@@ -8,13 +8,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- مكتبات Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
 
     <style>
-        /* الألوان والثيم */
         :root { 
             --bg-dark: #0B0F19; --bg-card: #1A2235; --primary: #F59E0B; --primary-hover: #D97706; 
             --accent: #8B5CF6; --text-main: #F3F4F6; --text-muted: #9CA3AF; --danger: #EF4444; 
@@ -24,21 +22,20 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
         body { background-color: var(--bg-dark); color: var(--text-main); overflow-x: hidden; }
         
-        /* الهيدر */
         header { background: rgba(26, 34, 53, 0.95); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; border-bottom: 1px solid var(--border-color); }
         .logo { font-size: 26px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 8px; text-shadow: 0 0 10px rgba(245, 158, 11, 0.3); }
-        .logo i { color: var(--accent); }
         
         .nav-actions { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
         .icon-btn-wrapper { display: flex; gap: 10px; }
         .cart-icon-btn { background: var(--bg-card); border: 1px solid var(--border-color); width: 45px; height: 45px; border-radius: 12px; font-size: 20px; color: var(--text-main); cursor: pointer; position: relative; transition: 0.3s; display: flex; justify-content: center; align-items: center; }
         .cart-icon-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .cart-icon-btn.heart-icon:hover { border-color: var(--danger); color: var(--danger); }
         .cart-badge { position: absolute; top: -5px; right: -5px; background: var(--primary); color: #000; font-size: 11px; font-weight: 900; width: 20px; height: 20px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid var(--bg-card); }
 
         .btn-auth { background: var(--primary); border: none; color: #000; padding: 10px 18px; border-radius: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
         .btn-auth:hover { background: var(--primary-hover); transform: translateY(-2px); }
         
-        /* قائمة المستخدم */
+        /* المستخدم والقائمة */
         .user-dropdown { position: relative; display: inline-block; }
         .user-profile { display: flex; align-items: center; gap: 8px; background: var(--bg-dark); padding: 5px 15px 5px 5px; border-radius: 30px; border: 1px solid var(--border-color); cursor: pointer; transition: 0.3s; }
         .user-profile img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
@@ -48,33 +45,34 @@
         .user-menu button { width: 100%; text-align: right; background: none; border: none; padding: 12px 15px; color: var(--text-main); font-size: 14px; font-weight: 700; cursor: pointer; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 10px; transition: 0.3s; }
         .user-menu button:hover { background: rgba(255,255,255,0.05); color: var(--primary); }
         .user-menu button.logout { color: var(--danger); }
-        .user-menu button.logout:hover { background: rgba(239,68,68,0.1); }
 
-        /* نافذة تسجيل الدخول / حساب جديد (Modal) */
+        /* نافذة الدخول (تم تعديل زر جوجل فيها) */
         .auth-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 3000; display: none; justify-content: center; align-items: center; }
-        .auth-modal { background: var(--bg-card); width: 90%; max-width: 400px; border-radius: 20px; border: 1px solid var(--border-color); overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.6); position: relative; }
+        .auth-modal { background: var(--bg-card); width: 90%; max-width: 400px; border-radius: 20px; border: 1px solid var(--border-color); overflow: hidden; position: relative; }
         .auth-header { display: flex; }
         .auth-tab { flex: 1; padding: 15px; text-align: center; font-weight: 800; font-size: 16px; cursor: pointer; background: rgba(0,0,0,0.2); color: var(--text-muted); border-bottom: 2px solid var(--border-color); transition: 0.3s; }
         .auth-tab.active { background: transparent; color: var(--primary); border-bottom-color: var(--primary); }
         .auth-body { padding: 30px 20px; }
         .auth-input { width: 100%; background: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-main); padding: 12px; border-radius: 12px; margin-bottom: 15px; outline: none; font-family: 'Cairo'; }
         .auth-input:focus { border-color: var(--primary); }
-        .auth-btn { width: 100%; background: var(--primary); border: none; padding: 12px; border-radius: 12px; font-weight: 800; font-size: 16px; color: #000; cursor: pointer; margin-bottom: 15px; }
-        .google-auth-btn { width: 100%; background: white; border: none; padding: 12px; border-radius: 12px; font-weight: 800; font-size: 15px; color: #000; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .auth-btn { width: 100%; background: var(--primary); border: none; padding: 12px; border-radius: 12px; font-weight: 800; font-size: 16px; color: #000; cursor: pointer; margin-bottom: 15px; transition: 0.3s;}
+        
+        /* التعديل الجديد لزر جوجل */
+        .google-auth-btn { width: 100%; background: #ffffff; border: 1px solid #ccc; padding: 12px; border-radius: 12px; font-weight: 800; font-size: 15px; color: #333; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .google-auth-btn:hover { background: #f8f9fa; transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
+        
         .close-auth { position: absolute; top: 15px; right: 15px; background: transparent; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; }
 
-        /* نافذة مشترياتي */
-        .orders-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 3000; display: none; justify-content: center; align-items: center; }
-        .orders-modal { background: var(--bg-card); width: 95%; max-width: 600px; height: 80vh; border-radius: 20px; border: 1px solid var(--border-color); display: flex; flex-direction: column; overflow: hidden; }
+        /* نافذة الطلبات السابقة */
+        .orders-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 3000; display: none; justify-content: center; align-items: center; }
+        .orders-modal { background: var(--bg-card); width: 95%; max-width: 600px; height: 80vh; border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; }
         .orders-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
         .orders-body { flex: 1; overflow-y: auto; padding: 20px; }
         .order-card { background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; margin-bottom: 15px; }
-        .order-card-header { display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-color); padding-bottom: 10px; margin-bottom: 10px; font-size: 14px; }
+        .order-card-header { display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-color); padding-bottom: 10px; margin-bottom: 10px; }
         .order-id { color: var(--primary); font-weight: bold; }
-        .order-item-list { list-style: none; padding-right: 15px; margin-bottom: 10px; }
-        .order-item-list li { font-size: 14px; color: var(--text-main); margin-bottom: 5px; }
         
-        .hero { background: linear-gradient(135deg, rgba(26,34,53,1) 0%, rgba(11,15,25,1) 100%); color: var(--text-main); text-align: center; padding: 40px 20px; border-radius: 0 0 30px 30px; margin-bottom: 30px; border-bottom: 1px solid var(--border-color); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .hero { background: linear-gradient(135deg, rgba(26,34,53,1) 0%, rgba(11,15,25,1) 100%); color: var(--text-main); text-align: center; padding: 40px 20px; border-radius: 0 0 30px 30px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .hero h2 { font-size: clamp(24px, 5vw, 42px); margin-bottom: 10px; }
         .hero h2 span { color: var(--primary); }
         
@@ -82,21 +80,20 @@
         .store-layout { display: flex; gap: 25px; align-items: flex-start; }
         .sidebar-categories { width: 280px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 20px; position: sticky; top: 100px; display: flex; flex-direction: column; gap: 10px; }
         .cat-btn { background: transparent; color: var(--text-muted); border: none; padding: 12px 15px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 10px; text-align: right; width: 100%; }
-        .cat-btn:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
         .cat-btn.active { background: var(--primary); color: #000; }
 
         .main-products { flex: 1; }
         .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
         
-        /* الكروت */
         .product-card { background: var(--bg-card); border-radius: 20px; overflow: hidden; border: 1px solid var(--border-color); transition: 0.3s ease; position: relative; display: flex; flex-direction: column; }
-        .product-card:hover { transform: translateY(-5px); border-color: var(--primary); }
         .product-img-wrapper { height: 200px; overflow: hidden; position: relative; background: #000; }
         .product-img-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s ease; opacity: 0.9; }
-        .product-card:hover .product-img-wrapper img { transform: scale(1.08); opacity: 1; }
-        .cat-badge { position: absolute; top: 12px; right: 12px; background: var(--accent); color: #fff; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 800; }
         
-        /* التحذير للمخزون */
+        /* زر المفضلة (القلب) على المنتجات */
+        .like-btn { position: absolute; top: 12px; left: 12px; background: rgba(11, 15, 25, 0.8); border: 1px solid var(--border-color); width: 35px; height: 35px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 16px; color: var(--text-muted); cursor: pointer; transition: 0.3s; z-index: 10; backdrop-filter: blur(5px);}
+        .like-btn.liked { color: var(--danger); border-color: var(--danger); animation: heartBeat 0.3s; }
+        @keyframes heartBeat { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
+
         .stock-warning { color: var(--danger); font-size: 12px; font-weight: 900; margin-bottom: 5px; animation: flash 1s infinite alternate; }
         @keyframes flash { 0% { opacity: 0.7; } 100% { opacity: 1; } }
 
@@ -105,11 +102,10 @@
         .product-price { font-size: 22px; font-weight: 900; color: var(--primary); margin-bottom: 10px; }
         .btn { width: 100%; padding: 12px; border: none; border-radius: 12px; font-size: 15px; font-weight: 800; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.3s; }
         .btn-cart { background: var(--primary); color: #000; }
-        .btn-cart:hover { background: var(--primary-hover); }
         .btn-buy { background: var(--whatsapp); color: #fff; }
         .btn-delete { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
 
-        /* القوائم الجانبية */
+        /* القوائم الجانبية (للسلة والمفضلة) */
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; display: none; }
         .overlay.active { display: block; }
         .side-panel { position: fixed; top: 0; right: -450px; width: 400px; max-width: 100%; height: 100%; background: var(--bg-card); z-index: 2001; transition: 0.4s; display: flex; flex-direction: column; }
@@ -132,18 +128,22 @@
         @media (max-width: 900px) {
             .store-layout { flex-direction: column; gap: 15px; }
             .sidebar-categories { width: 100%; flex-direction: row; overflow-x: auto; position: static; padding: 10px; }
-            .cat-btn { width: auto; white-space: nowrap; }
             .form-grid { grid-template-columns: 1fr; }
+            .side-panel { width: 100%; }
         }
     </style>
 </head>
 <body>
 
-    <!-- الهيدر -->
     <header>
         <div class="logo"><i class="fa-solid fa-gamepad"></i> Kemo Store</div>
         <div class="nav-actions">
             <div class="icon-btn-wrapper">
+                <!-- زر المفضلة رجع تاني هنا -->
+                <button class="cart-icon-btn heart-icon" onclick="openWishlist()">
+                    <i class="fa-solid fa-heart"></i>
+                    <span class="cart-badge" id="wishlist-badge-count" style="background: var(--danger); color:white;">0</span>
+                </button>
                 <button class="cart-icon-btn" onclick="openCart()">
                     <i class="fa-solid fa-cart-shopping"></i>
                     <span class="cart-badge" id="cart-badge-count">0</span>
@@ -158,7 +158,7 @@
         </div>
     </header>
 
-    <!-- نافذة تسجيل الدخول والإنشاء -->
+    <!-- نافذة تسجيل الدخول -->
     <div class="auth-modal-overlay" id="auth-modal">
         <div class="auth-modal">
             <button class="close-auth" onclick="closeAuthModal()"><i class="fa-solid fa-xmark"></i></button>
@@ -167,15 +167,13 @@
                 <div class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">حساب جديد</div>
             </div>
             <div class="auth-body">
-                <!-- فورم إنشاء حساب -->
                 <div id="form-signup" style="display: none;">
-                    <input type="text" id="reg-name" class="auth-input" placeholder="اسمك الكريم (الذي سيظهر في الطلب)">
+                    <input type="text" id="reg-name" class="auth-input" placeholder="اسمك الكريم (للطلب)">
                     <input type="email" id="reg-email" class="auth-input" placeholder="البريد الإلكتروني">
                     <input type="password" id="reg-pass" class="auth-input" placeholder="كلمة المرور (6 أحرف على الأقل)">
                     <button class="auth-btn" onclick="signUpWithEmail()">إنشاء حساب</button>
                 </div>
 
-                <!-- فورم تسجيل الدخول -->
                 <div id="form-login">
                     <input type="email" id="log-email" class="auth-input" placeholder="البريد الإلكتروني">
                     <input type="password" id="log-pass" class="auth-input" placeholder="كلمة المرور">
@@ -183,23 +181,23 @@
                 </div>
 
                 <div style="text-align: center; margin: 15px 0; color: var(--text-muted);">أو</div>
+                <!-- تصميم زر جوجل الجديد -->
                 <button class="google-auth-btn" onclick="loginWithGoogle()">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="G"> المتابعة بجوجل
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="G" style="width:20px;"> 
+                    المتابعة باستخدام جوجل
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- نافذة مشترياتي السابقة -->
+    <!-- نافذة مشترياتي -->
     <div class="orders-modal-overlay" id="orders-modal">
         <div class="orders-modal">
             <div class="orders-header">
                 <h3><i class="fa-solid fa-clock-rotate-left" style="color:var(--primary)"></i> طلباتي السابقة</h3>
                 <button class="close-auth" style="position:static;" onclick="closeOrdersModal()"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="orders-body" id="orders-list-container">
-                <!-- الطلبات تظهر هنا -->
-            </div>
+            <div class="orders-body" id="orders-list-container"></div>
         </div>
     </div>
 
@@ -221,11 +219,19 @@
                 <span>الإجمالي:</span>
                 <span style="color: var(--primary);"><span id="cart-total-price">0</span> ج.م</span>
             </div>
-            <button class="btn btn-buy" onclick="checkoutWhatsApp()"><i class="fa-brands fa-whatsapp fa-lg"></i> إرسال الطلب عبر واتساب</button>
+            <button class="btn btn-buy" onclick="checkoutWhatsApp()"><i class="fa-brands fa-whatsapp fa-lg"></i> إرسال الطلب</button>
         </div>
     </div>
 
-    <!-- واجهة المتجر -->
+    <!-- قائمة المفضلة الجانبية -->
+    <div class="side-panel" id="wishlist-sidebar">
+        <div class="side-header">
+            <h3><i class="fa-solid fa-heart" style="color:var(--danger)"></i> المفضلة</h3>
+            <button class="close-side" onclick="closeAllSidebars()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="side-items" id="wishlist-items"></div>
+    </div>
+
     <div id="store-section">
         <div class="hero">
             <h2>اشحن ألعابك المفضلة <span>الآن!</span></h2>
@@ -241,7 +247,6 @@
         </div>
     </div>
 
-    <!-- لوحة الإدارة -->
     <div id="admin-section" class="container" style="display: none; margin-top: 30px;">
         <button class="btn" style="background:var(--bg-card); color:white; width:max-content; margin-bottom:20px;" onclick="switchTab('store')"><i class="fa-solid fa-arrow-right"></i> العودة للمتجر</button>
 
@@ -254,7 +259,7 @@
             </div>
             <div class="input-group"><label>اسم الشحنة</label><input type="text" id="p-name"></div>
             <div class="input-group"><label>السعر (ج.م)</label><input type="number" id="p-price"></div>
-            <div class="input-group"><label>الكمية المتاحة للبيع</label><input type="number" id="p-qty" placeholder="مثال: 50"></div>
+            <div class="input-group"><label>الكمية المتاحة للبيع</label><input type="number" id="p-qty"></div>
             <div class="input-group"><label>الصورة</label><input type="file" id="p-image" accept="image/*"></div>
             <div class="input-group" style="grid-column: 1 / -1;"><label>رسالة الواتس (اختياري)</label><input type="text" id="p-msg"></div>
             <button class="btn btn-cart" id="add-btn" style="grid-column: 1 / -1;" onclick="addProduct()"><i class="fa-solid fa-upload"></i> حفظ المنتج</button>
@@ -268,7 +273,6 @@
     <div id="toast">تم بنجاح!</div>
 
     <script>
-        // إعدادات قاعدة البيانات الخاصة بك
         const firebaseConfig = {
             apiKey: "AIzaSyAxAGDNo9cRiYVjUopaiWo4K4ylUG8tiG0",
             authDomain: "kemo-store-daf94.firebaseapp.com",
@@ -289,6 +293,7 @@
         
         let products =[]; let categories =[]; let currentFilter = 'all'; 
         let cart = JSON.parse(localStorage.getItem('kemo_cart_gaming')) ||[];
+        let likes = JSON.parse(localStorage.getItem('kemo_likes_gaming')) ||[]; // حفظ المفضلة
         let uploadedImageData = ""; let currentUser = null; let isAdmin = false;
 
         function showToast(msg, isError = false) {
@@ -297,7 +302,6 @@
             t.className = "show"; setTimeout(() => t.className = "", 3000);
         }
 
-        // ================= نظام المصادقة المتقدم =================
         function openAuthModal(type) { document.getElementById('auth-modal').style.display = 'flex'; switchAuthTab(type); }
         function closeAuthModal() { document.getElementById('auth-modal').style.display = 'none'; }
         function switchAuthTab(type) {
@@ -306,64 +310,51 @@
             document.getElementById(`tab-${type}`).classList.add('active'); document.getElementById(`form-${type}`).style.display = 'block';
         }
 
-        // إنشاء حساب بالإيميل والاسم المخصص
         function signUpWithEmail() {
             const name = document.getElementById('reg-name').value.trim();
             const email = document.getElementById('reg-email').value.trim();
             const pass = document.getElementById('reg-pass').value;
-            
             if(!name || !email || !pass) return showToast("أكمل جميع البيانات!", true);
-            if(pass.length < 6) return showToast("كلمة المرور يجب أن تكون 6 أحرف على الأقل", true);
+            if(pass.length < 6) return showToast("الباسورد 6 أحرف على الأقل", true);
 
-            auth.createUserWithEmailAndPassword(email, pass).then((userCredential) => {
-                // حفظ الاسم المخصص في حساب العميل
-                userCredential.user.updateProfile({ displayName: name }).then(() => {
-                    closeAuthModal(); showToast("تم إنشاء الحساب بنجاح!");
-                });
-            }).catch((error) => {
-                if(error.code === 'auth/email-already-in-use') showToast("هذا الإيميل مسجل بالفعل، يرجى تسجيل الدخول", true);
-                else showToast("خطأ: " + error.message, true);
+            auth.createUserWithEmailAndPassword(email, pass).then((userCred) => {
+                userCred.user.updateProfile({ displayName: name }).then(() => { closeAuthModal(); showToast("تم إنشاء الحساب بنجاح!"); });
+            }).catch((err) => {
+                if(err.code === 'auth/email-already-in-use') showToast("الإيميل مسجل مسبقاً", true); else showToast(err.message, true);
             });
         }
 
-        // الدخول بالإيميل
         function loginWithEmail() {
             const email = document.getElementById('log-email').value.trim();
             const pass = document.getElementById('log-pass').value;
-            if(!email || !pass) return showToast("أدخل الإيميل وكلمة المرور", true);
+            if(!email || !pass) return showToast("أدخل الإيميل والباسورد", true);
 
-            auth.signInWithEmailAndPassword(email, pass).then(() => {
-                closeAuthModal(); showToast("أهلاً بك مرة أخرى!");
-            }).catch((error) => {
-                if(error.code === 'auth/user-not-found') showToast("الإيميل غير مسجل، يرجى إنشاء حساب جديد", true);
-                else if(error.code === 'auth/wrong-password') showToast("كلمة المرور غير صحيحة", true);
-                else showToast("تأكد من صحة البيانات", true);
+            auth.signInWithEmailAndPassword(email, pass).then(() => { closeAuthModal(); showToast("أهلاً بك مرة أخرى!");
+            }).catch((err) => {
+                if(err.code === 'auth/user-not-found') showToast("الإيميل غير مسجل", true); else showToast("الباسورد خطأ", true);
             });
         }
 
-        function loginWithGoogle() { auth.signInWithPopup(provider).then(() => { closeAuthModal(); showToast("تم الدخول بنجاح"); }).catch(e => showToast("خطأ", true)); }
+        // تسجيل الدخول بجوجل مع رسالة الخطأ المبرمجة
+        function loginWithGoogle() { 
+            auth.signInWithPopup(provider).then(() => { 
+                closeAuthModal(); showToast("تم الدخول بنجاح"); 
+            }).catch(e => {
+                // رسالة واضحة في حالة رفض جوجل
+                alert("لم يتم تسجيل الدخول.\nالسبب: رابط موقعك غير مسجل في Firebase (Authorized domains).\nيرجى إضافة الرابط من إعدادات Firebase.");
+                showToast("خطأ في تسجيل الدخول", true);
+            }); 
+        }
+        
         function logout() { auth.signOut().then(() => { showToast("تم الخروج"); switchTab('store'); }); }
 
-        // تحديث شكل المستخدم بعد الدخول
         auth.onAuthStateChanged((user) => {
             const userArea = document.getElementById('user-area');
             if (user) {
                 currentUser = user; isAdmin = (user.email.toLowerCase() === ADMIN_EMAIL);
-                const displayName = user.displayName || "عميل مميز";
-                const initial = displayName.charAt(0).toUpperCase();
-                const avatar = user.photoURL ? `<img src="${user.photoURL}">` : `<div style="width:35px;height:35px;border-radius:50%;background:var(--primary);color:#000;display:flex;justify-content:center;align-items:center;font-weight:bold;">${initial}</div>`;
-                
-                userArea.innerHTML = `
-                    <div class="user-dropdown">
-                        <div class="user-profile">
-                            ${avatar} <span>${displayName.split(' ')[0]}</span> <i class="fa-solid fa-chevron-down" style="font-size:10px; margin-right:5px;"></i>
-                        </div>
-                        <div class="user-menu">
-                            ${isAdmin ? `<button onclick="switchTab('admin')"><i class="fa-solid fa-user-shield"></i> لوحة الإدارة</button>` : ''}
-                            <button onclick="openOrdersModal()"><i class="fa-solid fa-box-open"></i> مشترياتي</button>
-                            <button class="logout" onclick="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> تسجيل الخروج</button>
-                        </div>
-                    </div>`;
+                const name = user.displayName || "عميل";
+                const avatar = user.photoURL ? `<img src="${user.photoURL}">` : `<div style="width:35px;height:35px;border-radius:50%;background:var(--primary);color:#000;display:flex;justify-content:center;align-items:center;font-weight:bold;">${name.charAt(0)}</div>`;
+                userArea.innerHTML = `<div class="user-dropdown"><div class="user-profile">${avatar} <span>${name.split(' ')[0]}</span></div><div class="user-menu">${isAdmin ? `<button onclick="switchTab('admin')"><i class="fa-solid fa-shield"></i> الإدارة</button>` : ''}<button onclick="openOrdersModal()"><i class="fa-solid fa-box"></i> مشترياتي</button><button class="logout" onclick="logout()"><i class="fa-solid fa-door-open"></i> خروج</button></div></div>`;
             } else {
                 currentUser = null; isAdmin = false;
                 userArea.innerHTML = `<button class="btn-auth" onclick="openAuthModal('login')"><i class="fa-solid fa-user"></i> دخول / حساب جديد</button>`;
@@ -382,16 +373,16 @@
         }
         function filterCategory(cat, btn) { currentFilter = cat; renderCategoriesUI(); renderProducts(); }
 
-        // ================= السلة والشراء =================
-        function closeAllSidebars() { document.getElementById('cart-sidebar').classList.remove('active'); document.getElementById('main-overlay').classList.remove('active'); }
+        // ================= السلة والمفضلة =================
+        function closeAllSidebars() { document.getElementById('cart-sidebar').classList.remove('active'); document.getElementById('wishlist-sidebar').classList.remove('active'); document.getElementById('main-overlay').classList.remove('active'); }
         function openCart() { closeAllSidebars(); document.getElementById('cart-sidebar').classList.add('active'); document.getElementById('main-overlay').classList.add('active'); renderCart(); }
+        function openWishlist() { closeAllSidebars(); document.getElementById('wishlist-sidebar').classList.add('active'); document.getElementById('main-overlay').classList.add('active'); renderWishlist(); }
 
         function addToCart(id) {
             const product = products.find(p => p.id === id); if(!product) return;
             if(product.qty <= 0) return showToast("نفدت الكمية!", true);
             const existing = cart.find(item => item.id === id);
-            if(existing) { 
-                if(existing.qty < product.qty) { existing.qty++; showToast("تم زيادة الكمية"); } else { showToast("وصلت لأقصى كمية متاحة", true); }
+            if(existing) { if(existing.qty < product.qty) { existing.qty++; showToast("تم زيادة الكمية"); } else { showToast("وصلت لأقصى كمية", true); }
             } else { cart.push({ id: product.id, name: product.name, price: product.price, image: product.image, maxQty: product.qty, qty: 1 }); showToast("أضيف للسلة 🛒"); }
             saveCart();
         }
@@ -399,7 +390,7 @@
         function updateCartQty(id, change) {
             const item = cart.find(i => i.id === id); if(!item) return;
             let newQty = item.qty + change;
-            if(newQty > item.maxQty) return showToast("لا يوجد كمية إضافية بالمخزن", true);
+            if(newQty > item.maxQty) return showToast("لا يوجد كمية إضافية", true);
             if(newQty <= 0) removeFromCart(id); else { item.qty = newQty; saveCart(); }
         }
         function removeFromCart(id) { cart = cart.filter(item => item.id !== id); saveCart(); }
@@ -407,90 +398,75 @@
 
         function renderCart() {
             const container = document.getElementById('cart-items'); let total = 0, count = 0; container.innerHTML = '';
-            if(cart.length === 0) container.innerHTML = '<div style="text-align:center;color:var(--text-muted);"><p>السلة فارغة</p></div>';
+            if(cart.length === 0) container.innerHTML = '<div style="text-align:center;color:gray;">السلة فارغة</div>';
             else {
                 cart.forEach(item => {
                     total += (item.price * item.qty); count += item.qty;
-                    container.innerHTML += `<div class="cart-item"><img src="${item.image}"><div class="cart-item-details"><div class="cart-item-title">${item.name}</div><div class="cart-item-price">${item.price} ج.م</div><div class="qty-controls"><button class="qty-btn" onclick="updateCartQty(${item.id}, -1)">-</button><span>${item.qty}</span><button class="qty-btn" onclick="updateCartQty(${item.id}, 1)">+</button></div></div><button class="remove-item" onclick="removeFromCart(${item.id})"><i class="fa-solid fa-trash"></i></button></div>`;
+                    container.innerHTML += `<div class="cart-item"><img src="${item.image}"><div class="cart-item-details"><div class="cart-item-title">${item.name}</div><div style="color:var(--primary);">${item.price} ج.م</div><div class="qty-controls" style="display:flex;gap:10px;margin-top:5px;"><button style="background:transparent;color:white;border:none;font-size:18px;" onclick="updateCartQty(${item.id}, -1)">-</button><span>${item.qty}</span><button style="background:transparent;color:white;border:none;font-size:18px;" onclick="updateCartQty(${item.id}, 1)">+</button></div></div><button class="remove-item" onclick="removeFromCart(${item.id})"><i class="fa-solid fa-trash"></i></button></div>`;
                 });
             }
             document.getElementById('cart-total-price').innerText = total; document.getElementById('cart-badge-count').innerText = count;
         }
 
-        // إتمام الطلب (رقم مميز + تفريغ + رسالة واتس)
+        // دوال المفضلة
+        function toggleLike(id) {
+            if(likes.includes(id)) { likes = likes.filter(l => l !== id); } else { likes.push(id); showToast("أضيف للمفضلة ❤️"); }
+            localStorage.setItem('kemo_likes_gaming', JSON.stringify(likes));
+            renderProducts(); updateWishlistBadge();
+            if(document.getElementById('wishlist-sidebar').classList.contains('active')) renderWishlist();
+        }
+        function updateWishlistBadge() { document.getElementById('wishlist-badge-count').innerText = likes.length; }
+        function renderWishlist() {
+            const container = document.getElementById('wishlist-items'); container.innerHTML = '';
+            if(likes.length === 0) { container.innerHTML = '<div style="text-align:center;color:gray;">لا توجد منتجات مفضلة</div>'; return; }
+            likes.forEach(id => {
+                const p = products.find(p => p.id === id);
+                if(p) {
+                    container.innerHTML += `<div class="cart-item"><img src="${p.image}"><div class="cart-item-details"><div class="cart-item-title">${p.name}</div><div style="color:var(--primary);">${p.price} ج.م</div></div><button class="btn btn-cart" style="width:auto;padding:10px;" onclick="addToCart(${p.id})"><i class="fa-solid fa-plus"></i></button><button class="remove-item" onclick="toggleLike(${p.id})"><i class="fa-solid fa-trash"></i></button></div>`;
+                }
+            });
+        }
+
         function checkoutWhatsApp() {
             if (!currentUser) { showToast("يرجى تسجيل الدخول أولاً!", true); openAuthModal('login'); return; }
             if(cart.length === 0) return showToast("السلة فارغة!", true);
             const playerId = document.getElementById('customer-game-id').value.trim();
             if(!playerId) return showToast("اكتب الـ ID الخاص بك!", true);
 
-            // توليد رقم طلب مميز
             const orderId = 'ORD-' + Math.floor(1000 + Math.random() * 9000);
-            let total = 0; let msg = `مرحباً Kemo Store 👋%0Aيوجد طلب شحن جديد! 🚀%0A%0A🔖 *رقم الطلب:* #${orderId}%0A👤 *اسم العميل:* ${currentUser.displayName || 'عميل'}%0A🎮 *الـ ID / الحساب:* *${playerId}*%0A%0A📦 *المنتجات:*%0A`;
-
-            // تجهيز الطلب للحفظ في الداتا بيز للعميل
+            let total = 0; let msg = `مرحباً Kemo Store 👋%0Aيوجد طلب شحن جديد! 🚀%0A%0A🔖 *رقم الطلب:* #${orderId}%0A👤 *اسم العميل:* ${currentUser.displayName}%0A🎮 *الـ ID / الحساب:* *${playerId}*%0A%0A📦 *المنتجات:*%0A`;
             const orderDataToSave = { id: orderId, date: new Date().toLocaleString('ar-EG'), playerId: playerId, items: cart, status: "تم إرسال الطلب", total: 0 };
 
-            // تحديث الكميات في قاعدة البيانات (خصم المباع)
             cart.forEach((item, i) => {
                 let itemTotal = item.price * item.qty; total += itemTotal;
                 msg += `${i+1}- ${item.name} (الكمية: ${item.qty}) = ${itemTotal} ج.م%0A`;
-                
-                // البحث عن المنتج لخصم الكمية
                 let pIndex = products.findIndex(p => p.id === item.id);
                 if(pIndex !== -1) { products[pIndex].qty -= item.qty; }
             });
-            orderDataToSave.total = total;
-            msg += `%0A💰 *الإجمالي الكلي:* ${total} ج.م%0A%0Aبرجاء التنفيذ.`;
+            orderDataToSave.total = total; msg += `%0A💰 *الإجمالي:* ${total} ج.م%0A%0Aبرجاء التنفيذ.`;
 
-            // 1. حفظ الطلب في سجل العميل (مشترياتي)
             db.ref('kemo_orders/' + currentUser.uid).push(orderDataToSave);
-            
-            // 2. تحديث المنتجات في السيرفر لتقليل الكمية
             db.ref('kemo_products').set(products);
-
-            // 3. مسح السلة وإغلاقها
-            cart =[]; saveCart(); closeAllSidebars();
-            document.getElementById('customer-game-id').value = '';
-
-            // 4. فتح الواتساب
+            cart =[]; saveCart(); closeAllSidebars(); document.getElementById('customer-game-id').value = '';
             window.open(`https://wa.me/${whatsappNumber}?text=${msg}`, '_blank');
-            showToast("تم إرسال الطلب وحفظه في سجل مشترياتك!");
         }
 
-        // ================= مشترياتي (سجل الطلبات) =================
         function openOrdersModal() {
             if(!currentUser) return;
             document.getElementById('orders-modal').style.display = 'flex';
-            const container = document.getElementById('orders-list-container');
-            container.innerHTML = '<div style="text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> جاري التحميل...</div>';
-
-            db.ref('kemo_orders/' + currentUser.uid).once('value', (snapshot) => {
-                const orders = snapshot.val(); container.innerHTML = '';
-                if(!orders) { container.innerHTML = '<div style="text-align:center; color:var(--text-muted);">لا توجد طلبات سابقة.</div>'; return; }
-                
-                // تحويل الأوبجكت لمصفوفة لعرض الأحدث أولاً
+            const container = document.getElementById('orders-list-container'); container.innerHTML = 'جاري التحميل...';
+            db.ref('kemo_orders/' + currentUser.uid).once('value', (s) => {
+                const orders = s.val(); container.innerHTML = '';
+                if(!orders) { container.innerHTML = 'لا توجد طلبات سابقة.'; return; }
                 Object.values(orders).reverse().forEach(ord => {
-                    let itemsHtml = ord.items.map(i => `<li>- ${i.name} <span style="color:var(--text-muted)">(الكمية: ${i.qty})</span></li>`).join('');
-                    container.innerHTML += `
-                        <div class="order-card">
-                            <div class="order-card-header">
-                                <span class="order-id">#${ord.id}</span>
-                                <span style="color:var(--text-muted);">${ord.date}</span>
-                            </div>
-                            <ul class="order-item-list">${itemsHtml}</ul>
-                            <div style="display:flex; justify-content:space-between; border-top:1px solid var(--border-color); padding-top:10px;">
-                                <span>حالة الطلب: <span style="color:var(--whatsapp);">${ord.status}</span></span>
-                                <span style="color:var(--primary); font-weight:bold;">${ord.total} ج.م</span>
-                            </div>
-                        </div>`;
+                    let itemsHtml = ord.items.map(i => `<li>- ${i.name} (الكمية: ${i.qty})</li>`).join('');
+                    container.innerHTML += `<div class="order-card"><div class="order-card-header"><span class="order-id">#${ord.id}</span><span>${ord.date}</span></div><ul>${itemsHtml}</ul><div style="display:flex; justify-content:space-between; margin-top:10px; color:var(--primary);"><span>${ord.status}</span><span style="font-weight:bold;">${ord.total} ج.م</span></div></div>`;
                 });
             });
         }
         function closeOrdersModal() { document.getElementById('orders-modal').style.display = 'none'; }
 
-        // ================= المنتجات والإدارة =================
-        db.ref('kemo_products').on('value', (s) => { products = s.val() ||[]; renderProducts(); renderCart(); });
+        db.ref('kemo_products').on('value', (s) => { products = s.val() ||[]; renderProducts(); renderCart(); updateWishlistBadge(); });
 
         document.getElementById('p-image').addEventListener('change', function(e) {
             const file = e.target.files[0]; if(!file) return;
@@ -512,7 +488,7 @@
             const qty = parseInt(document.getElementById('p-qty').value) || 0; const msg = document.getElementById('p-msg').value;
             
             if(cat === '__NEW__') { if(!newCat) return; cat = newCat; db.ref('kemo_categories').set([...categories, { id: Date.now().toString(), name: newCat }]); }
-            if(!name || !price || !uploadedImageData || qty <= 0) return showToast("أكمل البيانات بـ كمية صحيحة وصورة", true);
+            if(!name || !price || !uploadedImageData || qty <= 0) return showToast("أكمل البيانات بـ كمية صحيحة", true);
             
             const btn = document.getElementById('add-btn'); btn.innerHTML = 'جاري...'; btn.disabled = true;
             db.ref('kemo_products').set([...products, { id: Date.now(), category: cat, image: uploadedImageData, name: name, price: price, qty: qty, waMessage: msg }]).then(() => {
@@ -529,10 +505,8 @@
             let filtered = currentFilter !== 'all' ? products.filter(p => p.category === currentFilter) : products;
 
             if(filtered.length === 0) storeList.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:gray;">لا يوجد شحن هنا</div>`;
-            else {
-                [...filtered].reverse().forEach(p => {
-                    const outOfStock = p.qty <= 0;
-                    // تحذير المخزون
+            else {[...filtered].reverse().forEach(p => {
+                    const outOfStock = p.qty <= 0; const isLiked = likes.includes(p.id);
                     let stockBadge = `<span class="cat-badge" style="background:var(--primary); color:#000;">متاح: ${p.qty}</span>`;
                     let stockWarn = '';
                     if(outOfStock) { stockBadge = `<span class="cat-badge" style="background:var(--danger);">نفدت الكمية</span>`; }
@@ -541,6 +515,7 @@
                     storeList.innerHTML += `
                         <div class="product-card" ${outOfStock ? 'style="opacity:0.6"' : ''}>
                             <div class="product-img-wrapper">
+                                <button class="like-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike(${p.id})"><i class="${isLiked ? 'fa-solid' : 'fa-regular'} fa-heart"></i></button>
                                 ${stockBadge}
                                 <img src="${p.image}">
                             </div>
