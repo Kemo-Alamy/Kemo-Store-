@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kemo Store | شحن ألعاب</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+
+    <style>
+        :root { 
+            --bg-dark: #0B0F19; --bg-card: #1A2235; --primary: #F59E0B; --primary-hover: #D97706; 
+            --accent: #8B5CF6; --text-main: #F3F4F6; --text-muted: #9CA3AF; --danger: #EF4444; 
+            --whatsapp: #25D366; --border-color: #374151; --success: #10B981;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-main); overflow-x: hidden; }
+        
+        /* Header */
+        header { background: rgba(26, 34, 53, 0.95); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); padding: 10px 5%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid var(--border-color); }
+        .logo { font-size: 24px; font-weight: 900; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        .logo i { color: var(--accent); }
+        
+        .nav-actions { display: flex; align-items: center; gap: 10px; }
+        .cart-icon-btn { background: var(--bg-card); border: 1px solid var(--border-color); width: 40px; height: 40px; border-radius: 10px; font-size: 18px; color: var(--text-main); cursor: pointer; position: relative; display: flex; justify-content: center; align-items: center; }
+        .cart-icon-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .cart-icon-btn.heart-icon:hover { border-color: var(--danger); color: var(--danger); }
+        .cart-badge { position: absolute; top: -5px; right: -5px; background: var(--primary); color: #000; font-size: 11px; font-weight: 900; width: 20px; height: 20px; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
+
+        .btn-auth { background: var(--primary); border: none; color: #000; padding: 8px 15px; border-radius: 10px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        
+        /* User Profile */
+        .user-dropdown { position: relative; display: inline-block; }
+        .user-profile { display: flex; align-items: center; gap: 8px; background: var(--bg-dark); padding: 5px 12px 5px 5px; border-radius: 30px; border: 1px solid var(--border-color); cursor: pointer; }
+        .user-profile img { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--primary); }
+        .user-profile span { font-weight: 700; font-size: 13px; }
+        .user-menu { display: none; position: absolute; left: 0; top: 45px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; width: 160px; z-index: 1001; overflow:hidden;}
+        .user-dropdown:hover .user-menu { display: block; }
+        .user-menu button { width: 100%; text-align: right; background: none; border: none; padding: 10px; color: var(--text-main); font-size: 13px; font-weight: 700; cursor: pointer; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 8px; }
+        .user-menu button:hover { background: rgba(255,255,255,0.05); color: var(--primary); }
+        .user-menu button.logout { color: var(--danger); }
+
+        /* Modals */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 3000; display: none; justify-content: center; align-items: center; }
+        .modal-box { background: var(--bg-card); width: 90%; max-width: 400px; border-radius: 15px; border: 1px solid var(--border-color); padding: 20px; position: relative; }
+        .close-modal { position: absolute; top: 15px; right: 15px; background: transparent; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; }
+        .modal-input { width: 100%; background: var(--bg-dark); border: 1px solid var(--border-color); color: white; padding: 12px; border-radius: 10px; margin-bottom: 15px; font-family: 'Cairo'; outline:none;}
+        .modal-btn { width: 100%; background: var(--primary); border: none; padding: 12px; border-radius: 10px; font-weight: 800; font-size: 15px; color: #000; cursor: pointer; margin-bottom: 10px; }
+        
+        .auth-tab { display: inline-block; width: 49%; text-align: center; padding: 10px; font-weight: bold; cursor: pointer; border-bottom: 2px solid var(--border-color); color:var(--text-muted); }
+        .auth-tab.active { color: var(--primary); border-color: var(--primary); }
+        .google-btn { width: 100%; background: white; color: black; padding: 10px; border-radius: 10px; font-weight: bold; display: flex; justify-content: center; align-items: center; gap: 10px; border: none; cursor: pointer; }
+
+        /* Layout & Cards (Customized for Mobile as requested) */
+        .container { max-width: 1200px; margin: 0 auto; padding: 15px; }
+        .store-layout { display: flex; gap: 20px; align-items: flex-start; }
+        .sidebar-categories { width: 250px; background: var(--bg-card); border-radius: 15px; padding: 15px; position: sticky; top: 80px; }
+        .cat-btn { background: transparent; color: var(--text-muted); border: none; padding: 10px; font-size: 14px; font-weight: bold; cursor: pointer; width: 100%; text-align: right; border-radius: 8px; margin-bottom: 5px;}
+        .cat-btn.active { background: var(--primary); color: #000; }
+
+        .main-products { flex: 1; }
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; } /* حجم الكروت الجديد */
+        
+        .product-card { background: var(--bg-card); border-radius: 15px; border: 1px solid var(--border-color); overflow: hidden; position: relative; display: flex; flex-direction: column; }
+        .product-img-wrapper { height: 160px; position: relative; background: #0a0a0a; display:flex; justify-content:center; align-items:center;}
+        .product-img-wrapper img { max-width: 100%; max-height: 100%; object-fit: contain; transition: 0.3s; }
+        .product-card:hover img { transform: scale(1.05); }
+        
+        .like-btn { position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.5); border: 1px solid var(--border-color); width: 30px; height: 30px; border-radius: 50%; color: var(--text-muted); display:flex; justify-content:center; align-items:center; cursor:pointer; z-index:10;}
+        .like-btn.liked { color: var(--danger); border-color: var(--danger); }
+        
+        .discount-badge { position: absolute; top: 8px; right: 8px; background: var(--danger); color: white; padding: 3px 8px; border-radius: 8px; font-size: 11px; font-weight: 900; }
+
+        .product-info { padding: 12px; flex: 1; display: flex; flex-direction: column; text-align: center; }
+        .product-title { font-size: 14px; font-weight: 800; margin-bottom: 5px; color: white; line-height:1.3;}
+        .product-price-container { display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap:wrap;}
+        .old-price { text-decoration: line-through; color: var(--danger); font-size: 12px; font-weight: bold; }
+        .current-price { color: var(--primary); font-size: 18px; font-weight: 900; }
+        
+        .btn-cart { background: var(--primary); color: #000; border: none; padding: 8px; border-radius: 8px; font-weight: 800; width: 100%; cursor: pointer; display:flex; justify-content:center; gap:5px; align-items:center; font-size:13px;}
+        .btn-edit { background: #3b82f6; color: white; }
+        .btn-delete { background: var(--danger); color: white; }
+        .admin-actions { display:flex; gap:5px; margin-top:5px; }
+        .admin-actions button { flex:1; padding:8px; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:12px;}
+
+        /* Sidebars (Cart & Wishlist) */
+        .side-panel { position: fixed; top: 0; right: -100%; width: 350px; max-width: 100%; height: 100%; background: var(--bg-card); z-index: 2001; transition: 0.4s; display: flex; flex-direction: column; border-left:1px solid var(--border-color); }
+        .side-panel.active { right: 0; }
+        .side-header { padding: 15px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items:center;}
+        .side-items { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .cart-item { display: flex; gap: 10px; background: var(--bg-dark); padding: 10px; border-radius: 10px; border: 1px solid var(--border-color); align-items: center;}
+        .cart-item img { width: 60px; height: 60px; border-radius: 8px; object-fit: contain; background:#000;}
+        .cart-item-title { font-size: 13px; font-weight: bold; }
+        .cart-item-price { color: var(--primary); font-weight: bold; font-size:14px; margin-top:3px;}
+        .qty-controls { display:flex; align-items:center; gap:10px; margin-top:5px; background:var(--bg-card); padding:2px 8px; border-radius:5px;}
+        .qty-controls button { background:none; border:none; color:white; font-size:16px; cursor:pointer;}
+        .promo-box { display:flex; gap:5px; margin-bottom:10px; }
+        .promo-box input { flex:1; padding:8px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-dark); color:white; outline:none;}
+        .promo-box button { background:var(--accent); color:white; border:none; padding:8px 15px; border-radius:8px; font-weight:bold; cursor:pointer;}
+
+        /* Admin Panels */
+        .admin-panel { background: var(--bg-card); padding: 20px; border-radius: 15px; border: 1px solid var(--border-color); margin-bottom: 20px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .input-group { display: flex; flex-direction: column; gap: 5px; }
+        .input-group label { font-size: 12px; color: var(--text-muted); font-weight:bold;}
+        .input-group input, .input-group select { background: var(--bg-dark); color: white; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; outline: none; font-family:'Cairo';}
+        
+        #toast { visibility: hidden; min-width: 250px; background: var(--bg-card); color: #fff; text-align: center; border-radius: 10px; padding: 12px; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; border: 1px solid var(--border-color); font-weight:bold;}
+        #toast.show { visibility: visible; }
+
+        @media (max-width: 768px) {
+            .store-layout { flex-direction: column; gap: 10px; }
+            .sidebar-categories { width: 100%; flex-direction: row; overflow-x: auto; position: static; padding: 10px; display:flex; white-space:nowrap; }
+            .cat-btn { width: auto; padding: 8px 15px; margin-bottom:0;}
+            /* الكروت في الموبايل 2 جنب بعض زي الصورة */
+            .products-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .product-img-wrapper { height: 130px; }
+            .product-title { font-size:12px;}
+            .product-price { font-size: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo"><i class="fa-solid fa-gamepad"></i> Kemo Store</div>
+        <div class="nav-actions">
+            <div class="icon-btn-wrapper">
+                <button class="cart-icon-btn heart-icon" onclick="openSidebar('wishlist-sidebar')">
+                    <i class="fa-solid fa-heart"></i>
+                    <span class="cart-badge" id="wishlist-badge" style="background:var(--danger);color:white;">0</span>
+                </button>
+                <button class="cart-icon-btn" onclick="openSidebar('cart-sidebar')">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span class="cart-badge" id="cart-badge">0</span>
+                </button>
+            </div>
+            <div id="user-area" class="user-area">
+                <button class="btn-auth" onclick="openModal('auth-modal')">دخول / حساب</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="modal-overlay" id="main-overlay" onclick="closeAll()"></div>
+
+    <!-- نافذة الدخول -->
+    <div class="modal-overlay" id="auth-modal">
+        <div class="modal-box">
+            <button class="close-modal" onclick="closeModal('auth-modal')"><i class="fa-solid fa-xmark"></i></button>
+            <div style="margin-bottom:15px;">
+                <div class="auth-tab active" id="tab-login" onclick="switchAuth('login')">تسجيل الدخول</div>
+                <div class="auth-tab" id="tab-signup" onclick="switchAuth('signup')">حساب جديد</div>
+            </div>
+            
+            <div id="form-signup" style="display:none;">
+                <input type="text" id="reg-name" class="modal-input" placeholder="اسمك (للواتساب)">
+                <input type="email" id="reg-email" class="modal-input" placeholder="البريد الإلكتروني">
+                <input type="password" id="reg-pass" class="modal-input" placeholder="كلمة المرور">
+                <button class="modal-btn" onclick="signUpEmail()">إنشاء حساب</button>
+            </div>
+            <div id="form-login">
+                <input type="email" id="log-email" class="modal-input" placeholder="البريد الإلكتروني">
+                <input type="password" id="log-pass" class="modal-input" placeholder="كلمة المرور">
+                <button class="modal-btn" onclick="loginEmail()">دخول</button>
+            </div>
+            
+            <p style="text-align:center; color:gray; margin:10px 0;">أو</p>
+            <button class="google-btn" onclick="loginGoogle()"><img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="20"> المتابعة بجوجل</button>
+        </div>
+    </div>
+
+    <!-- نافذة طلب اسم مخصص بعد الدخول بجوجل -->
+    <div class="modal-overlay" id="name-modal">
+        <div class="modal-box">
+            <h3 style="margin-bottom:10px; color:var(--primary);">مرحباً بك! 👋</h3>
+            <p style="font-size:13px; color:gray; margin-bottom:15px;">يرجى كتابة الاسم الذي تريد أن يظهر في طلبات الواتساب الخاصة بك.</p>
+            <input type="text" id="custom-google-name" class="modal-input" placeholder="اكتب اسمك هنا...">
+            <button class="modal-btn" onclick="saveGoogleName()">حفظ ومتابعة</button>
+        </div>
+    </div>
+
+    <!-- سلة الشراء -->
+    <div class="side-panel" id="cart-sidebar">
+        <div class="side-header">
+            <h3><i class="fa-solid fa-basket-shopping" style="color:var(--primary)"></i> السلة</h3>
+            <button class="close-side" onclick="closeAll()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="side-items" id="cart-items"></div>
+        <div style="padding:15px; border-top:1px solid var(--border-color); background:var(--bg-dark);">
+            <div class="promo-box">
+                <input type="text" id="promo-input" placeholder="كود الخصم (إن وجد)">
+                <button onclick="applyPromo()">تطبيق</button>
+            </div>
+            <input type="text" id="player-id" class="modal-input" placeholder="رقم اللاعب (ID) للشحن..." style="margin-bottom:10px;">
+            <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:18px; margin-bottom:15px;">
+                <span>الإجمالي:</span><span style="color:var(--primary);" id="cart-total">0 ج.م</span>
+            </div>
+            <button class="modal-btn" style="display:flex; justify-content:center; align-items:center; gap:5px;" onclick="checkout()"><i class="fa-brands fa-whatsapp fa-lg"></i> إرسال الطلب</button>
+        </div>
+    </div>
+
+    <!-- المفضلة بنفس شكل المنتجات تقريباً -->
+    <div class="side-panel" id="wishlist-sidebar">
+        <div class="side-header">
+            <h3><i class="fa-solid fa-heart" style="color:var(--danger)"></i> المفضلة</h3>
+            <button class="close-side" onclick="closeAll()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="side-items" id="wishlist-items" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"></div>
+    </div>
+
+    <!-- المتجر -->
+    <div id="store-section" class="container store-layout">
+        <div class="sidebar-categories" id="categories-list">
+            <button class="cat-btn active" onclick="filterCat('all')">الكل</button>
+        </div>
+        <div class="main-products">
+            <div class="products-grid" id="products-list"></div>
+        </div>
+    </div>
+
+    <!-- الإدارة -->
+    <div id="admin-section" class="container" style="display:none; margin-top:20px;">
+        <button class="btn-auth" style="background:var(--border-color); color:white; margin-bottom:20px;" onclick="switchMode('store')">العودة للمتجر</button>
+        
+        <h3 style="color:var(--primary); margin-bottom:10px;">إضافة / تعديل منتج</h3>
+        <div class="admin-panel form-grid">
+            <div class="input-group">
+                <label>القسم</label>
+                <select id="p-cat"><option value="none">بدون</option></select>
+                <input type="text" id="p-new-cat" placeholder="اسم القسم الجديد..." style="display:none; margin-top:5px;">
+            </div>
+            <div class="input-group"><label>اسم الشحنة</label><input type="text" id="p-name"></div>
+            <div class="input-group"><label>السعر الحالي (ج.م)</label><input type="number" id="p-price"></div>
+            <div class="input-group"><label>السعر القديم (للشطب - اختياري)</label><input type="number" id="p-old-price"></div>
+            <div class="input-group"><label>علامة الخصم (مثال: خصم 10%)</label><input type="text" id="p-badge"></div>
+            <div class="input-group"><label>الكمية المتاحة</label><input type="number" id="p-qty"></div>
+            <div class="input-group"><label>الصورة</label><input type="file" id="p-image" accept="image/*"></div>
+            <button class="modal-btn" id="btn-save-prod" style="grid-column: 1/-1;" onclick="saveProduct()">حفظ المنتج</button>
+        </div>
+
+        <h3 style="color:var(--accent); margin-bottom:10px;">أكواد الخصم (Promo Codes)</h3>
+        <div class="admin-panel form-grid">
+            <div class="input-group"><label>الكود</label><input type="text" id="promo-code" placeholder="مثال: KEMO2024"></div>
+            <div class="input-group"><label>الخصم (مبلغ بالجنيه)</label><input type="number" id="promo-val"></div>
+            <div class="input-group"><label>أقصى عدد مرات استخدام</label><input type="number" id="promo-uses" placeholder="مثال: 100"></div>
+            <button class="modal-btn" style="background:var(--accent); color:white;" onclick="addPromo()">حفظ الكود</button>
+            <div id="promo-list" style="grid-column:1/-1; display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;"></div>
+        </div>
+
+        <h3 style="color:var(--primary); margin-bottom:10px;">المنتجات الحالية</h3>
+        <div class="products-grid" id="admin-products-list"></div>
+    </div>
+
+    <div id="toast">تم!</div>
+
+    <script>
+        // إعدادات فايربيز الخاصة بك
+        const firebaseConfig = {
+            apiKey: "AIzaSyAxAGDNo9cRiYVjUopaiWo4K4ylUG8tiG0",
+            authDomain: "kemo-store-daf94.firebaseapp.com",
+            databaseURL: "https://kemo-store-daf94-default-rtdb.europe-west1.firebasedatabase.app", 
+            projectId: "kemo-store-daf94",
+            storageBucket: "kemo-store-daf94.firebasestorage.app",
+            messagingSenderId: "642183201870",
+            appId: "1:642183201870:web:e0890b603e079f2438af1f"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database(); const auth = firebase.auth(); const provider = new firebase.auth.GoogleAuthProvider();
+
+        const ADMIN_EMAIL = "kareemammar2025@gmail.com".toLowerCase(); const whatsappNumber = "201115168017";
+        
+        let products=[], categories=[], promos={}, currentFilter='all';
+        let cart = JSON.parse(localStorage.getItem('k_cart')) ||[];
+        let likes = JSON.parse(localStorage.getItem('k_likes')) ||[];
+        let uploadedImg = "", editingId = null, currentUser = null, isAdmin = false, customName = "", appliedPromo = null;
+
+        function toast(msg, err=false) { const t=document.getElementById('toast'); t.innerText=msg; t.style.borderColor=err?'red':'green'; t.className='show'; setTimeout(()=>t.className='',3000); }
+        function openModal(id) { document.getElementById('main-overlay').style.display='block'; document.getElementById(id).style.display='flex'; }
+        function closeModal(id) { document.getElementById('main-overlay').style.display='none'; document.getElementById(id).style.display='none'; }
+        function openSidebar(id) { closeAll(); document.getElementById('main-overlay').style.display='block'; document.getElementById(id).classList.add('active'); renderCart(); renderWishlist(); }
+        function closeAll() { document.getElementById('main-overlay').style.display='none'; document.querySelectorAll('.side-panel').forEach(p=>p.classList.remove('active')); document.querySelectorAll('.modal-overlay').forEach(m=>m.style.display='none'); }
+        function switchMode(m) { document.getElementById('store-section').style.display=m==='store'?'flex':'none'; document.getElementById('admin-section').style.display=m==='admin'?'block':'none'; }
+
+        // Auth
+        function switchAuth(t) { document.getElementById('form-login').style.display=t==='login'?'block':'none'; document.getElementById('form-signup').style.display=t==='signup'?'block':'none'; document.getElementById('tab-login').className=`auth-tab ${t==='login'?'active':''}`; document.getElementById('tab-signup').className=`auth-tab ${t==='signup'?'active':''}`; }
+        function signUpEmail() {
+            let n=document.getElementById('reg-name').value, e=document.getElementById('reg-email').value, p=document.getElementById('reg-pass').value;
+            if(!n||!e||!p) return toast("أكمل البيانات",true);
+            auth.createUserWithEmailAndPassword(e,p).then(res => { db.ref('kemo_users/'+res.user.uid).set({customName:n}); closeAll(); toast("تم التسجيل"); }).catch(e=>toast(e.message,true));
+        }
+        function loginEmail() {
+            let e=document.getElementById('log-email').value, p=document.getElementById('log-pass').value;
+            auth.signInWithEmailAndPassword(e,p).then(()=> { closeAll(); toast("أهلاً بك"); }).catch(e=>toast("خطأ بالبيانات",true));
+        }
+        function loginGoogle() {
+            auth.signInWithPopup(provider).then(res => {
+                closeAll();
+                db.ref('kemo_users/'+res.user.uid).once('value', snap => {
+                    if(!snap.exists() || !snap.val().customName) { openModal('name-modal'); } 
+                    else { customName = snap.val().customName; toast("تم الدخول"); }
+                });
+            }).catch(e=>toast("خطأ في تسجيل جوجل",true));
+        }
+        function saveGoogleName() {
+            let n = document.getElementById('custom-google-name').value.trim();
+            if(!n) return toast("اكتب اسمك",true);
+            db.ref('kemo_users/'+currentUser.uid).set({customName:n}).then(()=>{ customName=n; closeModal('name-modal'); toast("تم الحفظ"); });
+        }
+        function logout() { auth.signOut().then(()=>{ switchMode('store'); toast("تم الخروج"); }); }
+
+        auth.onAuthStateChanged(user => {
+            const ua = document.getElementById('user-area');
+            if(user) {
+                currentUser = user; isAdmin = user.email.toLowerCase()===ADMIN_EMAIL;
+                db.ref('kemo_users/'+user.uid).once('value', s => { customName = s.exists() ? s.val().customName : user.displayName; });
+                ua.innerHTML = `<div class="user-dropdown"><div class="user-profile"><img src="${user.photoURL||'https://cdn-icons-png.flaticon.com/512/149/149071.png'}"> <span>${user.displayName||'عميل'}</span></div><div class="user-menu">${isAdmin?`<button onclick="switchMode('admin')">الإدارة</button>`:''}<button class="logout" onclick="logout()">خروج</button></div></div>`;
+            } else { currentUser = null; isAdmin = false; customName=""; ua.innerHTML = `<button class="btn-auth" onclick="openModal('auth-modal')">دخول / حساب</button>`; }
+        });
+
+        // DB Listeners
+        db.ref('kemo_categories').on('value', s => { categories=s.val()||[]; renderCats(); });
+        db.ref('kemo_promo_codes').on('value', s => { promos=s.val()||{}; renderPromos(); });
+        db.ref('kemo_products').on('value', s => { products=s.val()||[]; renderProducts(); renderCart(); renderWishlist(); });
+
+        // Cats
+        function renderCats() {
+            let cList = `<option value="none">بدون</option>` + categories.map(c=>`<option value="${c.name}">${c.name}</option>`).join('') + `<option value="__NEW__">+ قسم جديد</option>`;
+            document.getElementById('p-cat').innerHTML = cList;
+            document.getElementById('p-cat').onchange = e => document.getElementById('p-new-cat').style.display=e.target.value==='__NEW__'?'block':'none';
+            document.getElementById('categories-list').innerHTML = `<button class="cat-btn ${currentFilter==='all'?'active':''}" onclick="filterCat('all')">الكل</button>` + categories.map(c=>`<button class="cat-btn ${currentFilter===c.name?'active':''}" onclick="filterCat('${c.name}')">${c.name}</button>`).join('');
+        }
+        function filterCat(c) { currentFilter=c; renderCats(); renderProducts(); }
+
+        // Promos
+        function addPromo() {
+            let code = document.getElementById('promo-code').value.trim().toUpperCase();
+            let val = parseInt(document.getElementById('promo-val').value);
+            let uses = parseInt(document.getElementById('promo-uses').value);
+            if(!code || !val || !uses) return toast("أكمل الكود",true);
+            db.ref('kemo_promo_codes/'+code).set({ val:val, maxUses:uses, usedBy:[] }).then(()=>{ toast("تم حفظ الكود"); });
+        }
+        function delPromo(c) { if(confirm("حذف الكود؟")) db.ref('kemo_promo_codes/'+c).remove(); }
+        function renderPromos() {
+            if(!isAdmin) return;
+            document.getElementById('promo-list').innerHTML = Object.keys(promos).map(k=>`<span style="background:var(--bg-dark);padding:5px 10px;border-radius:8px;font-size:12px;">${k} (خصم ${promos[k].val} | متبقي ${promos[k].maxUses}) <i class="fa-solid fa-xmark text-danger" style="cursor:pointer;color:red;" onclick="delPromo('${k}')"></i></span>`).join('');
+        }
+        function applyPromo() {
+            if(!currentUser) return toast("سجل دخول أولاً لاستخدام الكود",true);
+            let code = document.getElementById('promo-input').value.trim().toUpperCase();
+            if(!promos[code]) return toast("كود غير صحيح",true);
+            let p = promos[code];
+            let used = p.usedBy ||[];
+            if(used.includes(currentUser.uid)) return toast("استخدمت هذا الكود مسبقاً",true);
+            if(p.maxUses <= 0) return toast("انتهى الحد الأقصى للكود",true);
+            appliedPromo = { code:code, val:p.val };
+            toast("تم تطبيق الخصم!"); renderCart();
+        }
+
+        // Products
+        document.getElementById('p-image').addEventListener('change', e => {
+            const f = e.target.files[0]; if(!f) return;
+            const r = new FileReader(); r.onload = ev => {
+                const i=new Image(); i.onload = () => {
+                    const c=document.createElement('canvas'); const M=500; let w=i.width, h=i.height;
+                    if(w>h){if(w>M){h*=M/w;w=M;}}else{if(h>M){w*=M/h;h=M;}} c.width=w; c.height=h; c.getContext('2d').drawImage(i,0,0,w,h);
+                    uploadedImg = c.toDataURL('image/jpeg', 0.6);
+                }; i.src=ev.target.result;
+            }; r.readAsDataURL(f);
+        });
+
+        function saveProduct() {
+            let cat = document.getElementById('p-cat').value; let nCat = document.getElementById('p-new-cat').value.trim();
+            if(cat==='__NEW__'){ if(!nCat) return toast("اكتب اسم القسم",true); cat=nCat; db.ref('kemo_categories').set([...categories,{id:Date.now().toString(),name:nCat}]); }
+            let n=document.getElementById('p-name').value, p=document.getElementById('p-price').value, o=document.getElementById('p-old-price').value, b=document.getElementById('p-badge').value, q=parseInt(document.getElementById('p-qty').value)||0, m=document.getElementById('p-msg').value;
+            
+            if(!n || !p || (!uploadedImg && !editingId)) return toast("الاسم، السعر، والصورة مطلوبين",true);
+            let btn = document.getElementById('btn-save-prod'); btn.innerText='جاري...';
+            
+            let obj = { id: editingId||Date.now(), category:cat, name:n, price:p, oldPrice:o, badge:b, qty:q, waMessage:m, image:uploadedImg||products.find(x=>x.id===editingId).image };
+            let newList = editingId ? products.map(x=>x.id===editingId?obj:x) : [...products, obj];
+            
+            db.ref('kemo_products').set(newList).then(()=>{
+                toast("تم الحفظ"); editingId=null; uploadedImg=""; btn.innerText="حفظ المنتج";['p-name','p-price','p-old-price','p-badge','p-qty','p-msg','p-image'].forEach(i=>document.getElementById(i).value=''); document.getElementById('p-cat').value='none';
+            });
+        }
+
+        function editProduct(id) {
+            let p = products.find(x=>x.id===id); if(!p) return;
+            editingId = p.id;
+            document.getElementById('p-name').value = p.name; document.getElementById('p-price').value = p.price;
+            document.getElementById('p-old-price').value = p.oldPrice||''; document.getElementById('p-badge').value = p.badge||'';
+            document.getElementById('p-qty').value = p.qty; document.getElementById('p-msg').value = p.waMessage||'';
+            document.getElementById('p-cat').value = categories.find(c=>c.name===p.category) ? p.category : 'none';
+            document.getElementById('btn-save-prod').innerText="تحديث المنتج";
+            window.scrollTo(0,0);
+        }
+        function deleteProduct(id) { if(confirm("حذف نهائي؟")) db.ref('kemo_products').set(products.filter(p=>p.id!==id)); }
+
+        function renderProducts() {
+            let sList = document.getElementById('products-list'); let aList = document.getElementById('admin-products-list');
+            sList.innerHTML=''; aList.innerHTML='';
+            let fProds = currentFilter!=='all' ? products.filter(p=>p.category===currentFilter) : products;[...fProds].reverse().forEach(p => {
+                let noStock = p.qty<=0; let liked = likes.includes(p.id);
+                let badgeHtml = p.badge ? `<span class="discount-badge">${p.badge}</span>` : '';
+                let priceHtml = p.oldPrice ? `<span class="old-price">${p.oldPrice}</span> <span class="current-price">${p.price}</span>` : `<span class="current-price">${p.price}</span>`;
+                
+                sList.innerHTML += `
+                    <div class="product-card" ${noStock?'style="opacity:0.6"':''}>
+                        <div class="product-img-wrapper">
+                            <button class="like-btn ${liked?'liked':''}" onclick="toggleLike(${p.id})"><i class="fa-solid fa-heart"></i></button>
+                            ${badgeHtml}
+                            <img src="${p.image}">
+                        </div>
+                        <div class="product-info">
+                            <div class="product-title">${p.name}</div>
+                            <div class="product-price-container">${priceHtml} ج.م</div>
+                            <button class="btn-cart" ${noStock?'disabled':`onclick="addCart(${p.id})"`}>${noStock?'نفدت الكمية':'<i class="fa-solid fa-bolt"></i> شحن'}</button>
+                        </div>
+                    </div>`;
+            });
+
+            [...products].reverse().forEach(p => {
+                aList.innerHTML += `
+                    <div class="product-card">
+                        <div class="product-img-wrapper"><span class="discount-badge">متاح: ${p.qty}</span><img src="${p.image}"></div>
+                        <div class="product-info">
+                            <div class="product-title">${p.name}</div><div class="product-price-container"><span class="current-price">${p.price}</span> ج.م</div>
+                            <div class="admin-actions">
+                                <button class="btn-edit" onclick="editProduct(${p.id})"><i class="fa-solid fa-pen"></i></button>
+                                <button class="btn-delete" onclick="deleteProduct(${p.id})"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        // Cart & Wishlist Logic
+        function addCart(id) {
+            let p=products.find(x=>x.id===id); if(p.qty<=0) return toast("مباع",true);
+            let e=cart.find(x=>x.id===id); if(e){ if(e.qty<p.qty) e.qty++; else return toast("أقصى كمية",true); } else cart.push({...p,qty:1});
+            saveC(); toast("أضيف للسلة");
+        }
+        function updateCartQty(id,c) { let i=cart.find(x=>x.id===id); if(i.qty+c<=0) cart=cart.filter(x=>x.id!==id); else if(i.qty+c>products.find(x=>x.id===id).qty) return toast("لا يوجد مخزون",true); else i.qty+=c; saveC(); }
+        function removeFromCart(id){ cart=cart.filter(x=>x.id!==id); saveC(); }
+        function saveC() { localStorage.setItem('k_cart', JSON.stringify(cart)); renderCart(); }
+        
+        function renderCart() {
+            let c=document.getElementById('cart-items'); let t=0, cnt=0; c.innerHTML='';
+            cart.forEach(i=>{ t+=(i.price*i.qty); cnt+=i.qty;
+                c.innerHTML+=`<div class="cart-item"><img src="${i.image}"><div class="cart-item-details"><div class="cart-item-title">${i.name}</div><div class="cart-item-price">${i.price} ج.م</div><div class="qty-controls"><button onclick="updateCartQty(${i.id},-1)">-</button><span>${i.qty}</span><button onclick="updateCartQty(${i.id},1)">+</button></div></div><button class="remove-item" onclick="removeFromCart(${i.id})"><i class="fa-solid fa-trash"></i></button></div>`;
+            });
+            if(appliedPromo) { t -= appliedPromo.val; if(t<0) t=0; }
+            document.getElementById('cart-total').innerText = t; document.getElementById('cart-badge').innerText=cnt;
+        }
+
+        function toggleLike(id) {
+            if(likes.includes(id)) likes=likes.filter(x=>x!==id); else { likes.push(id); toast("أضيف للمفضلة"); }
+            localStorage.setItem('k_likes', JSON.stringify(likes)); renderProducts(); document.getElementById('wishlist-badge').innerText=likes.length; renderWishlist();
+        }
+        function renderWishlist() {
+            let c=document.getElementById('wishlist-items'); c.innerHTML='';
+            likes.forEach(id=>{ let p=products.find(x=>x.id===id); if(p) c.innerHTML+=`<div class="product-card" style="border-radius:10px;"><div class="product-img-wrapper" style="height:100px;"><button class="like-btn liked" onclick="toggleLike(${p.id})"><i class="fa-solid fa-trash"></i></button><img src="${p.image}"></div><div class="product-info" style="padding:8px;"><div class="product-title" style="font-size:12px;">${p.name}</div><div class="current-price" style="font-size:14px;">${p.price}</div><button class="btn-cart" style="padding:5px;" onclick="addCart(${p.id})">شحن</button></div></div>`; });
+        }
+
+        function checkout() {
+            if(!currentUser) { toast("سجل دخول أولاً!",true); openModal('auth-modal'); return; }
+            if(cart.length===0) return toast("السلة فارغة",true);
+            let pid = document.getElementById('player-id').value.trim(); if(!pid) return toast("اكتب الـ ID",true);
+
+            let ordId = 'KEMO-'+Math.floor(1000+Math.random()*9000); let t=0;
+            let msg = `مرحباً 👋%0Aطلب شحن جديد #*${ordId}*%0A👤 الاسم: ${customName}%0A🎮 الـ ID: *${pid}*%0A%0A`;
+            
+            cart.forEach((i,idx) => { t+=i.price*i.qty; msg+=`${idx+1}- ${i.name} (x${i.qty}) = ${i.price*i.qty} ج.م%0A`; let px=products.findIndex(x=>x.id===i.id); if(px!==-1) products[px].qty-=i.qty; });
+            
+            if(appliedPromo) { msg+=`🎁 كود الخصم: ${appliedPromo.code} (-${appliedPromo.val})%0A`; t-=appliedPromo.val; if(t<0)t=0; }
+            msg+=`💰 *الإجمالي:* ${t} ج.م%0Aبرجاء التنفيذ.`;
+
+            // خصم استخدام الكود
+            if(appliedPromo) { let pRef = db.ref('kemo_promo_codes/'+appliedPromo.code); pRef.once('value', s=>{ let d=s.val(); d.maxUses--; d.usedBy=d.usedBy||[]; d.usedBy.push(currentUser.uid); pRef.set(d); }); }
+            
+            db.ref('kemo_products').set(products); cart=
