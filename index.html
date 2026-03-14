@@ -35,8 +35,34 @@
         .cart-badge { position: absolute; top: -5px; right: -5px; background: var(--primary); color: #000; font-size: 11px; font-weight: 900; width: 20px; height: 20px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid var(--bg-card); }
 
         .user-area { display: flex; align-items: center; gap: 10px; }
-        .btn-google { background: var(--accent); border: none; color: #fff; padding: 8px 15px; border-radius: 10px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; font-size: 14px;}
-        .user-profile { display: flex; align-items: center; gap: 8px; background: var(--bg-dark); padding: 5px 15px 5px 5px; border-radius: 30px; border: 1px solid var(--border-color); }
+        
+        /* تصميم زر تسجيل الدخول الجديد والفخم */
+        .btn-google { 
+            background: transparent; 
+            border: 2px solid var(--primary); 
+            color: var(--text-main); 
+            padding: 6px 18px; 
+            border-radius: 25px; 
+            font-weight: 800; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            font-size: 14px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        .btn-google::before {
+            content: ''; position: absolute; top: 0; right: 100%; width: 100%; height: 100%;
+            background: var(--primary); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: -1;
+        }
+        .btn-google:hover::before { right: 0; }
+        .btn-google:hover { color: #000; box-shadow: 0 5px 15px rgba(248, 158, 27, 0.4); border-color: var(--primary);}
+        .btn-google img { width: 18px; background: white; border-radius: 50%; padding: 2px; transition: 0.3s;}
+
+        .user-profile { display: flex; align-items: center; gap: 8px; background: var(--bg-dark); padding: 5px 15px 5px 5px; border-radius: 30px; border: 1px solid var(--primary); box-shadow: 0 0 10px rgba(248, 158, 27, 0.1);}
         .user-profile img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
         .user-profile span { font-weight: 700; font-size: 14px; }
         .btn-logout-small { background: transparent; border: none; color: var(--danger); cursor: pointer; font-size: 16px; padding: 5px; }
@@ -51,12 +77,13 @@
 
         .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; width: 100%; }
         
-        .product-card { background: var(--bg-card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); display: flex; flex-direction: column; position: relative; }
+        .product-card { background: var(--bg-card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); display: flex; flex-direction: column; position: relative; transition: 0.3s;}
+        .product-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.5); border-color: var(--primary);}
         .sale-badge { position: absolute; top: 0; right: 0; background: var(--sale-badge); color: white; padding: 5px 15px; font-size: 12px; font-weight: 900; border-bottom-left-radius: 12px; z-index: 10; letter-spacing: 1px;}
         
         .product-img-wrapper { height: 160px; background: #000; position: relative; display: flex; justify-content: center; align-items: center; padding: 15px;}
         .product-img-wrapper img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px;}
-        .like-btn { position: absolute; top: 10px; left: 10px; background: rgba(0, 0, 0, 0.6); border: 1px solid var(--border-color); width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 14px; color: var(--text-muted); cursor: pointer; z-index: 10; }
+        .like-btn { position: absolute; top: 10px; left: 10px; background: rgba(0, 0, 0, 0.6); border: 1px solid var(--border-color); width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 14px; color: var(--text-muted); cursor: pointer; z-index: 10; transition: 0.3s;}
         .like-btn.liked { color: var(--danger); border-color: var(--danger); }
         
         .product-info { padding: 15px; text-align: center; display: flex; flex-direction: column; flex: 1; }
@@ -102,7 +129,7 @@
         .badge-completed { background: rgba(16, 185, 129, 0.2); color: var(--success); padding: 3px 8px; border-radius: 5px; font-size: 12px; }
 
         .search-box { display: flex; gap: 10px; margin-bottom: 15px; }
-        .search-box input { flex: 1; background: var(--bg-dark); border: 1px solid var(--primary); color: white; padding: 10px; border-radius: 8px; outline: none; font-family: 'Cairo'; }
+        .search-box input { flex: 1; background: var(--bg-dark); border: 1px solid var(--primary); color: white; padding: 10px; border-radius: 8px; outline: none; font-family: 'Cairo'; box-shadow: 0 0 10px rgba(248, 158, 27, 0.1);}
         
         .admin-panel { background: var(--bg-dark); padding: 20px; border-radius: 15px; border: 1px solid var(--border-color); margin-bottom: 30px; }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
@@ -143,7 +170,10 @@
             </div>
             <button id="btn-admin-nav" class="btn-admin-nav" onclick="switchTab('admin')">الإدارة</button>
             <div id="user-area" class="user-area">
-                <button class="btn-google" onclick="loginWithGoogle()"><img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"> دخول</button>
+                <button class="btn-google" onclick="loginWithGoogle()">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"> 
+                    <span>تسجيل الدخول</span>
+                </button>
             </div>
         </div>
     </header>
@@ -217,7 +247,8 @@
         <h3 style="margin-bottom:15px; color:var(--primary);"><i class="fa-solid fa-truck-fast"></i> إدارة الطلبات</h3>
         <div class="admin-panel">
             <div class="search-box">
-                <input type="text" id="admin-order-search" placeholder="ابحث برقم الطلب (مثال: KEMO-1234) أو بالـ ID" onkeyup="searchOrders()">
+                <!-- تم تغيير الحدث لـ oninput عشان يلقط اللصق (Paste) فوراً في كل الموبايلات -->
+                <input type="text" id="admin-order-search" placeholder="ابحث برقم الطلب (مثال: KEMO-1234) أو بالـ ID" oninput="searchOrders()">
                 <button class="btn" style="width:auto;" onclick="searchOrders()"><i class="fa-solid fa-magnifying-glass"></i></button>
             </div>
             <div id="admin-orders-list" style="max-height: 300px; overflow-y:auto;"></div>
@@ -293,10 +324,18 @@
         db.ref('kemo_coupons').on('value', snap => { coupons = snap.val() ? Object.values(snap.val()) :[]; if(isAdmin) renderAdminCoupons(); });
         db.ref('kemo_orders').on('value', snap => { 
             allOrders = snap.val() ? Object.values(snap.val()).sort((a,b)=>b.timestamp-a.timestamp) :[];
-            if(currentUser) renderUserOrders(); if(isAdmin) renderAdminOrders();
+            if(currentUser) renderUserOrders(); 
+            // تعديل يمنع تحديث القائمة أثناء قيام الإدمن بالبحث
+            if(isAdmin) {
+                let searchBox = document.getElementById('admin-order-search');
+                if (searchBox && searchBox.value.trim() !== '') {
+                    searchOrders();
+                } else {
+                    renderAdminOrders();
+                }
+            }
         });
 
-        // تشغيل نافذة الاسم المخصصة
         function loginWithGoogle() {
             auth.signInWithPopup(provider).then((result) => {
                 if (result.additionalUserInfo && result.additionalUserInfo.isNewUser) {
@@ -333,7 +372,7 @@
                 uArea.innerHTML = `<div class="user-profile"><img src="${user.photoURL}"><span>${user.displayName ? user.displayName.split(' ')[0] : 'مستخدم'}</span><button class="btn-logout-small" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></button></div>`;
                 btnAdmin.style.display = isAdmin ? 'inline-block' : 'none'; renderUserOrders(); if(isAdmin) renderAdminCoupons();
             } else {
-                isAdmin = false; uArea.innerHTML = `<button class="btn-google" onclick="loginWithGoogle()"><img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"> دخول</button>`;
+                isAdmin = false; uArea.innerHTML = `<button class="btn-google" onclick="loginWithGoogle()"><img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"> <span>تسجيل الدخول</span></button>`;
                 btnAdmin.style.display = 'none'; document.getElementById('user-orders-list').innerHTML = '<div style="text-align:center; color:var(--text-muted);">سجل الدخول لرؤية طلباتك</div>';
             }
         });
@@ -466,7 +505,7 @@
 
         function renderAdminOrders(list = allOrders) {
             const cont = document.getElementById('admin-orders-list'); cont.innerHTML='';
-            if(!list.length) cont.innerHTML='<div style="color:gray;">لا يوجد طلبات مطابقة</div>';
+            if(!list.length) cont.innerHTML='<div style="color:gray; text-align:center; padding: 20px;">لا يوجد طلبات مطابقة</div>';
             else list.forEach(o => {
                 cont.innerHTML += `
                     <div class="order-card" style="background:var(--bg-card);">
@@ -477,12 +516,12 @@
             });
         }
 
-        // الكود المصلح للبحث (يلغي تأثير علامة الشباك والمسافات تماماً)
+        // تم حل مشكلة البحث من جذورها: فلترة ذكية تتجاهل المسافات وعلامات الشباك
         function searchOrders() { 
-            let term = document.getElementById('admin-order-search').value.toLowerCase().replace(/#/g, '').replace(/\s/g, ''); 
+            let term = document.getElementById('admin-order-search').value.toLowerCase().replace(/[#\s]/g, ''); 
             let filtered = allOrders.filter(o => {
-                let cleanId = o.id.toLowerCase().replace(/#/g, '').replace(/\s/g, '');
-                let cleanPlayer = (o.playerId || "").toLowerCase().replace(/\s/g, '');
+                let cleanId = o.id.toLowerCase().replace(/[#\s]/g, '');
+                let cleanPlayer = (o.playerId || "").toLowerCase().replace(/[#\s]/g, '');
                 return cleanId.includes(term) || cleanPlayer.includes(term);
             });
             renderAdminOrders(filtered); 
