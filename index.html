@@ -180,7 +180,7 @@
 
     <div class="overlay" id="main-overlay" onclick="closeAllSidebars()"></div>
 
-    <!-- نافذة تسجيل الاسم للمستخدم الجديد (لا يمكن إغلاقها بالنقر بالخارج) -->
+    <!-- نافذة تسجيل الاسم للمستخدم الجديد -->
     <div class="overlay" id="name-modal-overlay" style="z-index: 2999;"></div>
     <div class="custom-modal" id="name-modal">
         <i class="fa-solid fa-user-astronaut"></i>
@@ -247,7 +247,6 @@
         <h3 style="margin-bottom:15px; color:var(--primary);"><i class="fa-solid fa-truck-fast"></i> إدارة الطلبات</h3>
         <div class="admin-panel">
             <div class="search-box">
-                <!-- تم تغيير الحدث لـ oninput عشان يلقط اللصق (Paste) فوراً في كل الموبايلات -->
                 <input type="text" id="admin-order-search" placeholder="ابحث برقم الطلب (مثال: KEMO-1234) أو بالـ ID" oninput="searchOrders()">
                 <button class="btn" style="width:auto;" onclick="searchOrders()"><i class="fa-solid fa-magnifying-glass"></i></button>
             </div>
@@ -323,9 +322,16 @@
         db.ref('kemo_products').on('value', snap => { products = snap.val()||[]; renderProducts(); renderCart(); });
         db.ref('kemo_coupons').on('value', snap => { coupons = snap.val() ? Object.values(snap.val()) :[]; if(isAdmin) renderAdminCoupons(); });
         db.ref('kemo_orders').on('value', snap => { 
-            allOrders = snap.val() ? Object.values(snap.val()).sort((a,b)=>b.timestamp-a.timestamp) :[];
+            // فلتر التنظيف: يمسح أي طلب ملوش id سليم من العرض عشان ميعملش مشاكل في البحث
+            if(snap.val()) {
+                allOrders = Object.values(snap.val())
+                    .filter(o => o && o.id && o.id !== 'undefined')
+                    .sort((a,b)=>b.timestamp-a.timestamp);
+            } else {
+                allOrders =[];
+            }
+            
             if(currentUser) renderUserOrders(); 
-            // تعديل يمنع تحديث القائمة أثناء قيام الإدمن بالبحث
             if(isAdmin) {
                 let searchBox = document.getElementById('admin-order-search');
                 if (searchBox && searchBox.value.trim() !== '') {
@@ -516,12 +522,13 @@
             });
         }
 
-        // تم حل مشكلة البحث من جذورها: فلترة ذكية تتجاهل المسافات وعلامات الشباك
+        // دالة بحث محصنة تماماً ضد الأخطاء
         function searchOrders() { 
             let term = document.getElementById('admin-order-search').value.toLowerCase().replace(/[#\s]/g, ''); 
             let filtered = allOrders.filter(o => {
-                let cleanId = o.id.toLowerCase().replace(/[#\s]/g, '');
-                let cleanPlayer = (o.playerId || "").toLowerCase().replace(/[#\s]/g, '');
+                if (!o || !o.id) return false; // أمان إضافي يتخطى أي عنصر فارغ
+                let cleanId = String(o.id).toLowerCase().replace(/[#\s]/g, '');
+                let cleanPlayer = String(o.playerId || "").toLowerCase().replace(/[#\s]/g, '');
                 return cleanId.includes(term) || cleanPlayer.includes(term);
             });
             renderAdminOrders(filtered); 
