@@ -113,6 +113,15 @@
         #toast { visibility: hidden; min-width: 250px; background-color: var(--bg-dark); color: #fff; text-align: center; border-radius: 8px; padding: 12px; position: fixed; z-index: 10000; left: 50%; transform: translateX(-50%); bottom: 30px; font-size: 14px; font-weight: bold; border: 1px solid var(--primary); opacity: 0; transition: 0.3s; }
         #toast.show { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(-20px); }
 
+        /* نافذة الاسم الفخمة */
+        .custom-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); background: var(--bg-card); padding: 30px; border-radius: 20px; border: 1px solid var(--primary); box-shadow: 0 10px 40px rgba(0,0,0,0.8); z-index: 3000; width: 90%; max-width: 400px; text-align: center; opacity: 0; visibility: hidden; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .custom-modal.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
+        .custom-modal i { font-size: 40px; color: var(--primary); margin-bottom: 15px; }
+        .custom-modal h3 { color: #fff; margin-bottom: 10px; font-size: 20px; font-weight: 900;}
+        .custom-modal p { color: var(--text-muted); margin-bottom: 20px; font-size: 13px; line-height: 1.6;}
+        .custom-modal input { width: 100%; background: var(--bg-dark); border: 1px solid var(--border-color); color: white; padding: 12px; border-radius: 10px; font-family: 'Cairo'; margin-bottom: 20px; outline: none; text-align: center; font-size: 16px; font-weight: bold;}
+        .custom-modal input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(248, 158, 27, 0.2);}
+
         @media (max-width: 600px) {
             .products-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
             .product-img-wrapper { height: 130px; }
@@ -140,6 +149,16 @@
     </header>
 
     <div class="overlay" id="main-overlay" onclick="closeAllSidebars()"></div>
+
+    <!-- نافذة تسجيل الاسم للمستخدم الجديد الفخمة -->
+    <div class="overlay" id="name-modal-overlay"></div>
+    <div class="custom-modal" id="name-modal">
+        <i class="fa-solid fa-crown"></i>
+        <h3>أهلاً بك في Kemo Store</h3>
+        <p>يرجى كتابة اسمك الكريم ليتم استخدامه في طباعة فواتير الشحن الخاصة بك وتسريع عملية الطلب.</p>
+        <input type="text" id="new-user-name-input" placeholder="اكتب اسمك هنا...">
+        <button class="btn btn-cart" onclick="saveNewUserName()">حفظ ومتابعة</button>
+    </div>
 
     <!-- سلة المشتريات والكوبون -->
     <div class="side-panel" id="cart-sidebar">
@@ -198,7 +217,7 @@
         <h3 style="margin-bottom:15px; color:var(--primary);"><i class="fa-solid fa-truck-fast"></i> إدارة الطلبات</h3>
         <div class="admin-panel">
             <div class="search-box">
-                <input type="text" id="admin-order-search" placeholder="ابحث برقم الطلب (مثال: KEMO-1234)" onkeyup="searchOrders()">
+                <input type="text" id="admin-order-search" placeholder="ابحث برقم الطلب (مثال: KEMO-1234) أو بالـ ID" onkeyup="searchOrders()">
                 <button class="btn" style="width:auto;" onclick="searchOrders()"><i class="fa-solid fa-magnifying-glass"></i></button>
             </div>
             <div id="admin-orders-list" style="max-height: 300px; overflow-y:auto;"></div>
@@ -262,6 +281,7 @@
         let products =[], categories =[], allOrders =[], coupons =[];
         let cart = JSON.parse(localStorage.getItem('kemo_cart')) ||[], likes = JSON.parse(localStorage.getItem('kemo_likes')) ||[];
         let currentFilter = 'all', uploadedImageData = "", currentUser = null, isAdmin = false, appliedDiscount = 0;
+        let tempUserResult = null;
 
         function showToast(msg, isError=false) {
             const t = document.getElementById("toast"); t.innerHTML = msg; t.style.borderColor = isError?"var(--danger)":"var(--primary)";
@@ -277,24 +297,31 @@
             if(currentUser) renderUserOrders(); if(isAdmin) renderAdminOrders();
         });
 
-        // --- تعديل 2: طلب الاسم عند الدخول لأول مرة فقط ---
+        // النافذة المنبثقة للاسم
         function loginWithGoogle() {
             auth.signInWithPopup(provider).then((result) => {
-                // إذا كان المستخدم جديد لأول مرة يطلب منه كتابة اسمه
                 if (result.additionalUserInfo && result.additionalUserInfo.isNewUser) {
-                    let customName = prompt("مرحباً بك في Kemo Store!\nبرجاء كتابة اسمك الذي سيتم استخدامه في رسالة الطلب:");
-                    if (customName && customName.trim() !== "") {
-                        result.user.updateProfile({ displayName: customName }).then(() => {
-                            currentUser.displayName = customName;
-                            showToast("تم التسجيل والدخول بنجاح");
-                            const userProfileSpan = document.querySelector('.user-profile span');
-                            if(userProfileSpan) userProfileSpan.innerText = customName.split(' ')[0];
-                        });
-                        return;
-                    }
+                    tempUserResult = result;
+                    document.getElementById('name-modal-overlay').classList.add('active');
+                    document.getElementById('name-modal').classList.add('active');
+                } else {
+                    showToast("تم الدخول بنجاح");
                 }
-                showToast("تم الدخول بنجاح");
             }).catch(e => showToast(e.message, true));
+        }
+
+        function saveNewUserName() {
+            let customName = document.getElementById('new-user-name-input').value.trim();
+            if (!customName) return showToast("برجاء كتابة اسمك أولاً!", true);
+
+            tempUserResult.user.updateProfile({ displayName: customName }).then(() => {
+                currentUser.displayName = customName;
+                document.getElementById('name-modal-overlay').classList.remove('active');
+                document.getElementById('name-modal').classList.remove('active');
+                showToast("تم التسجيل والدخول بنجاح");
+                const userProfileSpan = document.querySelector('.user-profile span');
+                if(userProfileSpan) userProfileSpan.innerText = customName.split(' ')[0];
+            });
         }
         
         function logout() { auth.signOut().then(()=>{ showToast("تم الخروج"); switchTab('store'); }); }
@@ -382,7 +409,6 @@
             const pId = document.getElementById('customer-game-id').value.trim();
             if(!pId) return showToast("اكتب الـ ID",true);
 
-            // --- تعديل 3: رقم طلب مميز جداً ولا يتكرر ويعتمد على الوقت الفعلي ---
             const orderId = 'KEMO-' + Date.now().toString().slice(-6) + Math.floor(Math.random() * 10);
             let finalTotal = document.getElementById('cart-total-price').innerText;
 
@@ -410,7 +436,6 @@
                 if(c) db.ref('kemo_coupons/'+c.id).update({uses: c.uses - 1});
             }
 
-            // --- تعديل 1: خصم الكمية من قاعدة البيانات بمجرد تسجيل الطلب ---
             let updatedProducts = [...products];
             cart.forEach(cartItem => {
                 let pIndex = updatedProducts.findIndex(p => p.id === cartItem.id);
@@ -421,7 +446,6 @@
                 }
             });
 
-            // تحديث المنتجات والطلب معاً
             db.ref('kemo_products').set(updatedProducts).then(() => {
                 db.ref('kemo_orders/' + orderId).set(order).then(() => {
                     cart=[]; appliedDiscount=0; document.getElementById('promo-code').value=''; document.getElementById('coupon-msg').innerText='';
@@ -443,7 +467,7 @@
 
         function renderAdminOrders(list = allOrders) {
             const cont = document.getElementById('admin-orders-list'); cont.innerHTML='';
-            if(!list.length) cont.innerHTML='<div style="color:gray;">لا يوجد طلبات</div>';
+            if(!list.length) cont.innerHTML='<div style="color:gray;">لا يوجد طلبات مطابقة</div>';
             else list.forEach(o => {
                 cont.innerHTML += `
                     <div class="order-card" style="background:var(--bg-card);">
@@ -454,7 +478,16 @@
             });
         }
 
-        function searchOrders() { let term = document.getElementById('admin-order-search').value.toLowerCase(); renderAdminOrders(allOrders.filter(o => o.id.toLowerCase().includes(term))); }
+        // تم إصلاح دالة البحث هنا
+        function searchOrders() { 
+            let term = document.getElementById('admin-order-search').value.toLowerCase().trim().replace('#', ''); 
+            let filtered = allOrders.filter(o => 
+                o.id.toLowerCase().includes(term) || 
+                (o.playerId && o.playerId.includes(term))
+            );
+            renderAdminOrders(filtered); 
+        }
+
         function completeOrder(id) { if(confirm("تأكيد الشحن؟")) db.ref('kemo_orders/'+id).update({status:'completed'}).then(()=>showToast("تم التحديث")); }
 
         function renderCategoriesUI() {
@@ -488,7 +521,7 @@
             const pObj = { id: pid?Number(pid):Date.now(), category: cat, name: name, price: price, oldPrice: oldPrice, badge: badge, stock: stock, waMessage: msg };
             if(uploadedImageData) pObj.image = uploadedImageData; else pObj.image = products.find(x=>x.id==pid).image;
 
-            let newList = pid ? products.map(x=>x.id==pid?pObj:x) : [...products, pObj];
+            let newList = pid ? products.map(x=>x.id==pid?pObj:x) :[...products, pObj];
             db.ref('kemo_products').set(newList).then(()=>{ showToast("تم الحفظ"); cancelEdit(); });
         }
 
@@ -511,7 +544,7 @@
             let list = currentFilter==='all' ? products : products.filter(p=>p.category===currentFilter);
             
             if(!list.length) st.innerHTML = '<div style="grid-column:1/-1; text-align:center;">لا توجد منتجات</div>';
-            else [...list].reverse().forEach(p => {
+            else[...list].reverse().forEach(p => {
                 let badgeHTML = p.badge ? `<div class="sale-badge">${p.badge}</div>` : '';
                 let oldPriceHTML = p.oldPrice ? `<span class="old-price">${p.oldPrice}</span>` : '';
                 
