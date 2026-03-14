@@ -113,14 +113,14 @@
         #toast { visibility: hidden; min-width: 250px; background-color: var(--bg-dark); color: #fff; text-align: center; border-radius: 8px; padding: 12px; position: fixed; z-index: 10000; left: 50%; transform: translateX(-50%); bottom: 30px; font-size: 14px; font-weight: bold; border: 1px solid var(--primary); opacity: 0; transition: 0.3s; }
         #toast.show { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(-20px); }
 
-        /* نافذة الاسم الفخمة */
-        .custom-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); background: var(--bg-card); padding: 30px; border-radius: 20px; border: 1px solid var(--primary); box-shadow: 0 10px 40px rgba(0,0,0,0.8); z-index: 3000; width: 90%; max-width: 400px; text-align: center; opacity: 0; visibility: hidden; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        /* نافذة تسجيل الاسم الاحترافية (بدون زر إلغاء) */
+        .custom-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); background: var(--bg-card); padding: 35px 25px; border-radius: 20px; border: 1px solid var(--primary); box-shadow: 0 10px 40px rgba(0,0,0,0.8); z-index: 3000; width: 90%; max-width: 380px; text-align: center; opacity: 0; visibility: hidden; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .custom-modal.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
-        .custom-modal i { font-size: 40px; color: var(--primary); margin-bottom: 15px; }
+        .custom-modal i { font-size: 50px; color: var(--primary); margin-bottom: 15px; text-shadow: 0 0 15px rgba(248, 158, 27, 0.4); }
         .custom-modal h3 { color: #fff; margin-bottom: 10px; font-size: 20px; font-weight: 900;}
-        .custom-modal p { color: var(--text-muted); margin-bottom: 20px; font-size: 13px; line-height: 1.6;}
+        .custom-modal p { color: var(--text-muted); margin-bottom: 25px; font-size: 13px; line-height: 1.6;}
         .custom-modal input { width: 100%; background: var(--bg-dark); border: 1px solid var(--border-color); color: white; padding: 12px; border-radius: 10px; font-family: 'Cairo'; margin-bottom: 20px; outline: none; text-align: center; font-size: 16px; font-weight: bold;}
-        .custom-modal input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(248, 158, 27, 0.2);}
+        .custom-modal input:focus { border-color: var(--primary); }
 
         @media (max-width: 600px) {
             .products-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
@@ -150,14 +150,14 @@
 
     <div class="overlay" id="main-overlay" onclick="closeAllSidebars()"></div>
 
-    <!-- نافذة تسجيل الاسم للمستخدم الجديد الفخمة -->
-    <div class="overlay" id="name-modal-overlay"></div>
+    <!-- نافذة تسجيل الاسم للمستخدم الجديد (لا يمكن إغلاقها بالنقر بالخارج) -->
+    <div class="overlay" id="name-modal-overlay" style="z-index: 2999;"></div>
     <div class="custom-modal" id="name-modal">
-        <i class="fa-solid fa-crown"></i>
-        <h3>أهلاً بك في Kemo Store</h3>
-        <p>يرجى كتابة اسمك الكريم ليتم استخدامه في طباعة فواتير الشحن الخاصة بك وتسريع عملية الطلب.</p>
+        <i class="fa-solid fa-user-astronaut"></i>
+        <h3>خطوة أخيرة يا بطل! 🎮</h3>
+        <p>اكتب اسمك عشان نقدر نستخدمه في فواتير الشحن وتسريع عملية طلبك عندنا.</p>
         <input type="text" id="new-user-name-input" placeholder="اكتب اسمك هنا...">
-        <button class="btn btn-cart" onclick="saveNewUserName()">حفظ ومتابعة</button>
+        <button class="btn btn-cart" onclick="saveNewUserName()">حفظ ومتابعة <i class="fa-solid fa-arrow-left"></i></button>
     </div>
 
     <!-- سلة المشتريات والكوبون -->
@@ -288,7 +288,6 @@
             t.className = "show"; setTimeout(() => t.className = t.className.replace("show",""), 3000);
         }
 
-        // جلب البيانات
         db.ref('kemo_categories').on('value', snap => { categories = snap.val()||[]; renderCategoriesUI(); });
         db.ref('kemo_products').on('value', snap => { products = snap.val()||[]; renderProducts(); renderCart(); });
         db.ref('kemo_coupons').on('value', snap => { coupons = snap.val() ? Object.values(snap.val()) :[]; if(isAdmin) renderAdminCoupons(); });
@@ -297,7 +296,7 @@
             if(currentUser) renderUserOrders(); if(isAdmin) renderAdminOrders();
         });
 
-        // النافذة المنبثقة للاسم
+        // تشغيل نافذة الاسم المخصصة
         function loginWithGoogle() {
             auth.signInWithPopup(provider).then((result) => {
                 if (result.additionalUserInfo && result.additionalUserInfo.isNewUser) {
@@ -312,7 +311,7 @@
 
         function saveNewUserName() {
             let customName = document.getElementById('new-user-name-input').value.trim();
-            if (!customName) return showToast("برجاء كتابة اسمك أولاً!", true);
+            if (!customName) return showToast("يجب كتابة اسمك للمتابعة!", true);
 
             tempUserResult.user.updateProfile({ displayName: customName }).then(() => {
                 currentUser.displayName = customName;
@@ -478,13 +477,14 @@
             });
         }
 
-        // تم إصلاح دالة البحث هنا
+        // الكود المصلح للبحث (يلغي تأثير علامة الشباك والمسافات تماماً)
         function searchOrders() { 
-            let term = document.getElementById('admin-order-search').value.toLowerCase().trim().replace('#', ''); 
-            let filtered = allOrders.filter(o => 
-                o.id.toLowerCase().includes(term) || 
-                (o.playerId && o.playerId.includes(term))
-            );
+            let term = document.getElementById('admin-order-search').value.toLowerCase().replace(/#/g, '').replace(/\s/g, ''); 
+            let filtered = allOrders.filter(o => {
+                let cleanId = o.id.toLowerCase().replace(/#/g, '').replace(/\s/g, '');
+                let cleanPlayer = (o.playerId || "").toLowerCase().replace(/\s/g, '');
+                return cleanId.includes(term) || cleanPlayer.includes(term);
+            });
             renderAdminOrders(filtered); 
         }
 
