@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- أكواد منع الكاش عشان التعديلات تظهر فوراً -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <title>Kemo Store | شحن ألعاب</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+
+    <style>
+        :root { 
+            --bg-dark: #0f141e; --bg-card: #18202f; --primary: #f89e1b; --primary-hover: #d97706; 
+            --accent: #8B5CF6; --text-main: #F3F4F6; --text-muted: #9CA3AF; --danger: #EF4444; 
+            --success: #10B981; --whatsapp: #25D366; --border-color: #2a3447;
+            --sale-badge: #6b21a8; 
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-main); overflow-x: hidden; }
+        
+        header { background: var(--bg-card); position: sticky; top: 0; z-index: 1000; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; border-bottom: 1px solid var(--border-color); }
+        .logo { font-size: 24px; font-weight: 900; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        .logo i { color: var(--accent); }
+        
+        .nav-actions { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .icon-btn-wrapper { display: flex; gap: 10px; }
+        .cart-icon-btn { background: var(--bg-dark); border: 1px solid var(--border-color); width: 45px; height: 45px; border-radius: 12px; font-size: 18px; color: var(--text-main); cursor: pointer; position: relative; transition: 0.3s; display: flex; justify-content: center; align-items: center; }
+        .cart-icon-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .cart-icon-btn.heart-icon:hover { border-color: var(--danger); color: var(--danger); }
+        .cart-badge { position: absolute; top: -5px; right: -5px; background: var(--primary); color: #000; font-size: 11px; font-weight: 900; width: 20px; height: 20px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid var(--bg-card); }
+
+        .user-area { display: flex; align-items: center; gap: 10px; }
+        
+        .btn-google { 
+            background: transparent; 
+            border: 2px solid var(--primary); 
+            color: var(--text-main); 
+            padding: 6px 18px; 
+            border-radius: 25px; 
+            font-weight: 800; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            font-size: 14px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        .btn-google::before {
+            content: ''; position: absolute; top: 0; right: 100%; width: 100%; height: 100%;
+            background: var(--primary); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: -1;
+        }
+        .btn-google:hover::before { right: 0; }
+        .btn-google:hover { color: #000; box-shadow: 0 5px 15px rgba(248, 158, 27, 0.4); border-color: var(--primary);}
+        .btn-google img { width: 18px; background: white; border-radius: 50%; padding: 2px; transition: 0.3s;}
+
+        .user-profile { display: flex; align-items: center; gap: 8px; background: var(--bg-dark); padding: 5px 15px 5px 5px; border-radius: 30px; border: 1px solid var(--primary); box-shadow: 0 0 10px rgba(248, 158, 27, 0.1);}
+        .user-profile img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
+        .user-profile span { font-weight: 700; font-size: 14px; }
+        .btn-logout-small { background: transparent; border: none; color: var(--danger); cursor: pointer; font-size: 16px; padding: 5px; }
+        .btn-admin-nav { display: none; background: var(--primary); color: #000; padding: 8px 15px; border-radius: 10px; font-size: 14px; font-weight: bold; border: none; cursor: pointer; transition: 0.3s; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px 15px 50px; }
+        
+        .sidebar-categories { width: 100%; display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; margin-bottom: 20px; scrollbar-width: none; }
+        .sidebar-categories::-webkit-scrollbar { display: none; }
+        .cat-btn { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color); padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 800; cursor: pointer; transition: 0.3s; white-space: nowrap; }
+        .cat-btn.active { background: var(--primary); color: #000; border-color: var(--primary); }
+
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; width: 100%; }
+        
+        .product-card { background: var(--bg-card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); display: flex; flex-direction: column; position: relative; transition: 0.3s; cursor: pointer;}
+        .product-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.5); border-color: var(--primary);}
+        .sale-badge { position: absolute; top: 0; right: 0; background: var(--sale-badge); color: white; padding: 5px 15px; font-size: 12px; font-weight: 900; border-bottom-left-radius: 12px; z-index: 10; letter-spacing: 1px;}
+        
+        .product-img-wrapper { height: 160px; background: #000; position: relative; display: flex; justify-content: center; align-items: center; padding: 15px;}
+        .product-img-wrapper img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px;}
+        .like-btn { position: absolute; top: 10px; left: 10px; background: rgba(0, 0, 0, 0.6); border: 1px solid var(--border-color); width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 14px; color: var(--text-muted); cursor: pointer; z-index: 10; transition: 0.3s;}
+        .like-btn.liked { color: var(--danger); border-color: var(--danger); }
+        .like-btn:hover { color: var(--danger); border-color: var(--danger); transform: scale(1.1); }
+        
+        .product-info { padding: 15px; text-align: center; display: flex; flex-direction: column; flex: 1; }
+        .product-title { font-size: 14px; font-weight: 800; color: #fff; margin-bottom: 5px; }
+        .product-price { font-size: 18px; font-weight: 900; color: var(--primary); margin-bottom: 5px; display: flex; justify-content: center; align-items: center; gap: 8px;}
+        .old-price { font-size: 12px; color: var(--text-muted); text-decoration: line-through; font-weight: normal;}
+        .stock-warning { font-size: 11px; font-weight: bold; color: var(--danger); margin-bottom: 8px; }
+        
+        .btn { width: 100%; padding: 10px; border: none; border-radius: 8px; font-size: 14px; font-weight: 800; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.3s; margin-top: auto;}
+        .btn-cart { background: var(--primary); color: #000; }
+        .btn-cart:disabled { background: var(--border-color); color: var(--text-muted); cursor: not-allowed; }
+        .btn-buy { background: var(--whatsapp); color: #fff; }
+        .btn-edit { background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid var(--success); }
+
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; display: none; opacity: 0; transition: 0.3s; }
+        .overlay.active { display: block; opacity: 1; }
+        
+        .side-panel { position: fixed; top: 0; right: -100%; width: 350px; max-width: 100%; height: 100%; background: var(--bg-card); z-index: 2001; transition: 0.3s ease-in-out; display: flex; flex-direction: column; border-left: 1px solid var(--border-color); }
+        .side-panel.active { right: 0; }
+        .side-header { padding: 15px 20px; background: var(--bg-dark); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .side-items { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        
+        .cart-item { display: flex; gap: 10px; background: var(--bg-dark); padding: 10px; border-radius: 10px; border: 1px solid var(--border-color); align-items: center;}
+        .cart-item img { width: 60px; height: 60px; border-radius: 8px; object-fit: contain; }
+        .cart-item-details { flex: 1; }
+        .cart-item-title { font-weight: 800; font-size: 13px; color: var(--text-main); margin-bottom: 5px;}
+        .qty-controls { display: flex; align-items: center; gap: 10px; margin-top: 5px; background: var(--bg-card); width: max-content; padding: 2px 5px; border-radius: 6px; }
+        .qty-btn { background: transparent; border: none; color: var(--text-main); cursor: pointer; font-weight: bold; width: 20px;}
+        
+        /* تصميم زر سلة المهملات (الحذف) عشان يظهر بوضوح */
+        .cart-item-delete { 
+            background: rgba(239, 68, 68, 0.1); 
+            border: 1px solid rgba(239, 68, 68, 0.3); 
+            color: var(--danger); 
+            min-width: 35px; 
+            height: 35px; 
+            border-radius: 8px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            font-size: 15px;
+            margin-right: auto; /* يجبر الزر إنه يروح أقصى اليسار */
+        }
+        .cart-item-delete:hover { background: var(--danger); color: #fff; transform: scale(1.05); }
+
+        .side-footer { padding: 15px; background: var(--bg-dark); border-top: 1px solid var(--border-color); }
+        .input-box { margin-bottom: 15px; }
+        .input-box label { display: block; font-size: 12px; color: var(--primary); margin-bottom: 5px; font-weight: bold; }
+        .input-box input { width: 100%; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px; border-radius: 8px; outline: none; font-family: 'Cairo'; }
+
+        .coupon-area { display: flex; gap: 10px; margin-bottom: 10px; }
+        .coupon-area input { flex: 1; background: var(--bg-card); border: 1px solid var(--border-color); color: white; padding: 8px; border-radius: 8px; outline: none; font-family: 'Cairo'; }
+        .coupon-area button { background: var(--accent); border: none; color: white; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: 'Cairo'; }
+
+        /* الطلبات والبحث */
+        .order-card { background: var(--bg-dark); border: 1px solid var(--border-color); padding: 15px; border-radius: 10px; margin-bottom: 10px; }
+        .order-header { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 10px; font-size: 13px; font-weight:bold;}
+        .badge-pending { background: rgba(245, 158, 11, 0.2); color: var(--primary); padding: 3px 8px; border-radius: 5px; font-size: 12px; }
+        .badge-completed { background: rgba(16, 185, 129, 0.2); color: var(--success); padding: 3px 8px; border-radius: 5px; font-size: 12px; }
+
+        .search-box { display: flex; gap: 10px; margin-bottom: 15px; }
+        .search-box input { flex: 1; background: var(--bg-dark); border: 1px solid var(--primary); color: white; padding: 10px; border-radius: 8px; outline: none; font-family: 'Cairo'; box-shadow: 0 0 10px rgba(248, 158, 27, 0.1);}
+        
+        .admin-panel { background: var(--bg-dark); padding: 20px; border-radius: 15px; border: 1px solid var(--border-color); margin-bottom: 30px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .input-group { display: flex; flex-direction: column; gap: 5px; }
+        .input-group label { font-weight: 700; color: var(--text-muted); font-size: 12px; }
+        .input-group input, .input-group select, .input-group textarea { background: var(--bg-card); color: var(--text-main); padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; outline: none; font-family: 'Cairo'; resize: vertical; }
+        
+        #toast { visibility: hidden; min-width: 250px; background-color: var(--bg-dark); color: #fff; text-align: center; border-radius: 8px; padding: 12px; position: fixed; z-index: 10000; left: 50%; transform: translateX(-50%); bottom: 30px; font-size: 14px; font-weight: bold; border: 1px solid var(--primary); opacity: 0; transition: 0.3s; }
+        #toast.show { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(-20px); }
+
+        /* نافذة تسجيل الاسم الاحترافية (بدون زر إلغاء) ونافذة التفاصيل */
+        .custom-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); background: var(--bg-card); padding: 35px 25px; border-radius: 20px; border: 1px solid var(--primary); box-shadow: 0 10px 40px rgba(0,0,0,0.8); z-index: 3000; width: 90%; max-width: 380px; text-align: center; opacity: 0; visibility: hidden; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .custom-modal.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
+        .custom-modal i.main-icon { font-size: 50px; color: var(--primary); margin-bottom: 15px; text-shadow: 0 0 15px rgba(248, 158, 27, 0.4); }
+        .custom-modal h3 { color: #fff; margin-bottom: 10px; font-size: 20px; font-weight: 900;}
+        .custom-modal p { color: var(--text-muted); margin-bottom: 25px; font-size: 13px; line-height: 1.6;}
+        .custom-modal input.name-input { width: 100%; background: var(--bg-dark); border: 1px solid var(--border-color); color: white; padding: 12px; border-radius: 10px; font-family: 'Cairo'; margin-bottom: 20px; outline: none; text-align: center; font-size: 16px; font-weight: bold;}
+        .custom-modal input.name-input:focus { border-color: var(--primary); }
+
+        @media (max-width: 600px) {
+            .products-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .product-img-wrapper { height: 130px; }
+            .form-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo"><i class="fa-solid fa-gamepad"></i> Kemo</div>
+        <div class="nav-actions">
+            <div class="icon-btn-wrapper">
+                <button class="cart-icon-btn heart-icon" onclick="openSidebar('wishlist-sidebar')"><i class="fa-solid fa-heart"></i></button>
+                <button class="cart-icon-btn" onclick="openSidebar('orders-sidebar')"><i class="fa-solid fa-box-open"></i></button>
+                <button class="cart-icon-btn" onclick="openSidebar('cart-sidebar')">
+                    <i class="fa-solid fa-cart-shopping"></i><span class="cart-badge" id="cart-badge-count">0</span>
+                </button>
+            </div>
+            <button id="btn-admin-nav" class="btn-admin-nav" onclick="switchTab('admin')">الإدارة</button>
+            <div id="user-area" class="user-area">
+                <button class="btn-google" onclick="loginWithGoogle()">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"> 
+                    <span>تسجيل الدخول</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="overlay" id="main-overlay" onclick="closeAllSidebars()"></div>
+
+    <!-- نافذة تسجيل الاسم للمستخدم الجديد -->
+    <div class="overlay" id="name-modal-overlay" style="z-index: 2999;"></div>
+    <div class="custom-modal" id="name-modal">
+        <i class="fa-solid fa-user-astronaut main-icon"></i>
+        <h3>خطوة أخيرة يا بطل! 🎮</h3>
+        <p>اكتب اسمك عشان نقدر نستخدمه في فواتير الشحن وتسريع عملية طلبك عندنا.</p>
+        <input type="text" id="new-user-name-input" class="name-input" placeholder="اكتب اسمك هنا...">
+        <button class="btn btn-cart" onclick="saveNewUserName()">حفظ ومتابعة <i class="fa-solid fa-arrow-left"></i></button>
+    </div>
+
+    <!-- نافذة تفاصيل المنتج -->
+    <div class="overlay" id="details-modal-overlay" style="z-index: 2999;" onclick="closeDetailsModal()"></div>
+    <div class="custom-modal" id="details-modal" style="text-align: right; padding-top: 45px;">
+        <button onclick="closeDetailsModal()" style="position: absolute; top: 15px; left: 15px; background: transparent; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; transition: 0.3s;"><i class="fa-solid fa-xmark"></i></button>
+        <div style="text-align: center; margin-bottom: 15px;">
+            <img id="details-img" src="" style="width: 140px; height: 140px; object-fit: contain; border-radius: 12px; border: 1px solid var(--primary); padding: 5px; background: #000;">
+        </div>
+        <h3 id="details-title" style="color: #fff; font-size: 18px; margin-bottom: 10px; text-align: center;"></h3>
+        <div id="details-price" style="text-align: center; color: var(--primary); font-size: 22px; font-weight: 900; margin-bottom: 15px;"></div>
+        
+        <div style="background: var(--bg-dark); padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border-color);">
+            <h4 style="font-size: 13px; color: var(--primary); margin-bottom: 8px; font-weight: 800;"><i class="fa-solid fa-circle-info"></i> تفاصيل المنتج:</h4>
+            <p id="details-desc" style="font-size: 13px; color: var(--text-main); line-height: 1.6; white-space: pre-wrap; margin-bottom: 0;"></p>
+        </div>
+        
+        <div id="details-stock" style="text-align: center; margin-bottom: 15px;"></div>
+        <button class="btn btn-cart" id="details-buy-btn">شحن الآن <i class="fa-solid fa-cart-plus"></i></button>
+    </div>
+
+    <!-- سلة المشتريات والكوبون -->
+    <div class="side-panel" id="cart-sidebar">
+        <div class="side-header">
+            <h3><i class="fa-solid fa-basket-shopping" style="color:var(--primary)"></i> سلة الشحن</h3>
+            <button class="close-side" onclick="closeAllSidebars()" style="background:transparent; border:none; color:#fff; font-size:20px;"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="side-items" id="cart-items"></div>
+        <div class="side-footer">
+            <div class="input-box">
+                <label>الـ ID / الحساب</label>
+                <input type="text" id="customer-game-id" placeholder="اكتب الـ ID هنا...">
+            </div>
+            
+            <div class="coupon-area">
+                <input type="text" id="promo-code" placeholder="لديك كود خصم؟">
+                <button onclick="applyCoupon()">تطبيق</button>
+            </div>
+            <div id="coupon-msg" style="font-size:12px; margin-bottom:10px; font-weight:bold;"></div>
+
+            <div style="display: flex; justify-content: space-between; font-weight: 900; margin-bottom: 10px;">
+                <span>الإجمالي:</span><span style="color: var(--primary);"><span id="cart-total-price">0</span> ج.م</span>
+            </div>
+            <button class="btn btn-buy" onclick="checkoutWhatsApp()"><i class="fa-brands fa-whatsapp fa-lg"></i> إرسال الطلب</button>
+        </div>
+    </div>
+
+    <!-- طلباتي -->
+    <div class="side-panel" id="orders-sidebar">
+        <div class="side-header">
+            <h3><i class="fa-solid fa-box-open" style="color:var(--primary)"></i> طلباتي</h3>
+            <button class="close-side" onclick="closeAllSidebars()" style="background:transparent; border:none; color:#fff; font-size:20px;"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="side-items" id="user-orders-list"></div>
+    </div>
+
+    <!-- المفضلة -->
+    <div class="side-panel" id="wishlist-sidebar">
+        <div class="side-header">
+            <h3><i class="fa-solid fa-heart" style="color:var(--danger)"></i> المفضلة</h3>
+            <button class="close-side" onclick="closeAllSidebars()" style="background:transparent; border:none; color:#fff; font-size:20px;"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="side-items" id="wishlist-items"></div>
+    </div>
+
+    <div id="store-section">
+        <div class="container store-layout">
+            <div class="sidebar-categories" id="store-category-filter"></div>
+            <div class="products-grid" id="products-list"><div style="text-align:center; width:100%; grid-column:1/-1;">جاري التحميل...</div></div>
+        </div>
+    </div>
+
+    <!-- الإدارة -->
+    <div id="admin-section" class="container" style="display: none;">
+        <button class="btn" style="background:var(--bg-card); color:var(--text-main); width:max-content; margin-bottom:20px;" onclick="switchTab('store')">العودة للمتجر</button>
+
+        <h3 style="margin-bottom:15px; color:var(--primary);"><i class="fa-solid fa-truck-fast"></i> إدارة الطلبات</h3>
+        <div class="admin-panel">
+            <div class="search-box">
+                <input type="text" id="admin-order-search" placeholder="ابحث برقم الطلب (مثال: KEMO-1234) أو بالـ ID" oninput="searchOrders()">
+                <button class="btn" style="width:auto;" onclick="searchOrders()"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>
+            <div id="admin-orders-list" style="max-height: 300px; overflow-y:auto;"></div>
+        </div>
+
+        <h3 style="margin-bottom:15px; color:var(--primary);"><i class="fa-solid fa-ticket"></i> إضافة كوبون خصم</h3>
+        <div class="admin-panel">
+            <div class="form-grid">
+                <div class="input-group"><label>كود الكوبون</label><input type="text" id="c-code" placeholder="مثال: KEMO10"></div>
+                <div class="input-group"><label>نسبة الخصم (%)</label><input type="number" id="c-percent" placeholder="مثال: 10"></div>
+                <div class="input-group"><label>عدد الاستخدامات المسموحة</label><input type="number" id="c-uses" placeholder="مثال: 50"></div>
+                <button class="btn btn-cart" style="grid-column: 1 / -1;" onclick="addCoupon()">حفظ الكوبون</button>
+            </div>
+            <div id="admin-coupons-list" style="margin-top:15px; display:flex; gap:10px; flex-wrap:wrap;"></div>
+        </div>
+
+        <h3 style="margin-bottom:15px; color:var(--primary);"><i class="fa-solid fa-plus"></i> إضافة / تعديل منتج</h3>
+        <div class="admin-panel">
+            <input type="hidden" id="p-id">
+            <div class="form-grid">
+                <div class="input-group">
+                    <label>القسم</label>
+                    <select id="p-category" onchange="checkNewCategory()"><option value="none">بدون قسم</option></select>
+                    <input type="text" id="p-new-cat" placeholder="اسم القسم الجديد..." style="display:none; margin-top:5px;">
+                </div>
+                <div class="input-group"><label>الاسم (مثال: 210 جوهرة)</label><input type="text" id="p-name"></div>
+                <div class="input-group"><label>السعر الحالي (ج.م)</label><input type="number" id="p-price"></div>
+                <div class="input-group"><label>السعر القديم (مكانه مشطوب)</label><input type="number" id="p-old-price" placeholder="اختياري"></div>
+                <div class="input-group"><label>نص الخصم (زي: Sale أو Off 7%)</label><input type="text" id="p-badge" placeholder="اختياري"></div>
+                <div class="input-group"><label>الكمية المتاحة (المخزون)</label><input type="number" id="p-stock" placeholder="لو أقل من 10 هيكتبله قربت تخلص"></div>
+                <div class="input-group" style="grid-column: 1 / -1;"><label>تفاصيل ووصف المنتج</label><textarea id="p-details" rows="3" placeholder="اختياري: اكتب تفاصيل إضافية للمنتج تظهر عند الضغط عليه..."></textarea></div>
+                <div class="input-group" style="grid-column: 1 / -1;"><label>صورة المنتج</label><input type="file" id="p-image" accept="image/*"></div>
+                <div class="input-group" style="grid-column: 1 / -1;"><label>ملاحظة افتراضية للواتساب</label><input type="text" id="p-msg" placeholder="اختياري: مثال اشحنلي يا كيمو"></div>
+                
+                <button class="btn btn-cart" id="add-btn" style="grid-column: 1 / -1;" onclick="saveProduct()">حفظ ونشر</button>
+                <button class="btn" id="cancel-edit-btn" style="grid-column: 1 / -1; display:none; background:var(--danger); color:white;" onclick="cancelEdit()">إلغاء التعديل</button>
+            </div>
+        </div>
+        
+        <h3 style="margin-bottom:15px; color:var(--primary);">المنتجات الحالية</h3>
+        <div class="products-grid" id="admin-products-list"></div>
+    </div>
+
+    <div id="toast">رسالة</div>
+
+    <script>
+        // إعدادات الفايربيز
+        const firebaseConfig = {
+            apiKey: "AIzaSyAxAGDNo9cRiYVjUopaiWo4K4ylUG8tiG0",
+            authDomain: "kemo-store-daf94.firebaseapp.com",
+            databaseURL: "https://kemo-store-daf94-default-rtdb.europe-west1.firebasedatabase.app", 
+            projectId: "kemo-store-daf94",
+            storageBucket: "kemo-store-daf94.firebasestorage.app"
+        };
+        
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const db = firebase.database(); const auth = firebase.auth(); const provider = new firebase.auth.GoogleAuthProvider();
+
+        const ADMIN_EMAIL = "kareemammar2025@gmail.com".toLowerCase(); 
+        const whatsappNumber = "201115168017";
+        
+        // تعديل مهم: توحيد نوع بيانات الـ ID في المفضلة ليكون (نص) دائماً عشان يطابق البيانات بدون مشاكل
+        let cart = JSON.parse(localStorage.getItem('kemo_cart')) ||[], likes = (JSON.parse(localStorage.getItem('kemo_likes')) ||[]).map(String);
+        let currentFilter = 'all', uploadedImageData = "", currentUser = null, isAdmin = false, appliedDiscount = 0;
+        let tempUserResult = null;
+
+        function showToast(msg, isError=false) {
+            const t = document.getElementById("toast"); t.innerHTML = msg; t.style.borderColor = isError?"var(--danger)":"var(--primary)";
+            t.className = "show"; setTimeout(() => t.className = t.className.replace("show",""), 3000);
+        }
+
+        db.ref('kemo_categories').on('value', snap => { categories = snap.val()||[]; renderCategoriesUI(); });
+        db.ref('kemo_products').on('value', snap => { products = snap.val()||[]; renderProducts(); renderCart(); renderWishlist(); });
+        db.ref('kemo_coupons').on('value', snap => { coupons = snap.val() ? Object.values(snap.val()) :[]; if(isAdmin) renderAdminCoupons(); });
+        db.ref('kemo_orders').on('value', snap => { 
+            if(snap.val()) {
+                allOrders = Object.values(snap.val())
+                    .filter(o => o && o.id && String(o.id) !== 'undefined')
+                    .sort((a,b)=>b.timestamp-a.timestamp);
+            } else {
+                allOrders =[];
+            }
+            
+            if(currentUser) renderUserOrders(); 
+            if(isAdmin) {
+                let searchBox = document.getElementById('admin-order-search');
+                if (searchBox && searchBox.value.trim() !== '') searchOrders(); else renderAdminOrders();
+            }
+        });
+
+        function loginWithGoogle() {
+            auth.signInWithPopup(provider).then((result) => {
+                if (result.additionalUserInfo && result.additionalUserInfo.isNewUser) {
+                    tempUserResult = result;
+                    document.getElementById('name-modal-overlay').classList.add('active');
+                    document.getElementById('name-modal').classList.add('active');
+                } else {
+                    showToast("تم الدخول بنجاح");
+                }
+            }).catch(e => showToast(e.message, true));
+        }
+
+        function saveNewUserName() {
+            let customName = document.getElementById('new-user-name-input').value.trim();
+            if (!customName) return showToast("يجب كتابة اسمك للمتابعة!", true);
+
+            tempUserResult.user.updateProfile({ displayName: customName }).then(() => {
+                currentUser.displayName = customName;
+                document.getElementById('name-modal-overlay').classList.remove('active');
+                document.getElementById('name-modal').classList.remove('active');
+                showToast("تم التسجيل والدخول بنجاح");
+                const userProfileSpan = document.querySelector('.user-profile span');
+                if(userProfileSpan) userProfileSpan.innerText = customName.split(' ')[0];
+            });
+        }
+        
+        function logout() { auth.signOut().then(()=>{ showToast("تم الخروج"); switchTab('store'); }); }
+
+        auth.onAuthStateChanged(user => {
+            currentUser = user; 
+            const uArea = document.getElementById('user-area'), btnAdmin = document.getElementById('btn-admin-nav');
+            if(user) {
+                isAdmin = (user.email.toLowerCase() === ADMIN_EMAIL);
+                uArea.innerHTML = `<div class="user-profile"><img src="${user.photoURL}"><span>${user.displayName ? user.displayName.split(' ')[0] : 'مستخدم'}</span><button class="btn-logout-small" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></button></div>`;
+                btnAdmin.style.display = isAdmin ? 'inline-block' : 'none'; renderUserOrders(); if(isAdmin) renderAdminCoupons();
+            } else {
+                isAdmin = false; uArea.innerHTML = `<button class="btn-google" onclick="loginWithGoogle()"><img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"> <span>تسجيل الدخول</span></button>`;
+                btnAdmin.style.display = 'none'; document.getElementById('user-orders-list').innerHTML = '<div style="text-align:center; color:var(--text-muted);">سجل الدخول لرؤية طلباتك</div>';
+            }
+        });
+
+        function openSidebar(id) { closeAllSidebars(); document.getElementById(id).classList.add('active'); document.getElementById('main-overlay').classList.add('active'); }
+        function closeAllSidebars() { document.querySelectorAll('.side-panel').forEach(p=>p.classList.remove('active')); document.getElementById('main-overlay').classList.remove('active'); }
+
+        // تفاصيل المنتج المنبثقة
+        function showProductDetails(id) {
+            const p = products.find(x => String(x.id) === String(id));
+            if(!p) return;
+            
+            document.getElementById('details-img').src = p.image;
+            document.getElementById('details-title').innerText = p.name;
+            document.getElementById('details-price').innerHTML = (p.oldPrice ? `<span class="old-price" style="font-size:14px; color:var(--text-muted); text-decoration:line-through;">${p.oldPrice}</span> ` : '') + p.price + ' ج.م';
+            document.getElementById('details-desc').innerText = p.details || 'لا توجد تفاصيل إضافية مكتوبة لهذا المنتج.';
+            
+            let stockHTML = '';
+            let buyBtn = document.getElementById('details-buy-btn');
+            
+            if(p.stock !== undefined && p.stock !== '') {
+                let s = parseInt(p.stock);
+                if(s <= 0) {
+                    stockHTML = `<span class="stock-warning" style="font-size:14px;">نفذت الكمية ❌</span>`;
+                    buyBtn.disabled = true;
+                    buyBtn.innerText = "غير متوفر";
+                    buyBtn.style.background = "var(--border-color)";
+                    buyBtn.style.color = "var(--text-muted)";
+                    buyBtn.onclick = null;
+                } else {
+                    if(s < 10) stockHTML = `<span class="stock-warning" style="font-size:14px;">⚠️ قربت تخلص (باقي ${s})</span>`;
+                    else stockHTML = `<span style="color:var(--success); font-weight:bold; font-size:14px;">متوفر في المخزون ✅</span>`;
+                    
+                    buyBtn.disabled = false;
+                    buyBtn.innerHTML = 'شحن الآن <i class="fa-solid fa-cart-plus"></i>';
+                    buyBtn.style.background = "var(--primary)";
+                    buyBtn.style.color = "#000";
+                    buyBtn.onclick = (e) => { addToCart(p.id, e); closeDetailsModal(); };
+                }
+            } else {
+                buyBtn.disabled = false;
+                buyBtn.innerHTML = 'شحن الآن <i class="fa-solid fa-cart-plus"></i>';
+                buyBtn.style.background = "var(--primary)";
+                buyBtn.style.color = "#000";
+                buyBtn.onclick = (e) => { addToCart(p.id, e); closeDetailsModal(); };
+            }
+            
+            document.getElementById('details-stock').innerHTML = stockHTML;
+
+            document.getElementById('details-modal-overlay').classList.add('active');
+            document.getElementById('details-modal').classList.add('active');
+        }
+
+        function closeDetailsModal() {
+            document.getElementById('details-modal-overlay').classList.remove('active');
+            document.getElementById('details-modal').classList.remove('active');
+        }
+
+        // المفضلة والإعجابات
+        function toggleLike(id, event) {
+            if (event) event.stopPropagation();
+            
+            id = String(id); // تأكيد إن المعرف عبارة عن نص للمطابقة المضمونة
+            
+            if (likes.includes(id)) {
+                likes = likes.filter(x => x !== id);
+                showToast("تم الحذف من المفضلة");
+            } else {
+                likes.push(id);
+                showToast("تمت الإضافة للمفضلة");
+            }
+            localStorage.setItem('kemo_likes', JSON.stringify(likes));
+            renderProducts();
+            renderWishlist();
+        }
+
+        function renderWishlist() {
+            const cont = document.getElementById('wishlist-items');
+            cont.innerHTML = '';
+            // التأكد من المطابقة بالنص أيضاً
+            let likedProducts = products.filter(p => likes.includes(String(p.id)));
+            
+            if(!likedProducts.length) {
+                cont.innerHTML = '<div style="text-align:center; color:var(--text-muted);">المفضلة فارغة</div>';
+                return;
+            }
+            likedProducts.forEach(p => {
+                cont.innerHTML += `
+                    <div class="cart-item">
+                        <img src="${p.image}">
+                        <div class="cart-item-details">
+                            <div class="cart-item-title">${p.name}</div>
+                            <div style="color:var(--primary); font-weight:bold;">${p.price} ج.م</div>
+                            <button class="btn btn-cart" style="padding: 5px; margin-top: 5px; font-size: 12px; width: max-content;" onclick="addToCart('${p.id}')">نقل للسلة</button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function applyCoupon() {
+            let code = document.getElementById('promo-code').value.trim();
+            let c = coupons.find(x => x.code === code);
+            let msgBox = document.getElementById('coupon-msg');
+            
+            if(!code) { appliedDiscount = 0; msgBox.innerText = ""; renderCart(); return; }
+            if(!c) { msgBox.innerText = "كود غير صحيح ❌"; msgBox.style.color = "var(--danger)"; appliedDiscount = 0; }
+            else if (c.uses <= 0) { msgBox.innerText = "انتهى الحد الأقصى لاستخدام الكود ❌"; msgBox.style.color = "var(--danger)"; appliedDiscount = 0; }
+            else { appliedDiscount = c.percent; msgBox.innerText = `تم تطبيق خصم ${c.percent}% بنجاح! ✅`; msgBox.style.color = "var(--success)"; }
+            renderCart();
+        }
+
+        function addCoupon() {
+            if(!isAdmin) return;
+            const code = document.getElementById('c-code').value.trim().toUpperCase();
+            const percent = parseInt(document.getElementById('c-percent').value);
+            const uses = parseInt(document.getElementById('c-uses').value);
+            if(!code || !percent || !uses) return showToast("أكمل بيانات الكوبون", true);
+            const newC = { id: Date.now().toString(), code: code, percent: percent, uses: uses };
+            db.ref('kemo_coupons/'+newC.id).set(newC).then(()=>{
+                showToast("تم إضافة الكود"); document.getElementById('c-code').value=''; document.getElementById('c-percent').value=''; document.getElementById('c-uses').value='';
+            });
+        }
+        function renderAdminCoupons() {
+            const cont = document.getElementById('admin-coupons-list'); cont.innerHTML = '';
+            coupons.forEach(c => {
+                cont.innerHTML += `<span style="background:var(--bg-card); padding:8px 15px; border-radius:10px; border:1px solid var(--primary); display:flex; gap:10px; align-items:center; font-size:12px;">
+                    <b>${c.code}</b> (${c.percent}%) - متبقي: ${c.uses} 
+                    <i class="fa-solid fa-trash" style="color:var(--danger); cursor:pointer;" onclick="deleteCoupon('${c.id}')"></i></span>`;
+            });
+        }
+        function deleteCoupon(id) { if(confirm("حذف الكوبون؟")) db.ref('kemo_coupons/'+id).remove(); }
+
+        function addToCart(id, event) {
+            if (event) event.stopPropagation(); 
+            
+            const p = products.find(x => String(x.id) === String(id)); if(!p) return;
+            if(p.stock && parseInt(p.stock) <= 0) return showToast("الكمية غير متوفرة", true);
+            const ex = cart.find(x => String(x.id) === String(id)); if(ex) ex.qty++; else cart.push({id:p.id, name:p.name, price:p.price, image:p.image, waMessage:p.waMessage||'', qty:1});
+            saveCart(); showToast("أضيف للسلة");
+        }
+        
+        function updateCartQty(id, ch) { 
+            const it = cart.find(x => String(x.id) === String(id)); 
+            if(it){ 
+                it.qty += ch; 
+                if(it.qty <= 0) cart = cart.filter(x => String(x.id) !== String(id)); 
+                saveCart(); 
+            } 
+        }
+        
+        function removeFromCart(id) {
+            cart = cart.filter(x => String(x.id) !== String(id));
+            saveCart();
+            showToast("تم حذف المنتج من السلة", true);
+        }
+
+        function saveCart() { localStorage.setItem('kemo_cart', JSON.stringify(cart)); renderCart(); }
+
+        function renderCart() {
+            const cont = document.getElementById('cart-items'); let subTotal=0, cnt=0; cont.innerHTML='';
+            if(!cart.length) cont.innerHTML = '<div style="text-align:center; color:var(--text-muted);">السلة فارغة</div>';
+            else cart.forEach(it => {
+                subTotal += (it.price*it.qty); cnt+=it.qty;
+                cont.innerHTML += `
+                    <div class="cart-item">
+                        <img src="${it.image}">
+                        <div class="cart-item-details">
+                            <div class="cart-item-title">${it.name}</div>
+                            <div style="color:var(--primary); font-weight:bold;">${it.price} ج.م</div>
+                            <div class="qty-controls">
+                                <button class="qty-btn" onclick="updateCartQty('${it.id}', 1)">+</button>
+                                <span>${it.qty}</span>
+                                <button class="qty-btn" onclick="updateCartQty('${it.id}', -1)">-</button>
+                            </div>
+                        </div>
+                        <button class="cart-item-delete" onclick="removeFromCart('${it.id}')" title="حذف المنتج من السلة">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>`;
+            });
+            
+            let finalTotal = subTotal;
+            if(appliedDiscount > 0) finalTotal = subTotal - (subTotal * (appliedDiscount / 100));
+            
+            document.getElementById('cart-total-price').innerText = Math.round(finalTotal); 
+            document.getElementById('cart-badge-count').innerText = cnt;
+        }
+
+        function checkoutWhatsApp() {
+            if(!currentUser) { showToast("سجل دخول أولاً!",true); return loginWithGoogle(); }
+            if(!cart.length) return showToast("السلة فارغة",true);
+            const pId = document.getElementById('customer-game-id').value.trim();
+            if(!pId) return showToast("اكتب الـ ID",true);
+
+            const orderId = 'KEMO-' + Date.now().toString().slice(-6) + Math.floor(Math.random() * 10);
+            let finalTotal = document.getElementById('cart-total-price').innerText;
+
+            const order = { id: orderId, uid: currentUser.uid, userName: currentUser.displayName || 'عميل', email: currentUser.email, playerId: pId, items: cart, total: finalTotal, status: 'pending', timestamp: Date.now() };
+
+            let msg = `مرحباً Kemo Store 👋\nأريد شحن المنتجات التالية:\n\n`;
+            msg += `👤 *معلومات المشتري:*\n   الاسم: ${order.userName}\n   الإيميل: ${order.email}\n\n`;
+            msg += `🎮 *معلومات اللعبة:*\n   الـ ID / الحساب: *${pId}*\n\n`;
+            msg += `📦 *تفاصيل الشحنة:*\n`;
+            
+            let subT = 0;
+            cart.forEach((it, i) => {
+                let itTotal = it.price * it.qty; subT += itTotal;
+                msg += `${i+1}- *${it.name}*\n   الكمية: ${it.qty} | السعر: ${itTotal} ج.م\n`;
+                if(it.waMessage) msg += `   💬: ${it.waMessage}\n`;
+            });
+            
+            msg += `\n💰 *الإجمالي الكلي:* ${finalTotal} ج.م\n`;
+            if(appliedDiscount > 0) msg += `🎁 (تم تطبيق كود خصم ${appliedDiscount}%)\n`;
+            msg += `\nبرجاء تأكيد الشحن معي. (رقم الطلب: #${orderId})`;
+
+            let code = document.getElementById('promo-code').value.trim();
+            if(code && appliedDiscount > 0) {
+                let c = coupons.find(x => x.code === code);
+                if(c) db.ref('kemo_coupons/'+c.id).update({uses: c.uses - 1});
+            }
+
+            let updatedProducts = [...products];
+            cart.forEach(cartItem => {
+                let pIndex = updatedProducts.findIndex(p => String(p.id) === String(cartItem.id));
+                if(pIndex !== -1 && updatedProducts[pIndex].stock !== undefined && updatedProducts[pIndex].stock !== '') {
+                    let currentStock = parseInt(updatedProducts[pIndex].stock);
+                    let newStock = currentStock - cartItem.qty;
+                    updatedProducts[pIndex].stock = newStock < 0 ? 0 : newStock;
+                }
+            });
+
+            db.ref('kemo_products').set(updatedProducts).then(() => {
+                db.ref('kemo_orders/' + orderId).set(order).then(() => {
+                    cart=[]; appliedDiscount=0; document.getElementById('promo-code').value=''; document.getElementById('coupon-msg').innerText='';
+                    saveCart(); closeAllSidebars(); showToast("تم تسجيل الطلب!");
+                    window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, '_blank');
+                });
+            });
+        }
+
+        function renderUserOrders() {
+            const cont = document.getElementById('user-orders-list'); cont.innerHTML='';
+            const myO = allOrders.filter(o=>o.uid === currentUser.uid);
+            if(!myO.length) cont.innerHTML='<div style="text-align:center; color:gray;">لا توجد طلبات</div>';
+            else myO.forEach(o => {
+                let badge = o.status==='pending' ? `<span class="badge-pending">قيد التنفيذ ⏳</span>` : `<span class="badge-completed">تم الشحن ✅</span>`;
+                cont.innerHTML += `<div class="order-card"><div class="order-header"><span>#${o.id}</span>${badge}</div><div style="font-size:12px; color:gray;">الـ ID: ${o.playerId}</div><div style="font-weight:bold; color:var(--primary); margin-top:5px;">الإجمالي: ${o.total} ج.م</div></div>`;
+            });
+        }
+
+        function renderAdminOrders(list = allOrders) {
+            const cont = document.getElementById('admin-orders-list'); cont.innerHTML='';
+            if(!list.length) cont.innerHTML='<div style="color:gray; text-align:center; padding: 20px;">لا يوجد طلبات مطابقة</div>';
+            else list.forEach(o => {
+                cont.innerHTML += `
+                    <div class="order-card" style="background:var(--bg-card);">
+                        <div class="order-header"><span style="color:var(--primary);">#${o.id}</span><span>${o.userName}</span></div>
+                        <div style="font-size:13px; margin-bottom:10px;"><b>ID:</b> ${o.playerId} <br> <b>إجمالي:</b> ${o.total} ج.م</div>
+                        ${o.status==='pending' ? `<button class="btn" style="background:var(--success); color:white;" onclick="completeOrder('${o.id}')">تم الشحن ✅</button>` : `<div style="color:var(--success); font-weight:bold; text-align:center;">تم شحن الطلب</div>`}
+                    </div>`;
+            });
+        }
+
+        function searchOrders() { 
+            let term = document.getElementById('admin-order-search').value.toLowerCase().replace(/[#\s]/g, ''); 
+            let filtered = allOrders.filter(o => {
+                if (!o || !o.id) return false; 
+                let cleanId = String(o.id).toLowerCase().replace(/[#\s]/g, '');
+                let cleanPlayer = String(o.playerId || "").toLowerCase().replace(/[#\s]/g, '');
+                return cleanId.includes(term) || cleanPlayer.includes(term);
+            });
+            renderAdminOrders(filtered); 
+        }
+
+        function completeOrder(id) { if(confirm("تأكيد الشحن؟")) db.ref('kemo_orders/'+id).update({status:'completed'}).then(()=>showToast("تم التحديث")); }
+
+        function renderCategoriesUI() {
+            let cHtml = `<option value="none">بدون قسم</option>`, fHtml = `<button class="cat-btn active" onclick="filterCat('all',this)">الكل</button>`;
+            categories.forEach(c => { cHtml+=`<option value="${c.name}">${c.name}</option>`; fHtml+=`<button class="cat-btn" onclick="filterCat('${c.name}',this)">${c.name}</button>`; });
+            cHtml+=`<option value="__NEW__">➕ قسم جديد...</option>`;
+            document.getElementById('p-category').innerHTML = cHtml; document.getElementById('store-category-filter').innerHTML = fHtml;
+        }
+        function filterCat(cat, btn) { currentFilter = cat; document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderProducts(); }
+
+        document.getElementById('p-image').addEventListener('change', e => {
+            const f = e.target.files[0]; if(!f) return; const r = new FileReader();
+            r.onload = ev => {
+                const img = new Image(); img.onload = () => {
+                    const cv = document.createElement('canvas'); const M = 500; let w = img.width, h = img.height;
+                    if(w>h){if(w>M){h*=M/w; w=M;}} else {if(h>M){w*=M/h; h=M;}}
+                    cv.width=w; cv.height=h; cv.getContext('2d').drawImage(img,0,0,w,h); uploadedImageData = cv.toDataURL('image/jpeg', 0.6);
+                }; img.src = ev.target.result;
+            }; r.readAsDataURL(f);
+        });
+
+        function saveProduct() {
+            if(!isAdmin) return;
+            const pid = document.getElementById('p-id').value, name = document.getElementById('p-name').value, price = document.getElementById('p-price').value;
+            const oldPrice = document.getElementById('p-old-price').value, badge = document.getElementById('p-badge').value, stock = document.getElementById('p-stock').value, msg = document.getElementById('p-msg').value;
+            const details = document.getElementById('p-details').value; 
+            let cat = document.getElementById('p-category').value;
+            
+            if(cat==='__NEW__'){ const nc = document.getElementById('p-new-cat').value.trim(); if(!nc) return showToast("اكتب اسم القسم",true); cat = nc; db.ref('kemo_categories').set([...categories, {id:Date.now().toString(), name:nc}]); }
+            if(!name || !price || (!uploadedImageData && !pid)) return showToast("أكمل البيانات",true);
+            
+            const pObj = { id: pid?Number(pid):Date.now(), category: cat, name: name, price: price, oldPrice: oldPrice, badge: badge, stock: stock, waMessage: msg, details: details }; 
+            if(uploadedImageData) pObj.image = uploadedImageData; else pObj.image = products.find(x=>String(x.id)===String(pid)).image;
+
+            let newList = pid ? products.map(x=>String(x.id)===String(pid)?pObj:x) :[...products, pObj];
+            db.ref('kemo_products').set(newList).then(()=>{ showToast("تم الحفظ"); cancelEdit(); });
+        }
+
+        function editProduct(id) {
+            const p = products.find(x => String(x.id) === String(id)); if(!p) return;
+            document.getElementById('p-id').value = p.id; document.getElementById('p-name').value = p.name; document.getElementById('p-price').value = p.price;
+            document.getElementById('p-old-price').value = p.oldPrice||''; document.getElementById('p-badge').value = p.badge||''; document.getElementById('p-stock').value = p.stock||''; document.getElementById('p-msg').value = p.waMessage||'';
+            document.getElementById('p-details').value = p.details||''; 
+            document.getElementById('p-category').value = p.category; document.getElementById('add-btn').innerText = "تحديث المنتج"; document.getElementById('cancel-edit-btn').style.display = "block";
+            window.scrollTo(0, document.getElementById('admin-section').offsetTop);
+        }
+        function cancelEdit() {['p-id','p-name','p-price','p-old-price','p-badge','p-stock','p-msg','p-new-cat','p-details'].forEach(i=>document.getElementById(i).value='');
+            document.getElementById('p-category').value='none'; document.getElementById('p-image').value=''; uploadedImageData="";
+            document.getElementById('add-btn').innerText="حفظ ونشر"; document.getElementById('cancel-edit-btn').style.display="none";
+        }
+        function deleteProduct(id) { if(confirm("حذف المنتج؟")) db.ref('kemo_products').set(products.filter(p=>String(p.id)!==String(id))); }
+        function switchTab(t) { document.getElementById('store-section').style.display = t==='store'?'block':'none'; document.getElementById('admin-section').style.display = t==='admin'?'block':'none'; }
+
+        function renderProducts() {
+            const st = document.getElementById('products-list'), ad = document.getElementById('admin-products-list'); st.innerHTML=''; ad.innerHTML='';
+            let list = currentFilter==='all' ? products : products.filter(p=>p.category===currentFilter);
+            
+            if(!list.length) st.innerHTML = '<div style="grid-column:1/-1; text-align:center;">لا توجد منتجات</div>';
+            else[...list].reverse().forEach(p => {
+                let badgeHTML = p.badge ? `<div class="sale-badge">${p.badge}</div>` : '';
+                let oldPriceHTML = p.oldPrice ? `<span class="old-price">${p.oldPrice}</span>` : '';
+                
+                // تم التعديل هنا: استخدام String(p.id) عشان المطابقة تكون صحيحة بنسبة 100%
+                let isLiked = likes.includes(String(p.id)) ? 'liked' : '';
+                let heartHTML = `<button class="like-btn ${isLiked}" onclick="toggleLike('${p.id}', event)"><i class="fa-solid fa-heart"></i></button>`;
+                
+                let stockHTML = '', btnHTML = `<button class="btn btn-cart" onclick="addToCart('${p.id}', event)">شحن الآن</button>`;
+                if(p.stock !== undefined && p.stock !== '') {
+                    let s = parseInt(p.stock);
+                    if(s <= 0) { stockHTML = `<div class="stock-warning">نفذت الكمية ❌</div>`; btnHTML = `<button class="btn btn-cart" disabled onclick="event.stopPropagation()">غير متوفر</button>`; }
+                    else if (s < 10) { stockHTML = `<div class="stock-warning">⚠️ قربت تخلص (باقي ${s})</div>`; }
+                }
+
+                st.innerHTML += `
+                    <div class="product-card" onclick="showProductDetails('${p.id}')">
+                        <div class="product-img-wrapper">${badgeHTML}${heartHTML}<img src="${p.image}"></div>
+                        <div class="product-info">
+                            <div class="product-title">${p.name}</div>
+                            <div class="product-price">${oldPriceHTML} ${p.price} ج.م</div>
+                            ${stockHTML}
+                            ${btnHTML}
+                        </div>
+                    </div>`;
+            });
+
+            if(products.length) [...products].reverse().forEach(p => {
+                let stockInfo = p.stock !== undefined && p.stock !== '' ? `<div style="font-size:12px; color:var(--success);">المخزون: ${p.stock}</div>` : '';
+                ad.innerHTML += `
+                    <div class="product-card">
+                        <div class="product-img-wrapper"><img src="${p.image}"></div>
+                        <div class="product-info">
+                            <div class="product-title">${p.name}</div>
+                            ${stockInfo}
+                            <button class="btn btn-edit" onclick="editProduct('${p.id}')">تعديل</button>
+                            <button class="btn" style="background:rgba(239,68,68,0.1); color:var(--danger);" onclick="deleteProduct('${p.id}')">حذف</button>
+                        </div>
+                    </div>`;
+            });
+        }
+    </script>
+</body>
+</html>
