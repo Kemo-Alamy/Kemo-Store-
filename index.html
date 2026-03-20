@@ -187,8 +187,10 @@
 </head>
 <body>
 
-    <!-- إضافة ملف الصوت الخاص بالترحيب -->
+    <!-- إضافة ملف الصوت الترحيبي -->
     <audio id="welcome-audio" src="welcome.mp3" preload="auto"></audio>
+    <!-- إضافة ملف الصوت المستمر في الخلفية (سميناه background.mp3 ولاحظ خاصية loop) -->
+    <audio id="bg-audio" src="background.mp3" preload="auto" loop></audio>
 
     <header>
         <div class="logo"><i class="fa-solid fa-gamepad"></i> Kemo</div>
@@ -522,18 +524,22 @@
 
         function closeDetailsModal() { document.getElementById('details-modal-overlay').classList.remove('active'); document.getElementById('details-modal').classList.remove('active'); }
 
+        // التعديل هنا لضمان أن التحديث يتم فورياً في كل مكان بمجرد الضغط
         function toggleLike(id, event) {
             if (event) event.stopPropagation(); id = String(id);
-            let isLiked = false;
-            if (likes.includes(id)) { likes = likes.filter(x => x !== id); showToast("تم الحذف من المفضلة"); } 
-            else { likes.push(id); isLiked = true; showToast("تمت الإضافة للمفضلة"); }
+            if (likes.includes(id)) { 
+                likes = likes.filter(x => x !== id); 
+                showToast("تم الحذف من المفضلة"); 
+            } 
+            else { 
+                likes.push(id); 
+                showToast("تمت الإضافة للمفضلة"); 
+            }
             localStorage.setItem('kemo_likes', JSON.stringify(likes));
             
-            if (event && event.currentTarget) {
-                if(isLiked) event.currentTarget.classList.add('liked');
-                else event.currentTarget.classList.remove('liked');
-            }
+            // إعادة رسم المنتجات والمفضلة لتحديث القلب فورا
             renderWishlist();
+            renderProducts();
         }
 
         function renderWishlist() {
@@ -624,7 +630,6 @@
             const orderId = 'KEMO-' + Date.now().toString().slice(-6) + Math.floor(Math.random() * 10);
             let finalTotal = document.getElementById('cart-total-price').innerText;
 
-            // إعداد التاريخ والوقت
             const now = new Date();
             const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             const fullDateTime = `${now.toLocaleDateString('ar-EG', dateOptions)} - الساعة ${now.toLocaleTimeString('ar-EG')}`;
@@ -810,27 +815,32 @@
             ad.innerHTML = adHTML;
         }
 
-        // كود تشغيل الصوت الترحيبي
-        let welcomePlayed = false;
-        function playWelcomeAudio() {
-            if (!welcomePlayed) {
-                const audio = document.getElementById('welcome-audio');
-                if (audio) {
-                    audio.play().then(() => {
-                        welcomePlayed = true;
-                    }).catch(error => {
-                        // متصفحات زي جوجل كروم وسفاري بتمنع تشغيل الصوت تلقائياً بدون ما اليوزر يلمس الشاشة
-                        // فلو فشل، هيفضل مستني أول لمسة للشاشة ويشغله
-                    });
+        // كود تشغيل الصوت الترحيبي والصوت المستمر (الخلفية)
+        let audiosStarted = false;
+        function startAllAudios() {
+            if (!audiosStarted) {
+                const welcomeAudio = document.getElementById('welcome-audio');
+                const bgAudio = document.getElementById('bg-audio');
+                
+                // تشغيل الصوت الترحيبي
+                if (welcomeAudio) {
+                    welcomeAudio.play().catch(e => console.log("في انتظار تفاعل المستخدم لتشغيل الصوت الترحيبي"));
+                }
+                
+                // تشغيل صوت الخلفية المستمر
+                if (bgAudio) {
+                    bgAudio.play().then(() => {
+                        audiosStarted = true;
+                    }).catch(e => console.log("في انتظار تفاعل المستخدم لتشغيل موسيقى الخلفية"));
                 }
             }
         }
         
-        // محاولة تشغيل الصوت عند تحميل الصفحة
-        window.addEventListener('load', playWelcomeAudio);
-        // تشغيل الصوت عند أول ضغطة أو لمس للشاشة (لضمان عمله على الموبايل والكمبيوتر)
-        document.addEventListener('click', playWelcomeAudio, { once: true });
-        document.addEventListener('touchstart', playWelcomeAudio, { once: true });
+        // المحاولة عند تحميل الصفحة
+        window.addEventListener('load', startAllAudios);
+        // المحاولة مع أول ضغطة لضمان تخطي قيود المتصفحات
+        document.addEventListener('click', startAllAudios, { once: true });
+        document.addEventListener('touchstart', startAllAudios, { once: true });
         
     </script>
 </body>
