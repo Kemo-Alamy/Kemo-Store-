@@ -129,12 +129,14 @@
         .coupon-area button { background: var(--accent); border: none; color: white; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: 'Cairo'; transition: 0.2s;}
         .coupon-area button:active { transform: scale(0.95); }
 
-        .order-card { background: var(--bg-dark); border: 1px solid var(--border-color); padding: 15px; border-radius: 10px; margin-bottom: 10px; }
+        .order-card { background: var(--bg-dark); border: 1px solid var(--border-color); padding: 15px; border-radius: 10px; margin-bottom: 10px; position: relative;}
         .order-header { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 10px; font-size: 13px; font-weight:bold;}
         .badge-pending { background: rgba(245, 158, 11, 0.2); color: var(--primary); padding: 3px 8px; border-radius: 5px; font-size: 12px; }
         .badge-completed { background: rgba(16, 185, 129, 0.2); color: var(--success); padding: 3px 8px; border-radius: 5px; font-size: 12px; }
-        
         .badge-rejected { background: rgba(239, 68, 68, 0.2); color: var(--danger); padding: 3px 8px; border-radius: 5px; font-size: 12px; }
+        .badge-late { background: var(--danger); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-right: 5px; animation: pulse 1.5s infinite;}
+        
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
         .search-box { display: flex; gap: 10px; margin-bottom: 15px; }
         .search-box input { flex: 1; background: var(--bg-dark); border: 1px solid var(--primary); color: white; padding: 10px; border-radius: 8px; outline: none; font-family: 'Cairo'; box-shadow: 0 0 10px rgba(248, 158, 27, 0.1);}
@@ -186,7 +188,6 @@
 </head>
 <body>
 
-    <!-- إضافة ملف الصوت الترحيبي فقط -->
     <audio id="welcome-audio" src="welcome.mp3" preload="auto"></audio>
 
     <header>
@@ -263,6 +264,12 @@
                 <input type="text" id="customer-game-id" placeholder="اكتب الـ ID هنا...">
             </div>
             
+            <!-- تم إضافة خانة رقم الواتس للعميل -->
+            <div class="input-box">
+                <label>رقم الواتساب الخاص بك (مهم للتواصل)</label>
+                <input type="tel" id="customer-phone" placeholder="مثال: 01012345678">
+            </div>
+            
             <div class="coupon-area">
                 <input type="text" id="promo-code" placeholder="لديك كود خصم؟">
                 <button onclick="applyCoupon()">تطبيق</button>
@@ -335,7 +342,7 @@
                 <input type="text" id="admin-order-search" placeholder="ابحث برقم الطلب (مثال: KEMO-1234) أو بالـ ID" oninput="searchOrders()">
                 <button class="btn" style="width:auto;" onclick="searchOrders()"><i class="fa-solid fa-magnifying-glass"></i></button>
             </div>
-            <div id="admin-orders-list" style="max-height: 300px; overflow-y:auto;"></div>
+            <div id="admin-orders-list" style="max-height: 400px; overflow-y:auto;"></div>
         </div>
 
         <h3 style="margin-bottom:15px; color:var(--primary);"><i class="fa-solid fa-ticket"></i> إضافة كوبون خصم</h3>
@@ -621,6 +628,10 @@
             if(!currentUser) { showToast("سجل دخول أولاً!",true); return loginWithGoogle(); }
             if(!cart.length) return showToast("السلة فارغة",true);
             const pId = document.getElementById('customer-game-id').value.trim(); if(!pId) return showToast("اكتب الـ ID",true);
+            
+            // إضافة التقاط رقم التليفون
+            const cPhone = document.getElementById('customer-phone').value.trim();
+            if(!cPhone) return showToast("يرجى كتابة رقم الواتساب الخاص بك", true);
 
             const orderId = 'KEMO-' + Date.now().toString().slice(-6) + Math.floor(Math.random() * 10);
             let finalTotal = document.getElementById('cart-total-price').innerText;
@@ -629,9 +640,10 @@
             const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             const fullDateTime = `${now.toLocaleDateString('ar-EG', dateOptions)} - الساعة ${now.toLocaleTimeString('ar-EG')}`;
 
-            const order = { id: orderId, uid: currentUser.uid, userName: currentUser.displayName || 'عميل', email: currentUser.email, playerId: pId, items: cart, total: finalTotal, status: 'pending', timestamp: Date.now(), dateStr: fullDateTime };
+            // إضافة الرقم للأوردر
+            const order = { id: orderId, uid: currentUser.uid, userName: currentUser.displayName || 'عميل', email: currentUser.email, phone: cPhone, playerId: pId, items: cart, total: finalTotal, status: 'pending', timestamp: Date.now(), dateStr: fullDateTime };
 
-            let msg = `مرحباً Kemo Store 👋\nأريد شحن المنتجات التالية:\n\n📅 *تاريخ الطلب:* ${fullDateTime}\n\n👤 *معلومات المشتري:*\n   الاسم: ${order.userName}\n   الإيميل: ${order.email}\n\n🎮 *معلومات اللعبة:*\n   الـ ID / الحساب: *${pId}*\n\n📦 *تفاصيل الشحنة:*\n`;
+            let msg = `مرحباً Kemo Store 👋\nأريد شحن المنتجات التالية:\n\n📅 *تاريخ الطلب:* ${fullDateTime}\n\n👤 *معلومات المشتري:*\n   الاسم: ${order.userName}\n   رقم التواصل: ${order.phone}\n\n🎮 *معلومات اللعبة:*\n   الـ ID / الحساب: *${pId}*\n\n📦 *تفاصيل الشحنة:*\n`;
             let subT = 0;
             cart.forEach((it, i) => { let itTotal = it.price * it.qty; subT += itTotal; msg += `${i+1}- *${it.name}*\n   الكمية: ${it.qty} | السعر: ${itTotal} ج.م\n`; if(it.waMessage) msg += `   💬: ${it.waMessage}\n`; });
             msg += `\n💰 *الإجمالي الكلي:* ${finalTotal} ج.م\n`;
@@ -676,8 +688,21 @@
             if(!list.length) html='<div style="color:gray; text-align:center; padding: 20px;">لا يوجد طلبات مطابقة</div>';
             else list.forEach(o => {
                 let adminActions = '';
+                let lateIndicator = '';
+                
+                // حساب وقت التأخير (15 دقيقة = 900000 ملي ثانية)
                 if(o.status === 'pending') {
-                    adminActions = `
+                    let timePassed = Date.now() - o.timestamp;
+                    if(timePassed > 900000) {
+                        lateIndicator = `<span class="badge-late">تأخير ⚠️</span>`;
+                        adminActions = `
+                            <button class="btn" style="background:var(--primary); color:#000; margin-bottom:10px; font-size:12px;" onclick="sendLateMessage('${o.id}')">
+                                <i class="fa-brands fa-whatsapp"></i> إرسال رسالة تأخير للعميل
+                            </button>
+                        `;
+                    }
+                    
+                    adminActions += `
                         <div style="display:flex; gap:10px; margin-top: 10px;">
                             <button class="btn" style="background:var(--success); color:white; flex:1;" onclick="completeOrder('${o.id}')">تم الشحن ✅</button>
                             <button class="btn" style="background:var(--danger); color:white; flex:1;" onclick="rejectOrder('${o.id}')">إلغاء ❌</button>
@@ -691,8 +716,16 @@
 
                 html += `
                     <div class="order-card" style="background:var(--bg-card);">
-                        <div class="order-header"><span style="color:var(--primary);">#${o.id}</span><span>${o.userName}</span></div>
-                        <div style="font-size:13px; margin-bottom:10px;"><b>ID:</b> ${o.playerId} <br> <b>إجمالي:</b> ${o.total} ج.م <br> <b>التاريخ:</b> ${o.dateStr || new Date(o.timestamp).toLocaleDateString('ar-EG')}</div>
+                        <div class="order-header">
+                            <div>${lateIndicator}<span style="color:var(--primary);">#${o.id}</span></div>
+                            <span>${o.userName}</span>
+                        </div>
+                        <div style="font-size:13px; margin-bottom:10px;">
+                            <b>الرقم:</b> <a href="tel:${o.phone || ''}" style="color:var(--success); text-decoration:none;">${o.phone || 'غير مسجل'}</a><br>
+                            <b>ID:</b> ${o.playerId} <br> 
+                            <b>إجمالي:</b> ${o.total} ج.م <br> 
+                            <b>التاريخ:</b> ${o.dateStr || new Date(o.timestamp).toLocaleDateString('ar-EG')}
+                        </div>
                         ${adminActions}
                     </div>`;
             });
@@ -701,15 +734,49 @@
 
         function searchOrders() { 
             let term = document.getElementById('admin-order-search').value.toLowerCase().replace(/[#\s]/g, ''); 
-            let filtered = allOrders.filter(o => { if (!o || !o.id) return false; let cleanId = String(o.id).toLowerCase().replace(/[#\s]/g, ''); let cleanPlayer = String(o.playerId || "").toLowerCase().replace(/[#\s]/g, ''); return cleanId.includes(term) || cleanPlayer.includes(term); });
+            let filtered = allOrders.filter(o => { if (!o || !o.id) return false; let cleanId = String(o.id).toLowerCase().replace(/[#\s]/g, ''); let cleanPlayer = String(o.playerId || "").toLowerCase().replace(/[#\s]/g, ''); let cleanPhone = String(o.phone || "").replace(/[#\s]/g, ''); return cleanId.includes(term) || cleanPlayer.includes(term) || cleanPhone.includes(term); });
             renderAdminOrders(filtered); 
         }
 
-        function completeOrder(id) { if(confirm("تأكيد الشحن؟")) db.ref('kemo_orders/'+id).update({status:'completed'}).then(()=>showToast("تم التحديث")); }
+        // إرسال رسالة تأكيد الدفع والشحن للعميل
+        function completeOrder(id) { 
+            if(confirm("تأكيد الشحن؟ سيتم فتح الواتساب لإبلاغ العميل.")) {
+                const order = allOrders.find(o => String(o.id) === String(id));
+                db.ref('kemo_orders/'+id).update({status:'completed'}).then(() => {
+                    showToast("تم التحديث بنجاح");
+                    if (order && order.phone) {
+                        let msg = `مرحباً يا ${order.userName.split(' ')[0]} 👋\n\n✅ *تم اكتمال طلبك بنجاح!*\nتم شحن المنتجات إلى حسابك (ID: ${order.playerId})\nرقم الطلب: #${order.id}\n\nشكراً لثقتك في Kemo Store 🎮❤️`;
+                        let formattedPhone = order.phone.startsWith('0') ? '2' + order.phone : order.phone;
+                        window.open(`https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+                    }
+                });
+            }
+        }
         
+        // إرسال رسالة رفض الطلب للعميل
         function rejectOrder(id) { 
-            if(confirm("هل أنت متأكد من رفض وإلغاء هذا الطلب؟")) {
-                db.ref('kemo_orders/'+id).update({status:'rejected'}).then(()=>showToast("تم رفض الطلب", true)); 
+            if(confirm("هل أنت متأكد من رفض وإلغاء هذا الطلب؟ سيتم فتح الواتساب لإبلاغ العميل.")) {
+                const order = allOrders.find(o => String(o.id) === String(id));
+                db.ref('kemo_orders/'+id).update({status:'rejected'}).then(() => {
+                    showToast("تم رفض الطلب", true);
+                    if (order && order.phone) {
+                        let msg = `مرحباً يا ${order.userName.split(' ')[0]}\n\n❌ نأسف لإبلاغك بأنه *تم إلغاء طلبك* (رقم: #${order.id}).\n\nيرجى التواصل معنا لمعرفة السبب أو في حال وجود أي مشكلة في الدفع.\nKemo Store 🎮`;
+                        let formattedPhone = order.phone.startsWith('0') ? '2' + order.phone : order.phone;
+                        window.open(`https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+                    }
+                }); 
+            }
+        }
+
+        // إرسال رسالة تأخير للعميل لو عدى 15 دقيقة
+        function sendLateMessage(id) {
+            const order = allOrders.find(o => String(o.id) === String(id));
+            if (order && order.phone) {
+                let msg = `مرحباً يا ${order.userName.split(' ')[0]} 👋\n\nنعتذر عن التأخير البسيط في طلبك رقم (#${order.id}).\nالطلب حالياً قيد المراجعة وسوف يتم شحن (ID: ${order.playerId}) في أقرب وقت ممكن.\n\nشكراً لانتظارك وتفهمك ❤️\nKemo Store 🎮`;
+                let formattedPhone = order.phone.startsWith('0') ? '2' + order.phone : order.phone;
+                window.open(`https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+            } else {
+                showToast("رقم هاتف العميل غير متوفر", true);
             }
         }
 
@@ -810,46 +877,35 @@
             ad.innerHTML = adHTML;
         }
 
-        // --- الكود الذكي لتشغيل رسالة الترحيب ---
         let welcomePlayed = false;
-        
         function tryPlayWelcomeAudio() {
             if (welcomePlayed) return;
             const welcomeAudio = document.getElementById('welcome-audio');
             if (welcomeAudio) {
-                // المحاولة الفورية أول ما الموقع يحمل
                 welcomeAudio.play().then(() => {
                     welcomePlayed = true;
-                    removeAudioListeners(); // مسح التنصت لأن الصوت اشتغل خلاص
+                    removeAudioListeners(); 
                 }).catch(e => {
                     console.log("المتصفح منع تشغيل الصوت تلقائياً، في انتظار لمس الشاشة...");
                 });
             }
         }
-
-        // دالة مخصصة للتشغيل عند اللمس/النقر لو التشغيل التلقائي اترفض
         function playOnInteraction() {
             if (welcomePlayed) return;
             const welcomeAudio = document.getElementById('welcome-audio');
             if (welcomeAudio) {
                 welcomeAudio.play().then(() => {
                     welcomePlayed = true;
-                    removeAudioListeners(); // مسح التنصت لأن الصوت اشتغل خلاص
+                    removeAudioListeners(); 
                 }).catch(e => console.log(e));
             }
         }
-
-        // تنظيف الأحداث (Listeners) عشان ميفضلش الكود شغال في الخلفية عالفاضي
         function removeAudioListeners() {
             document.removeEventListener('click', playOnInteraction);
             document.removeEventListener('touchstart', playOnInteraction);
             document.removeEventListener('scroll', playOnInteraction);
         }
-
-        // 1. محاولة التشغيل فوراً عند اكتمال تحميل الصفحة
         window.addEventListener('load', tryPlayWelcomeAudio);
-        
-        // 2. كخطة بديلة (للهواتف وبعض متصفحات الكمبيوتر)، هيشتغل مع أول لمسة، كليك، أو سكرول
         document.addEventListener('click', playOnInteraction, { once: true });
         document.addEventListener('touchstart', playOnInteraction, { once: true });
         document.addEventListener('scroll', playOnInteraction, { once: true });
