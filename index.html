@@ -134,7 +134,6 @@
         .badge-pending { background: rgba(245, 158, 11, 0.2); color: var(--primary); padding: 3px 8px; border-radius: 5px; font-size: 12px; }
         .badge-completed { background: rgba(16, 185, 129, 0.2); color: var(--success); padding: 3px 8px; border-radius: 5px; font-size: 12px; }
         
-        /* بادج الرفض الجديد */
         .badge-rejected { background: rgba(239, 68, 68, 0.2); color: var(--danger); padding: 3px 8px; border-radius: 5px; font-size: 12px; }
 
         .search-box { display: flex; gap: 10px; margin-bottom: 15px; }
@@ -187,10 +186,8 @@
 </head>
 <body>
 
-    <!-- إضافة ملف الصوت الترحيبي -->
+    <!-- إضافة ملف الصوت الترحيبي فقط -->
     <audio id="welcome-audio" src="welcome.mp3" preload="auto"></audio>
-    <!-- إضافة ملف الصوت المستمر في الخلفية (سميناه background.mp3 ولاحظ خاصية loop) -->
-    <audio id="bg-audio" src="background.mp3" preload="auto" loop></audio>
 
     <header>
         <div class="logo"><i class="fa-solid fa-gamepad"></i> Kemo</div>
@@ -524,7 +521,6 @@
 
         function closeDetailsModal() { document.getElementById('details-modal-overlay').classList.remove('active'); document.getElementById('details-modal').classList.remove('active'); }
 
-        // التعديل هنا لضمان أن التحديث يتم فورياً في كل مكان بمجرد الضغط
         function toggleLike(id, event) {
             if (event) event.stopPropagation(); id = String(id);
             if (likes.includes(id)) { 
@@ -537,7 +533,6 @@
             }
             localStorage.setItem('kemo_likes', JSON.stringify(likes));
             
-            // إعادة رسم المنتجات والمفضلة لتحديث القلب فورا
             renderWishlist();
             renderProducts();
         }
@@ -815,32 +810,49 @@
             ad.innerHTML = adHTML;
         }
 
-        // كود تشغيل الصوت الترحيبي والصوت المستمر (الخلفية)
-        let audiosStarted = false;
-        function startAllAudios() {
-            if (!audiosStarted) {
-                const welcomeAudio = document.getElementById('welcome-audio');
-                const bgAudio = document.getElementById('bg-audio');
-                
-                // تشغيل الصوت الترحيبي
-                if (welcomeAudio) {
-                    welcomeAudio.play().catch(e => console.log("في انتظار تفاعل المستخدم لتشغيل الصوت الترحيبي"));
-                }
-                
-                // تشغيل صوت الخلفية المستمر
-                if (bgAudio) {
-                    bgAudio.play().then(() => {
-                        audiosStarted = true;
-                    }).catch(e => console.log("في انتظار تفاعل المستخدم لتشغيل موسيقى الخلفية"));
-                }
+        // --- الكود الذكي لتشغيل رسالة الترحيب ---
+        let welcomePlayed = false;
+        
+        function tryPlayWelcomeAudio() {
+            if (welcomePlayed) return;
+            const welcomeAudio = document.getElementById('welcome-audio');
+            if (welcomeAudio) {
+                // المحاولة الفورية أول ما الموقع يحمل
+                welcomeAudio.play().then(() => {
+                    welcomePlayed = true;
+                    removeAudioListeners(); // مسح التنصت لأن الصوت اشتغل خلاص
+                }).catch(e => {
+                    console.log("المتصفح منع تشغيل الصوت تلقائياً، في انتظار لمس الشاشة...");
+                });
             }
         }
+
+        // دالة مخصصة للتشغيل عند اللمس/النقر لو التشغيل التلقائي اترفض
+        function playOnInteraction() {
+            if (welcomePlayed) return;
+            const welcomeAudio = document.getElementById('welcome-audio');
+            if (welcomeAudio) {
+                welcomeAudio.play().then(() => {
+                    welcomePlayed = true;
+                    removeAudioListeners(); // مسح التنصت لأن الصوت اشتغل خلاص
+                }).catch(e => console.log(e));
+            }
+        }
+
+        // تنظيف الأحداث (Listeners) عشان ميفضلش الكود شغال في الخلفية عالفاضي
+        function removeAudioListeners() {
+            document.removeEventListener('click', playOnInteraction);
+            document.removeEventListener('touchstart', playOnInteraction);
+            document.removeEventListener('scroll', playOnInteraction);
+        }
+
+        // 1. محاولة التشغيل فوراً عند اكتمال تحميل الصفحة
+        window.addEventListener('load', tryPlayWelcomeAudio);
         
-        // المحاولة عند تحميل الصفحة
-        window.addEventListener('load', startAllAudios);
-        // المحاولة مع أول ضغطة لضمان تخطي قيود المتصفحات
-        document.addEventListener('click', startAllAudios, { once: true });
-        document.addEventListener('touchstart', startAllAudios, { once: true });
+        // 2. كخطة بديلة (للهواتف وبعض متصفحات الكمبيوتر)، هيشتغل مع أول لمسة، كليك، أو سكرول
+        document.addEventListener('click', playOnInteraction, { once: true });
+        document.addEventListener('touchstart', playOnInteraction, { once: true });
+        document.addEventListener('scroll', playOnInteraction, { once: true });
         
     </script>
 </body>
