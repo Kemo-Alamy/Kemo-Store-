@@ -187,6 +187,9 @@
 </head>
 <body>
 
+    <!-- إضافة ملف الصوت الخاص بالترحيب -->
+    <audio id="welcome-audio" src="welcome.mp3" preload="auto"></audio>
+
     <header>
         <div class="logo"><i class="fa-solid fa-gamepad"></i> Kemo</div>
         <div class="nav-actions">
@@ -621,9 +624,14 @@
             const orderId = 'KEMO-' + Date.now().toString().slice(-6) + Math.floor(Math.random() * 10);
             let finalTotal = document.getElementById('cart-total-price').innerText;
 
-            const order = { id: orderId, uid: currentUser.uid, userName: currentUser.displayName || 'عميل', email: currentUser.email, playerId: pId, items: cart, total: finalTotal, status: 'pending', timestamp: Date.now() };
+            // إعداد التاريخ والوقت
+            const now = new Date();
+            const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const fullDateTime = `${now.toLocaleDateString('ar-EG', dateOptions)} - الساعة ${now.toLocaleTimeString('ar-EG')}`;
 
-            let msg = `مرحباً Kemo Store 👋\nأريد شحن المنتجات التالية:\n\n👤 *معلومات المشتري:*\n   الاسم: ${order.userName}\n   الإيميل: ${order.email}\n\n🎮 *معلومات اللعبة:*\n   الـ ID / الحساب: *${pId}*\n\n📦 *تفاصيل الشحنة:*\n`;
+            const order = { id: orderId, uid: currentUser.uid, userName: currentUser.displayName || 'عميل', email: currentUser.email, playerId: pId, items: cart, total: finalTotal, status: 'pending', timestamp: Date.now(), dateStr: fullDateTime };
+
+            let msg = `مرحباً Kemo Store 👋\nأريد شحن المنتجات التالية:\n\n📅 *تاريخ الطلب:* ${fullDateTime}\n\n👤 *معلومات المشتري:*\n   الاسم: ${order.userName}\n   الإيميل: ${order.email}\n\n🎮 *معلومات اللعبة:*\n   الـ ID / الحساب: *${pId}*\n\n📦 *تفاصيل الشحنة:*\n`;
             let subT = 0;
             cart.forEach((it, i) => { let itTotal = it.price * it.qty; subT += itTotal; msg += `${i+1}- *${it.name}*\n   الكمية: ${it.qty} | السعر: ${itTotal} ج.م\n`; if(it.waMessage) msg += `   💬: ${it.waMessage}\n`; });
             msg += `\n💰 *الإجمالي الكلي:* ${finalTotal} ج.م\n`;
@@ -653,13 +661,12 @@
             const cont = document.getElementById('user-orders-list'); let html=''; const myO = allOrders.filter(o=>o.uid === currentUser.uid);
             if(!myO.length) html='<div style="text-align:center; color:gray;">لا توجد طلبات</div>';
             else myO.forEach(o => {
-                // تعديل هنا لعرض البادج الصحيح
                 let badge = '';
                 if(o.status === 'pending') badge = `<span class="badge-pending">قيد التنفيذ ⏳</span>`;
                 else if(o.status === 'completed') badge = `<span class="badge-completed">تم الشحن ✅</span>`;
                 else if(o.status === 'rejected') badge = `<span class="badge-rejected">تم رفض الطلب ❌</span>`;
                 
-                html += `<div class="order-card"><div class="order-header"><span>#${o.id}</span>${badge}</div><div style="font-size:12px; color:gray;">الـ ID: ${o.playerId}</div><div style="font-weight:bold; color:var(--primary); margin-top:5px;">الإجمالي: ${o.total} ج.م</div></div>`;
+                html += `<div class="order-card"><div class="order-header"><span>#${o.id}</span>${badge}</div><div style="font-size:12px; color:gray;">الـ ID: ${o.playerId}</div><div style="font-weight:bold; color:var(--primary); margin-top:5px;">الإجمالي: ${o.total} ج.م</div><div style="font-size:11px; color:var(--text-muted); margin-top:5px;"><i class="fa-regular fa-clock"></i> ${o.dateStr || new Date(o.timestamp).toLocaleDateString('ar-EG')}</div></div>`;
             });
             cont.innerHTML = html;
         }
@@ -668,25 +675,24 @@
             const cont = document.getElementById('admin-orders-list'); let html='';
             if(!list.length) html='<div style="color:gray; text-align:center; padding: 20px;">لا يوجد طلبات مطابقة</div>';
             else list.forEach(o => {
-                // عرض أزرار أو نصوص الإدارة بناءً على الحالة
                 let adminActions = '';
                 if(o.status === 'pending') {
                     adminActions = `
-                        <div style="display:flex; gap:10px;">
+                        <div style="display:flex; gap:10px; margin-top: 10px;">
                             <button class="btn" style="background:var(--success); color:white; flex:1;" onclick="completeOrder('${o.id}')">تم الشحن ✅</button>
                             <button class="btn" style="background:var(--danger); color:white; flex:1;" onclick="rejectOrder('${o.id}')">إلغاء ❌</button>
                         </div>
                     `;
                 } else if(o.status === 'completed') {
-                    adminActions = `<div style="color:var(--success); font-weight:bold; text-align:center;">تم شحن الطلب ✅</div>`;
+                    adminActions = `<div style="color:var(--success); font-weight:bold; text-align:center; margin-top: 10px;">تم شحن الطلب ✅</div>`;
                 } else if(o.status === 'rejected') {
-                    adminActions = `<div style="color:var(--danger); font-weight:bold; text-align:center;">تم رفض الطلب ❌</div>`;
+                    adminActions = `<div style="color:var(--danger); font-weight:bold; text-align:center; margin-top: 10px;">تم رفض الطلب ❌</div>`;
                 }
 
                 html += `
                     <div class="order-card" style="background:var(--bg-card);">
                         <div class="order-header"><span style="color:var(--primary);">#${o.id}</span><span>${o.userName}</span></div>
-                        <div style="font-size:13px; margin-bottom:10px;"><b>ID:</b> ${o.playerId} <br> <b>إجمالي:</b> ${o.total} ج.م</div>
+                        <div style="font-size:13px; margin-bottom:10px;"><b>ID:</b> ${o.playerId} <br> <b>إجمالي:</b> ${o.total} ج.م <br> <b>التاريخ:</b> ${o.dateStr || new Date(o.timestamp).toLocaleDateString('ar-EG')}</div>
                         ${adminActions}
                     </div>`;
             });
@@ -701,7 +707,6 @@
 
         function completeOrder(id) { if(confirm("تأكيد الشحن؟")) db.ref('kemo_orders/'+id).update({status:'completed'}).then(()=>showToast("تم التحديث")); }
         
-        // الدالة الجديدة لرفض الطلب
         function rejectOrder(id) { 
             if(confirm("هل أنت متأكد من رفض وإلغاء هذا الطلب؟")) {
                 db.ref('kemo_orders/'+id).update({status:'rejected'}).then(()=>showToast("تم رفض الطلب", true)); 
@@ -804,6 +809,29 @@
             });
             ad.innerHTML = adHTML;
         }
+
+        // كود تشغيل الصوت الترحيبي
+        let welcomePlayed = false;
+        function playWelcomeAudio() {
+            if (!welcomePlayed) {
+                const audio = document.getElementById('welcome-audio');
+                if (audio) {
+                    audio.play().then(() => {
+                        welcomePlayed = true;
+                    }).catch(error => {
+                        // متصفحات زي جوجل كروم وسفاري بتمنع تشغيل الصوت تلقائياً بدون ما اليوزر يلمس الشاشة
+                        // فلو فشل، هيفضل مستني أول لمسة للشاشة ويشغله
+                    });
+                }
+            }
+        }
+        
+        // محاولة تشغيل الصوت عند تحميل الصفحة
+        window.addEventListener('load', playWelcomeAudio);
+        // تشغيل الصوت عند أول ضغطة أو لمس للشاشة (لضمان عمله على الموبايل والكمبيوتر)
+        document.addEventListener('click', playWelcomeAudio, { once: true });
+        document.addEventListener('touchstart', playWelcomeAudio, { once: true });
+        
     </script>
 </body>
 </html>
