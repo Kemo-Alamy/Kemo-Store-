@@ -799,6 +799,19 @@
             }; r.readAsDataURL(f);
         });
 
+        // ----------------------------------------
+        // هذه هي الدالة الناقصة التي تم إضافتها لإظهار مربع الإدخال
+        function checkNewCategory() {
+            const catSelect = document.getElementById('p-category');
+            const newCatInput = document.getElementById('p-new-cat');
+            if (catSelect.value === '__NEW__') {
+                newCatInput.style.display = 'block';
+            } else {
+                newCatInput.style.display = 'none';
+            }
+        }
+        // ----------------------------------------
+
         function saveProduct() {
             if(!isAdmin) return;
             const pid = document.getElementById('p-id').value, name = document.getElementById('p-name').value, price = document.getElementById('p-price').value;
