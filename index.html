@@ -364,6 +364,7 @@
                     <label>القسم</label>
                     <select id="p-category" onchange="checkNewCategory()"><option value="none">بدون قسم</option></select>
                     <input type="text" id="p-new-cat" placeholder="اسم القسم الجديد..." style="display:none; margin-top:5px;">
+                    <button type="button" id="btn-delete-cat" onclick="deleteSelectedCategory()" style="display:none; background:var(--danger); color:white; padding:8px 15px; border:none; border-radius:8px; margin-top:5px; cursor:pointer; font-size:12px; font-weight:bold; width:max-content;"><i class="fa-solid fa-trash"></i> حذف هذا القسم</button>
                 </div>
                 <div class="input-group"><label>الاسم (مثال: 210 جوهرة)</label><input type="text" id="p-name"></div>
                 <div class="input-group"><label>السعر الحالي (ج.م)</label><input type="number" id="p-price"></div>
@@ -800,14 +801,32 @@
         });
 
         // ----------------------------------------
-        // هذه هي الدالة الناقصة التي تم إضافتها لإظهار مربع الإدخال
+        // هذه هي الدالة الناقصة التي تم إضافتها لإظهار مربع الإدخال وحذف القسم
         function checkNewCategory() {
             const catSelect = document.getElementById('p-category');
             const newCatInput = document.getElementById('p-new-cat');
+            const deleteBtn = document.getElementById('btn-delete-cat');
             if (catSelect.value === '__NEW__') {
                 newCatInput.style.display = 'block';
+                if(deleteBtn) deleteBtn.style.display = 'none';
             } else {
                 newCatInput.style.display = 'none';
+                if(deleteBtn) deleteBtn.style.display = (catSelect.value !== 'none') ? 'block' : 'none';
+            }
+        }
+
+        function deleteSelectedCategory() {
+            if(!isAdmin) return;
+            const catSelect = document.getElementById('p-category');
+            const selectedName = catSelect.value;
+            if (selectedName === 'none' || selectedName === '__NEW__') return;
+            if (confirm(`هل أنت متأكد من حذف قسم "${selectedName}" نهائياً؟`)) {
+                const updatedCategories = categories.filter(c => c.name !== selectedName);
+                db.ref('kemo_categories').set(updatedCategories).then(() => {
+                    showToast("تم حذف القسم بنجاح");
+                    catSelect.value = 'none';
+                    checkNewCategory();
+                }).catch(err => showToast("حدث خطأ أثناء الحذف", true));
             }
         }
         // ----------------------------------------
