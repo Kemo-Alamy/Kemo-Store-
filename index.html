@@ -19,9 +19,9 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
 
-    <!-- توليد Manifest ديناميكي ليعمل كتطبيق PWA -->
+    <!-- PWA Manifest: تم تحديث الأيقونة لتناسب متجر ألعاب (جواهر/شحن) -->
     <script>
-        const manifest = { "name": "Kemo Store", "short_name": "Kemo", "start_url": ".", "display": "standalone", "background_color": "#0f141e", "theme_color": "#f89e1b", "icons": [{"src": "https://cdn-icons-png.flaticon.com/512/3800/3800068.png", "sizes": "512x512", "type": "image/png"}] };
+        const manifest = { "name": "Kemo Store", "short_name": "Kemo", "start_url": ".", "display": "standalone", "background_color": "#0f141e", "theme_color": "#f89e1b", "icons": [{"src": "https://cdn-icons-png.flaticon.com/512/5260/5260498.png", "sizes": "512x512", "type": "image/png"}] };
         const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
         const manifestUrl = URL.createObjectURL(manifestBlob);
         document.write(`<link rel="manifest" href="${manifestUrl}">`);
@@ -91,6 +91,7 @@
         .product-card { background: var(--bg-card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); display: flex; flex-direction: column; position: relative; transition: 0.2s; cursor: pointer;}
         .product-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.5); border-color: var(--primary);}
         .product-card.inactive { opacity: 0.5; filter: grayscale(1); }
+        .product-card.expired { opacity: 0.7; }
         .sale-badge { position: absolute; top: 0; right: 0; background: var(--sale-badge); color: white; padding: 5px 15px; font-size: 12px; font-weight: 900; border-bottom-left-radius: 12px; z-index: 10; letter-spacing: 1px;}
         
         .product-img-wrapper { height: 160px; background: #000; position: relative; display: flex; justify-content: center; align-items: center; padding: 15px;}
@@ -105,10 +106,22 @@
         .old-price { font-size: 12px; color: var(--text-muted); text-decoration: line-through; font-weight: normal;}
         .stock-warning { font-size: 11px; font-weight: bold; color: var(--danger); margin-bottom: 8px; }
         
-        /* Stars & Countdown */
-        .stars { color: #fbbf24; font-size: 12px; margin-bottom: 5px; }
-        .countdown-timer { display: flex; justify-content: center; gap: 5px; margin-bottom: 10px; font-weight: bold; color: var(--danger); font-size: 12px; direction: ltr; }
-        .countdown-timer span { background: rgba(239, 68, 68, 0.1); padding: 2px 5px; border-radius: 4px; border: 1px solid rgba(239, 68, 68, 0.3); }
+        /* Interactive Stars */
+        .stars-container { margin-bottom: 5px; display: flex; flex-direction: column; align-items: center; }
+        .stars { display: flex; gap: 2px; flex-direction: row-reverse; justify-content: center; }
+        .star-btn { background: transparent; border: none; font-size: 16px; color: var(--border-color); cursor: pointer; transition: 0.2s; }
+        .star-btn.active, .star-btn:hover, .star-btn:hover ~ .star-btn { color: #fbbf24; }
+        .rating-text { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+
+        /* Countdown Timer - Enhanced */
+        .countdown-timer { display: flex; justify-content: center; gap: 5px; margin-bottom: 10px; font-weight: 900; color: #fff; font-size: 12px; direction: ltr; }
+        .countdown-timer span { background: var(--danger); padding: 3px 6px; border-radius: 6px; box-shadow: 0 2px 5px rgba(239,68,68,0.5); min-width: 28px; text-align: center; }
+        .countdown-timer.ended { color: var(--danger); direction: rtl; font-size: 13px; font-weight: 900; background: rgba(239, 68, 68, 0.1); padding: 5px; border-radius: 8px; border: 1px dashed var(--danger); }
+        .countdown-timer.ended span { display: none; }
+
+        /* Share Button Enhanced */
+        .share-btn-modal { position: absolute; top: 15px; left: 45px; background: rgba(248, 158, 27, 0.15); border: 1px solid rgba(248, 158, 27, 0.3); color: var(--primary); width: 35px; height: 35px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 15px; cursor: pointer; transition: 0.2s; box-shadow: 0 0 10px rgba(248, 158, 27, 0.2); }
+        .share-btn-modal:hover { background: var(--primary); color: #000; transform: scale(1.1); }
 
         .btn { width: 100%; padding: 10px; border: none; border-radius: 8px; font-size: 14px; font-weight: 800; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.2s; margin-top: auto;}
         .btn-cart { background: var(--primary); color: #000; }
@@ -271,15 +284,22 @@
 
     <div class="overlay" id="details-modal-overlay" style="z-index: 2999;" onclick="closeDetailsModal()"></div>
     <div class="custom-modal" id="details-modal" style="text-align: right; padding-top: 45px;">
-        <!-- زر المشاركة -->
-        <button onclick="shareProduct()" style="position: absolute; top: 15px; left: 45px; background: transparent; border: none; color: var(--primary); font-size: 18px; cursor: pointer; transition: 0.2s;" title="مشاركة المنتج"><i class="fa-solid fa-share-nodes"></i></button>
+        <!-- زر المشاركة المحسن -->
+        <button class="share-btn-modal" onclick="shareProduct()" title="مشاركة المنتج"><i class="fa-solid fa-share-nodes"></i></button>
         <button onclick="closeDetailsModal()" style="position: absolute; top: 15px; left: 15px; background: transparent; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; transition: 0.2s;"><i class="fa-solid fa-xmark"></i></button>
         
         <div style="text-align: center; margin-bottom: 10px;">
             <img id="details-img" src="" style="width: 140px; height: 140px; object-fit: contain; border-radius: 12px; border: 1px solid var(--primary); padding: 5px; background: #000;">
         </div>
         
-        <div class="stars" style="text-align: center;">⭐⭐⭐⭐⭐ <span>(تقييم ممتاز)</span></div>
+        <!-- نظام التقييم الفعلي (نجوم تفاعلية) -->
+        <div class="stars-container" id="details-rating-container">
+            <div class="stars" id="interactive-stars">
+                <!-- Stars will be injected by JS -->
+            </div>
+            <div class="rating-text" id="rating-text-info">قيّم هذا المنتج</div>
+        </div>
+
         <h3 id="details-title" style="color: #fff; font-size: 18px; margin-bottom: 5px; text-align: center;"></h3>
         <div id="details-timer-container"></div>
         <div id="details-price" style="text-align: center; color: var(--primary); font-size: 22px; font-weight: 900; margin-bottom: 15px;"></div>
@@ -381,7 +401,7 @@
             </div>
 
             <div class="sidebar-categories" id="store-category-filter"></div>
-            <!-- تم التعديل لوضع شكل Skeleton التحميل -->
+            <!-- Skeleton Loader -->
             <div class="products-grid" id="products-list">
                 <div class="skeleton skeleton-card"></div>
                 <div class="skeleton skeleton-card"></div>
@@ -394,8 +414,11 @@
     <div id="admin-section" class="container" style="display: none;">
         <button class="btn" style="background:var(--bg-card); color:var(--text-main); width:max-content; margin-bottom:20px;" onclick="switchTab('store')">العودة للمتجر</button>
 
-        <!-- لوحة الإحصائيات (VIP) -->
-        <h3 style="margin-bottom:15px; color:var(--primary);"><i class="fa-solid fa-chart-pie"></i> إحصائيات المتجر</h3>
+        <!-- لوحة الإحصائيات (VIP) مع زر التصفير -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom:15px;">
+            <h3 style="color:var(--primary); margin: 0;"><i class="fa-solid fa-chart-pie"></i> إحصائيات المتجر</h3>
+            <button onclick="manualResetStats()" style="background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 5px 10px; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: bold;"><i class="fa-solid fa-rotate-right"></i> تصفير الإحصائيات</button>
+        </div>
         <div class="dashboard-stats" style="background: var(--bg-card); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 30px;">
             <div class="stat-card"><h4>إجمالي الأرباح</h4><div class="val" id="stat-profit">0 ج.م</div></div>
             <div class="stat-card"><h4>مكتمل</h4><div class="val" style="color:var(--success);" id="stat-completed">0</div></div>
@@ -404,13 +427,18 @@
 
         <h3 style="margin-bottom:15px; color:var(--primary);"><i class="fa-solid fa-truck-fast"></i> إدارة الطلبات</h3>
         <div class="admin-panel">
-            <!-- فلتر الطلبات -->
-            <div class="admin-filters">
-                <button class="active" onclick="filterAdminOrders('all', this)">الكل</button>
-                <button onclick="filterAdminOrders('pending', this)">معلق ⏳</button>
-                <button onclick="filterAdminOrders('completed', this)">مكتمل ✅</button>
-                <button onclick="filterAdminOrders('rejected', this)">مرفوض ❌</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
+                <!-- فلتر الطلبات -->
+                <div class="admin-filters" style="margin: 0; padding: 0;">
+                    <button class="active" onclick="filterAdminOrders('all', this)">الكل</button>
+                    <button onclick="filterAdminOrders('pending', this)">معلق ⏳</button>
+                    <button onclick="filterAdminOrders('completed', this)">مكتمل ✅</button>
+                    <button onclick="filterAdminOrders('rejected', this)">مرفوض ❌</button>
+                </div>
+                <!-- زر حذف الجميع -->
+                <button onclick="deleteAllFilteredOrders()" style="background: var(--danger); color: white; border: none; padding: 5px 15px; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: bold;"><i class="fa-solid fa-trash-can"></i> حذف المعروض</button>
             </div>
+            
             <div class="search-box">
                 <input type="text" id="admin-order-search" placeholder="ابحث برقم الطلب (مثال: KEMO-1234) أو بالـ ID" oninput="searchOrders()">
                 <button class="btn" style="width:auto;" onclick="searchOrders()"><i class="fa-solid fa-magnifying-glass"></i></button>
@@ -445,13 +473,11 @@
                 <div class="input-group"><label>نص الخصم (زي: Sale أو Off 7%)</label><input type="text" id="p-badge" placeholder="اختياري"></div>
                 <div class="input-group"><label>الكمية المتاحة (المخزون)</label><input type="number" id="p-stock" placeholder="لو أقل من 10 هيكتبله قربت تخلص"></div>
                 
-                <!-- إضافة عداد الوقت الاختياري -->
                 <div class="input-group" style="grid-column: 1 / -1;">
-                    <label>تاريخ ووقت انتهاء العرض المحدود (اختياري - لظهور العداد)</label>
+                    <label>تاريخ ووقت انتهاء العرض المحدود (اختياري)</label>
                     <input type="datetime-local" id="p-countdown">
                 </div>
                 
-                <!-- إخفاء أو إظهار المنتج (اختياري) -->
                 <div class="input-group" style="grid-column: 1 / -1; flex-direction: row; align-items: center; gap: 10px;">
                     <input type="checkbox" id="p-is-active" checked style="width:20px; height:20px;">
                     <label style="margin:0; font-size: 14px; color: var(--success);">المنتج مفعل (يظهر للعملاء)</label>
@@ -473,7 +499,7 @@
     <div id="toast">رسالة</div>
 
     <script>
-        // PWA Installation Logic
+        // PWA Installation
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault(); deferredPrompt = e;
@@ -495,22 +521,32 @@
             slides[currentSlide].classList.add('active');
         }, 4000); 
 
-        // Countdown Timer Logic
+        // Countdown Timer Logic (Enhanced)
+        function isOfferExpired(countdownStr) {
+            if(!countdownStr) return false;
+            return new Date(countdownStr).getTime() <= new Date().getTime();
+        }
+
         setInterval(() => {
             document.querySelectorAll('.countdown-timer').forEach(el => {
+                if(el.classList.contains('ended')) return; // وفر معالجة
                 let endTime = new Date(el.getAttribute('data-time')).getTime();
                 let now = new Date().getTime(); let distance = endTime - now;
-                if (distance < 0) { el.innerHTML = "<span>انتهى العرض</span>"; return; }
+                if (distance <= 0) { 
+                    el.innerHTML = "لقد انتهى العرض ❌"; 
+                    el.classList.add('ended'); 
+                    renderProducts(); // إعادة رسم المنتجات لغلق زر الشراء
+                    return; 
+                }
                 let d = Math.floor(distance / (1000 * 60 * 60 * 24));
                 let h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 let m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                 let s = Math.floor((distance % (1000 * 60)) / 1000);
-                el.innerHTML = `<span>${s}ث</span>:<span>${m}د</span>:<span>${h}س</span>:<span>${d}ي</span>`;
+                el.innerHTML = `<span>${s}ث</span><span>${m}د</span><span>${h}س</span><span>${d}ي</span>`;
             });
         }, 1000);
 
         const randomArabicNames =["أحمد", "محمد", "محمود", "كريم", "علي", "يوسف", "عمر", "خالد", "مصطفى", "زياد", "طارق", "حسن", "إبراهيم", "حسام", "ياسين", "عمار", "سيف"];
-        
         function showLivePurchase() {
             if(!products || products.length === 0) return;
             const activeProducts = products.filter(p => p.isActive !== false);
@@ -526,11 +562,7 @@
             popup.classList.add('show');
             setTimeout(() => { popup.classList.remove('show'); }, 5000);
         }
-
-        function scheduleNextPopup() {
-            const randomDelay = Math.floor(Math.random() * (90000 - 35000 + 1)) + 35000;
-            setTimeout(() => { showLivePurchase(); scheduleNextPopup(); }, randomDelay);
-        }
+        function scheduleNextPopup() { const randomDelay = Math.floor(Math.random() * (90000 - 35000 + 1)) + 35000; setTimeout(() => { showLivePurchase(); scheduleNextPopup(); }, randomDelay); }
         setTimeout(() => { showLivePurchase(); scheduleNextPopup(); }, 12000);
 
         const firebaseConfig = {
@@ -549,22 +581,36 @@
         
         let cart = JSON.parse(localStorage.getItem('kemo_cart')) ||[], likes = (JSON.parse(localStorage.getItem('kemo_likes')) ||[]).map(String);
         let currentFilter = 'all', uploadedImageData = "", currentUser = null, isAdmin = false, appliedDiscount = 0;
-        let tempUserResult = null;
-        let currentShareProduct = null;
-        let adminCurrentOrderFilter = 'all';
+        let tempUserResult = null; let currentShareProduct = null; let adminCurrentOrderFilter = 'all';
+        let allRatings = {}; let statsResetTime = 0;
 
         function showToast(msg, isError=false) {
             const t = document.getElementById("toast"); t.innerHTML = msg; t.style.borderColor = isError?"var(--danger)":"var(--primary)";
             t.className = "show"; setTimeout(() => t.className = t.className.replace("show",""), 3000);
         }
 
+        // Ratings Listener
+        db.ref('kemo_ratings').on('value', snap => { allRatings = snap.val() || {}; renderProducts(); });
+
+        // Stats Reset Logic
+        db.ref('kemo_settings/stats_reset').on('value', snap => {
+            let val = snap.val();
+            let now = new Date();
+            // بداية الشهر الحالي
+            let firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+            if(!val || val < firstOfMonth) {
+                // تصفير تلقائي أول كل شهر
+                db.ref('kemo_settings/stats_reset').set(firstOfMonth);
+                statsResetTime = firstOfMonth;
+            } else { statsResetTime = val; }
+            if(isAdmin) updateAdminDashboard();
+        });
+
         db.ref('kemo_categories').on('value', snap => { categories = snap.val()||[]; renderCategoriesUI(); });
         db.ref('kemo_products').on('value', snap => { products = snap.val()||[]; renderProducts(); renderCart(); renderWishlist(); });
         db.ref('kemo_coupons').on('value', snap => { coupons = snap.val() ? Object.values(snap.val()) :[]; if(isAdmin) renderAdminCoupons(); });
         db.ref('kemo_orders').on('value', snap => { 
-            if(snap.val()) {
-                allOrders = Object.values(snap.val()).filter(o => o && o.id && String(o.id) !== 'undefined').sort((a,b)=>b.timestamp-a.timestamp);
-            } else { allOrders =[]; }
+            if(snap.val()) { allOrders = Object.values(snap.val()).filter(o => o && o.id && String(o.id) !== 'undefined').sort((a,b)=>b.timestamp-a.timestamp); } else { allOrders =[]; }
             if(currentUser) renderUserOrders(); 
             if(isAdmin) {
                 updateAdminDashboard();
@@ -574,29 +620,8 @@
             }
         });
 
-        function loginWithGoogle() {
-            auth.signInWithPopup(provider).then((result) => {
-                if (result.additionalUserInfo && result.additionalUserInfo.isNewUser) {
-                    tempUserResult = result;
-                    document.getElementById('name-modal-overlay').classList.add('active');
-                    document.getElementById('name-modal').classList.add('active');
-                } else { showToast("تم الدخول بنجاح"); }
-            }).catch(e => showToast(e.message, true));
-        }
-
-        function saveNewUserName() {
-            let customName = document.getElementById('new-user-name-input').value.trim();
-            if (!customName) return showToast("يجب كتابة اسمك للمتابعة!", true);
-            tempUserResult.user.updateProfile({ displayName: customName }).then(() => {
-                currentUser.displayName = customName;
-                document.getElementById('name-modal-overlay').classList.remove('active');
-                document.getElementById('name-modal').classList.remove('active');
-                showToast("تم التسجيل والدخول بنجاح");
-                const userProfileSpan = document.querySelector('.user-profile span');
-                if(userProfileSpan) userProfileSpan.innerText = customName.split(' ')[0];
-            });
-        }
-        
+        function loginWithGoogle() { auth.signInWithPopup(provider).then((result) => { if (result.additionalUserInfo && result.additionalUserInfo.isNewUser) { tempUserResult = result; document.getElementById('name-modal-overlay').classList.add('active'); document.getElementById('name-modal').classList.add('active'); } else { showToast("تم الدخول بنجاح"); } }).catch(e => showToast(e.message, true)); }
+        function saveNewUserName() { let customName = document.getElementById('new-user-name-input').value.trim(); if (!customName) return showToast("يجب كتابة اسمك للمتابعة!", true); tempUserResult.user.updateProfile({ displayName: customName }).then(() => { currentUser.displayName = customName; document.getElementById('name-modal-overlay').classList.remove('active'); document.getElementById('name-modal').classList.remove('active'); showToast("تم التسجيل والدخول بنجاح"); const userProfileSpan = document.querySelector('.user-profile span'); if(userProfileSpan) userProfileSpan.innerText = customName.split(' ')[0]; }); }
         function logout() { auth.signOut().then(()=>{ showToast("تم الخروج"); switchTab('store'); }); }
 
         auth.onAuthStateChanged(user => {
@@ -615,15 +640,43 @@
         function openSidebar(id) { closeAllSidebars(); document.getElementById(id).classList.add('active'); document.getElementById('main-overlay').classList.add('active'); }
         function closeAllSidebars() { document.querySelectorAll('.side-panel').forEach(p=>p.classList.remove('active')); document.getElementById('main-overlay').classList.remove('active'); }
 
-        // وظيفة المشاركة
+        // Share Feature
         function shareProduct() {
             if(!currentShareProduct) return;
             const text = `🔥 شوف العرض الجامد ده من Kemo Store\n🎮 ${currentShareProduct.name}\n💰 بسعر: ${currentShareProduct.price} ج.م\n🚀 اشحن دلوقتي من هنا:\n${window.location.href}`;
-            if (navigator.share) {
-                navigator.share({ title: currentShareProduct.name, text: text, url: window.location.href }).catch(console.error);
-            } else {
-                navigator.clipboard.writeText(text); showToast("تم نسخ الرابط والعرض! شاركه مع أصدقائك.");
+            if (navigator.share) { navigator.share({ title: currentShareProduct.name, text: text, url: window.location.href }).catch(console.error); } 
+            else { navigator.clipboard.writeText(text); showToast("تم نسخ الرابط والعرض! شاركه مع أصدقائك."); }
+        }
+
+        // Ratings Logic
+        function getProductRating(productId) {
+            let pRatings = allRatings[productId];
+            if(!pRatings) return { avg: 5, total: 0 };
+            let values = Object.values(pRatings);
+            if(values.length === 0) return { avg: 5, total: 0 };
+            let sum = values.reduce((a, b) => a + b, 0);
+            return { avg: (sum / values.length).toFixed(1), total: values.length };
+        }
+
+        function submitRating(productId, stars) {
+            if(!currentUser) { showToast("سجل دخول أولاً لتقييم المنتج!", true); return loginWithGoogle(); }
+            db.ref(`kemo_ratings/${productId}/${currentUser.uid}`).set(stars).then(() => {
+                showToast("شكراً لتقييمك!");
+                buildInteractiveStars(productId);
+            });
+        }
+
+        function buildInteractiveStars(productId) {
+            let userRating = (currentUser && allRatings[productId] && allRatings[productId][currentUser.uid]) ? allRatings[productId][currentUser.uid] : 0;
+            let ratingData = getProductRating(productId);
+            
+            let html = '';
+            for(let i=5; i>=1; i--) {
+                let activeClass = (i <= userRating) ? 'active' : '';
+                html += `<button class="star-btn ${activeClass}" onclick="submitRating('${productId}', ${i})"><i class="fa-solid fa-star"></i></button>`;
             }
+            document.getElementById('interactive-stars').innerHTML = html;
+            document.getElementById('rating-text-info').innerText = `التقييم: ${ratingData.avg} من 5 (${ratingData.total} تقييمات)`;
         }
 
         function showProductDetails(id) {
@@ -634,24 +687,34 @@
             document.getElementById('details-price').innerHTML = (p.oldPrice ? `<span class="old-price" style="font-size:14px; color:var(--text-muted); text-decoration:line-through;">${p.oldPrice}</span> ` : '') + p.price + ' ج.م';
             document.getElementById('details-desc').innerText = p.details || 'لا توجد تفاصيل إضافية مكتوبة لهذا المنتج.';
             
+            buildInteractiveStars(p.id);
+
+            let isExpired = isOfferExpired(p.countdown);
             let timerCont = document.getElementById('details-timer-container');
-            if(p.countdown) timerCont.innerHTML = `<div class="countdown-timer" data-time="${p.countdown}">يتم حساب الوقت...</div>`;
-            else timerCont.innerHTML = '';
+            if(p.countdown) {
+                if(isExpired) timerCont.innerHTML = `<div class="countdown-timer ended">لقد انتهى العرض ❌</div>`;
+                else timerCont.innerHTML = `<div class="countdown-timer" data-time="${p.countdown}">يتم حساب الوقت...</div>`;
+            } else timerCont.innerHTML = '';
 
             let stockHTML = ''; let buyBtn = document.getElementById('details-buy-btn');
-            if(p.stock !== undefined && p.stock !== '') {
-                let s = parseInt(p.stock);
-                if(s <= 0) {
-                    stockHTML = `<span class="stock-warning" style="font-size:14px;">نفذت الكمية ❌</span>`;
-                    buyBtn.disabled = true; buyBtn.innerText = "غير متوفر"; buyBtn.style.background = "var(--border-color)"; buyBtn.style.color = "var(--text-muted)"; buyBtn.onclick = null;
-                } else {
-                    if(s < 10) stockHTML = `<span class="stock-warning" style="font-size:14px;">⚠️ قربت تخلص (باقي ${s})</span>`; else stockHTML = `<span style="color:var(--success); font-weight:bold; font-size:14px;">متوفر في المخزون ✅</span>`;
-                    buyBtn.disabled = false; buyBtn.innerHTML = 'شحن الآن <i class="fa-solid fa-cart-plus"></i>'; buyBtn.style.background = "var(--primary)"; buyBtn.style.color = "#000";
-                    buyBtn.onclick = (e) => { addToCart(p.id, e); closeDetailsModal(); };
-                }
+            
+            // Check Expired First
+            if(isExpired) {
+                stockHTML = `<span class="stock-warning" style="font-size:14px;">نفذ الوقت المخصص للعرض ❌</span>`;
+                buyBtn.disabled = true; buyBtn.innerText = "انتهى العرض"; buyBtn.style.background = "var(--border-color)"; buyBtn.style.color = "var(--text-muted)"; buyBtn.onclick = null;
             } else {
-                buyBtn.disabled = false; buyBtn.innerHTML = 'شحن الآن <i class="fa-solid fa-cart-plus"></i>'; buyBtn.style.background = "var(--primary)"; buyBtn.style.color = "#000";
-                buyBtn.onclick = (e) => { addToCart(p.id, e); closeDetailsModal(); };
+                if(p.stock !== undefined && p.stock !== '') {
+                    let s = parseInt(p.stock);
+                    if(s <= 0) {
+                        stockHTML = `<span class="stock-warning" style="font-size:14px;">نفذت الكمية ❌</span>`;
+                        buyBtn.disabled = true; buyBtn.innerText = "غير متوفر"; buyBtn.style.background = "var(--border-color)"; buyBtn.style.color = "var(--text-muted)"; buyBtn.onclick = null;
+                    } else {
+                        if(s < 10) stockHTML = `<span class="stock-warning" style="font-size:14px;">⚠️ قربت تخلص (باقي ${s})</span>`; else stockHTML = `<span style="color:var(--success); font-weight:bold; font-size:14px;">متوفر في المخزون ✅</span>`;
+                        buyBtn.disabled = false; buyBtn.innerHTML = 'شحن الآن <i class="fa-solid fa-cart-plus"></i>'; buyBtn.style.background = "var(--primary)"; buyBtn.style.color = "#000"; buyBtn.onclick = (e) => { addToCart(p.id, e); closeDetailsModal(); };
+                    }
+                } else {
+                    buyBtn.disabled = false; buyBtn.innerHTML = 'شحن الآن <i class="fa-solid fa-cart-plus"></i>'; buyBtn.style.background = "var(--primary)"; buyBtn.style.color = "#000"; buyBtn.onclick = (e) => { addToCart(p.id, e); closeDetailsModal(); };
+                }
             }
             document.getElementById('details-stock').innerHTML = stockHTML;
             document.getElementById('details-modal-overlay').classList.add('active'); document.getElementById('details-modal').classList.add('active');
@@ -699,6 +762,7 @@
 
         function addToCart(id, event) {
             if (event) event.stopPropagation(); const p = products.find(x => String(x.id) === String(id)); if(!p) return;
+            if(isOfferExpired(p.countdown)) return showToast("لقد انتهى العرض ولا يمكن إضافة المنتج للسلة", true);
             if(p.stock && parseInt(p.stock) <= 0) return showToast("الكمية غير متوفرة", true);
             const ex = cart.find(x => String(x.id) === String(id)); if(ex) ex.qty++; else cart.push({id:p.id, name:p.name, price:p.price, image:p.image, waMessage:p.waMessage||'', qty:1});
             saveCart(); showToast("أضيف للسلة");
@@ -741,49 +805,42 @@
             db.ref('kemo_products').set(updatedProducts).then(() => { db.ref('kemo_orders/' + orderId).set(order).then(() => { cart=[]; appliedDiscount=0; document.getElementById('promo-code').value=''; document.getElementById('coupon-msg').innerText=''; saveCart(); closeAllSidebars(); showToast("تم تسجيل الطلب!"); window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, '_blank'); }); });
         }
 
-        // شريط تتبع الطلب في حساب المستخدم
         function renderUserOrders() {
             const cont = document.getElementById('user-orders-list'); let html=''; const myO = allOrders.filter(o=>o.uid === currentUser.uid);
             if(!myO.length) html='<div style="text-align:center; color:gray;">لا توجد طلبات</div>';
             else myO.forEach(o => {
                 let badge = ''; let trackerHtml = '';
-                
                 if(o.status === 'pending') {
                     badge = `<span class="badge-pending">جاري المراجعة ⏳</span>`;
-                    trackerHtml = `
-                        <div class="order-tracker">
-                            <div class="tracker-step active"><div class="step-icon"><i class="fa-solid fa-hourglass-half"></i></div>قيد المراجعة</div>
-                            <div class="tracker-step"><div class="step-icon"><i class="fa-solid fa-truck"></i></div>جاري الشحن</div>
-                            <div class="tracker-step"><div class="step-icon"><i class="fa-solid fa-check"></i></div>تم التسليم</div>
-                        </div>`;
+                    trackerHtml = `<div class="order-tracker"><div class="tracker-step active"><div class="step-icon"><i class="fa-solid fa-hourglass-half"></i></div>قيد المراجعة</div><div class="tracker-step"><div class="step-icon"><i class="fa-solid fa-truck"></i></div>جاري الشحن</div><div class="tracker-step"><div class="step-icon"><i class="fa-solid fa-check"></i></div>تم التسليم</div></div>`;
                 }
                 else if(o.status === 'completed') {
                     badge = `<span class="badge-completed">تم الشحن ✅</span>`;
-                    trackerHtml = `
-                        <div class="order-tracker">
-                            <div class="tracker-step done"><div class="step-icon"><i class="fa-solid fa-check"></i></div>تمت المراجعة</div>
-                            <div class="tracker-step done"><div class="step-icon"><i class="fa-solid fa-check"></i></div>شحن</div>
-                            <div class="tracker-step done"><div class="step-icon"><i class="fa-solid fa-check-double"></i></div>اكتمل</div>
-                        </div>`;
+                    trackerHtml = `<div class="order-tracker"><div class="tracker-step done"><div class="step-icon"><i class="fa-solid fa-check"></i></div>تمت المراجعة</div><div class="tracker-step done"><div class="step-icon"><i class="fa-solid fa-check"></i></div>شحن</div><div class="tracker-step done"><div class="step-icon"><i class="fa-solid fa-check-double"></i></div>اكتمل</div></div>`;
                 }
                 else if(o.status === 'rejected') {
                     badge = `<span class="badge-rejected">مرفوض ❌</span>`;
-                    trackerHtml = `
-                        <div class="order-tracker">
-                            <div class="tracker-step done"><div class="step-icon"><i class="fa-solid fa-check"></i></div>استلام الطلب</div>
-                            <div class="tracker-step rejected" style="width:66%"><div class="step-icon"><i class="fa-solid fa-xmark"></i></div>تم الإلغاء/الرفض</div>
-                        </div>`;
+                    trackerHtml = `<div class="order-tracker"><div class="tracker-step done"><div class="step-icon"><i class="fa-solid fa-check"></i></div>استلام الطلب</div><div class="tracker-step rejected" style="width:66%"><div class="step-icon"><i class="fa-solid fa-xmark"></i></div>تم الإلغاء/الرفض</div></div>`;
                 }
-                
                 html += `<div class="order-card"><div class="order-header"><span>#${o.id}</span>${badge}</div><div style="font-size:12px; color:gray;">الـ ID: ${o.playerId}</div><div style="font-weight:bold; color:var(--primary); margin-top:5px;">الإجمالي: ${o.total} ج.م</div><div style="font-size:11px; color:var(--text-muted); margin-top:5px;"><i class="fa-regular fa-clock"></i> ${o.dateStr || new Date(o.timestamp).toLocaleDateString('ar-EG')}</div>${trackerHtml}</div>`;
             });
             cont.innerHTML = html;
         }
 
-        // تحديث إحصائيات الإدارة
+        // Dashboard Stats (Manual and Auto Reset)
+        function manualResetStats() {
+            if(confirm("تحذير: هل أنت متأكد من تصفير إحصائيات الأرباح والطلبات للبدء من جديد؟")) {
+                db.ref('kemo_settings/stats_reset').set(Date.now());
+                showToast("تم تصفير الإحصائيات بنجاح");
+            }
+        }
+
         function updateAdminDashboard() {
             let totalProfit = 0, pendingCount = 0, completedCount = 0;
-            allOrders.forEach(o => {
+            // حساب اللي بعد وقت التصفير فقط
+            let recentOrders = allOrders.filter(o => o.timestamp >= statsResetTime);
+            
+            recentOrders.forEach(o => {
                 if(o.status === 'completed') { totalProfit += Number(o.total); completedCount++; }
                 if(o.status === 'pending') pendingCount++;
             });
@@ -792,7 +849,6 @@
             document.getElementById('stat-completed').innerText = completedCount;
         }
 
-        // فلترة وعرض الطلبات للإدارة
         function filterAdminOrders(status, btn=null) {
             adminCurrentOrderFilter = status;
             if(btn) { document.querySelectorAll('.admin-filters button').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
@@ -812,7 +868,10 @@
                 } else if(o.status === 'completed') { adminActions = `<div style="color:var(--success); font-weight:bold; text-align:center; margin-top: 10px;">تم شحن الطلب ✅</div>`; } 
                 else if(o.status === 'rejected') { adminActions = `<div style="color:var(--danger); font-weight:bold; text-align:center; margin-top: 10px;">تم رفض الطلب ❌</div>`; }
 
-                html += `<div class="order-card" style="background:var(--bg-card);"><div class="order-header"><div>${lateIndicator}<span style="color:var(--primary);">#${o.id}</span></div><span>${o.userName}</span></div><div style="font-size:13px; margin-bottom:10px;"><b>الرقم:</b> <a href="tel:${o.phone || ''}" style="color:var(--success); text-decoration:none;">${o.phone || 'غير مسجل'}</a><br><b>ID:</b> ${o.playerId} <br> <b>إجمالي:</b> ${o.total} ج.م <br> <b>التاريخ:</b> ${o.dateStr || new Date(o.timestamp).toLocaleDateString('ar-EG')}</div>${adminActions}</div>`;
+                // زر حذف الطلب الفردي
+                let deleteBtnHtml = `<button onclick="deleteSingleOrder('${o.id}')" style="position: absolute; top: 10px; left: 10px; background: transparent; border: none; color: var(--danger); font-size: 14px; cursor: pointer;"><i class="fa-solid fa-trash"></i></button>`;
+
+                html += `<div class="order-card" style="background:var(--bg-card); position:relative;">${deleteBtnHtml}<div class="order-header"><div>${lateIndicator}<span style="color:var(--primary);">#${o.id}</span></div><span style="padding-left:25px;">${o.userName}</span></div><div style="font-size:13px; margin-bottom:10px;"><b>الرقم:</b> <a href="tel:${o.phone || ''}" style="color:var(--success); text-decoration:none;">${o.phone || 'غير مسجل'}</a><br><b>ID:</b> ${o.playerId} <br> <b>إجمالي:</b> ${o.total} ج.م <br> <b>التاريخ:</b> ${o.dateStr || new Date(o.timestamp).toLocaleDateString('ar-EG')}</div>${adminActions}</div>`;
             });
             cont.innerHTML = html;
         }
@@ -821,6 +880,28 @@
             let term = document.getElementById('admin-order-search').value.toLowerCase().replace(/[#\s]/g, ''); 
             let filtered = allOrders.filter(o => { if (!o || !o.id) return false; let cleanId = String(o.id).toLowerCase().replace(/[#\s]/g, ''); let cleanPlayer = String(o.playerId || "").toLowerCase().replace(/[#\s]/g, ''); let cleanPhone = String(o.phone || "").replace(/[#\s]/g, ''); return cleanId.includes(term) || cleanPlayer.includes(term) || cleanPhone.includes(term); });
             renderAdminOrders(filtered); 
+        }
+
+        // دوال حذف الطلبات للإدارة
+        function deleteSingleOrder(id) {
+            if(confirm("هل أنت متأكد من حذف هذا الطلب نهائياً من قاعدة البيانات؟")) {
+                db.ref('kemo_orders/'+id).remove().then(() => showToast("تم حذف الطلب", true));
+            }
+        }
+
+        function deleteAllFilteredOrders() {
+            let list = adminCurrentOrderFilter === 'all' ? allOrders : allOrders.filter(o => o.status === adminCurrentOrderFilter);
+            if(list.length === 0) return showToast("لا يوجد طلبات لحذفها", true);
+            
+            let typeName = adminCurrentOrderFilter === 'all' ? 'جميع الطلبات' : 
+                           adminCurrentOrderFilter === 'pending' ? 'الطلبات المعلقة' : 
+                           adminCurrentOrderFilter === 'completed' ? 'الطلبات المكتملة' : 'الطلبات المرفوضة';
+
+            if(confirm(`تحذير خطير: هل أنت متأكد من حذف (${list.length}) من ${typeName} نهائياً؟ لا يمكن التراجع عن هذا الإجراء.`)) {
+                let updates = {};
+                list.forEach(o => updates[o.id] = null);
+                db.ref('kemo_orders').update(updates).then(() => showToast("تم الحذف الجماعي بنجاح", true));
+            }
         }
 
         function completeOrder(id) { 
@@ -937,18 +1018,32 @@
                 let isLiked = likes.includes(String(p.id)) ? 'liked' : '';
                 let heartHTML = `<button class="like-btn ${isLiked}" onclick="toggleLike('${p.id}', event)"><i class="fa-solid fa-heart"></i></button>`;
                 
-                let countdownHTML = p.countdown ? `<div class="countdown-timer" data-time="${p.countdown}"></div>` : '';
-                let starsHTML = `<div class="stars">⭐⭐⭐⭐⭐</div>`;
+                let isExpired = isOfferExpired(p.countdown);
+                let expiredClass = isExpired ? 'expired' : '';
+                let countdownHTML = '';
+                if(p.countdown) {
+                    if(isExpired) countdownHTML = `<div class="countdown-timer ended">لقد انتهى العرض ❌</div>`;
+                    else countdownHTML = `<div class="countdown-timer" data-time="${p.countdown}">يتم حساب الوقت...</div>`;
+                }
 
-                let stockHTML = '', btnHTML = `<button class="btn btn-cart" onclick="addToCart('${p.id}', event)">شحن الآن</button>`;
-                if(p.stock !== undefined && p.stock !== '') {
-                    let s = parseInt(p.stock);
-                    if(s <= 0) { stockHTML = `<div class="stock-warning">نفذت الكمية ❌</div>`; btnHTML = `<button class="btn btn-cart" disabled onclick="event.stopPropagation()">غير متوفر</button>`; }
-                    else if (s < 10) { stockHTML = `<div class="stock-warning">⚠️ قربت تخلص (باقي ${s})</div>`; }
+                let rData = getProductRating(p.id);
+                let starsHTML = `<div class="stars" style="font-size:10px; color:#fbbf24;">⭐ ${rData.avg} (${rData.total})</div>`;
+
+                let stockHTML = '', btnHTML = '';
+                
+                if (isExpired) {
+                    btnHTML = `<button class="btn btn-cart" disabled onclick="event.stopPropagation()">انتهى العرض</button>`;
+                } else {
+                    btnHTML = `<button class="btn btn-cart" onclick="addToCart('${p.id}', event)">شحن الآن</button>`;
+                    if(p.stock !== undefined && p.stock !== '') {
+                        let s = parseInt(p.stock);
+                        if(s <= 0) { stockHTML = `<div class="stock-warning">نفذت الكمية ❌</div>`; btnHTML = `<button class="btn btn-cart" disabled onclick="event.stopPropagation()">غير متوفر</button>`; }
+                        else if (s < 10) { stockHTML = `<div class="stock-warning">⚠️ قربت تخلص (باقي ${s})</div>`; }
+                    }
                 }
 
                 stHTML += `
-                    <div class="product-card" onclick="showProductDetails('${p.id}')">
+                    <div class="product-card ${expiredClass}" onclick="showProductDetails('${p.id}')">
                         <div class="product-img-wrapper">${badgeHTML}${heartHTML}<img src="${p.image}"></div>
                         <div class="product-info">
                             <div class="product-title">${p.name}</div>
