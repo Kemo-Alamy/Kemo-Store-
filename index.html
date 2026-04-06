@@ -52,10 +52,11 @@
 
         .user-area { display: flex; align-items: center; gap: 10px; }
         
-        /* تصميم زر تسجيل الدخول (جوجل G) */
-        .btn-google { background: #ffffff; border: 1px solid #e5e7eb; color: #374151; padding: 8px 20px; border-radius: 30px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: all 0.3s ease; font-size: 14px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); position: relative; z-index: 1; }
-        .btn-google:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(248, 158, 27, 0.25); border-color: var(--primary); color: #000; }
-        .btn-google img { width: 18px; height: 18px; object-fit: contain; }
+        /* تصميم زر جوجل الاحترافي (النمط الداكن المطابق للصورة) */
+        .btn-google { background-color: #131314; border: 1px solid #8e918f; color: #e3e3e3; padding: 8px 20px; border-radius: 40px; font-family: 'Cairo', sans-serif; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: all 0.2s ease; position: relative; z-index: 1; outline: none; }
+        .btn-google:hover { background-color: #1e1e1e; border-color: var(--primary); color: #ffffff; box-shadow: 0 4px 15px rgba(248, 158, 27, 0.15); transform: translateY(-1px); }
+        .btn-google:active { transform: translateY(0); }
+        .btn-google img { width: 20px; height: 20px; object-fit: contain; }
 
         .user-profile { display: flex; align-items: center; gap: 8px; background: var(--bg-dark); padding: 5px 15px 5px 5px; border-radius: 30px; border: 1px solid var(--primary); box-shadow: 0 0 10px rgba(248, 158, 27, 0.1);}
         .user-profile img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
@@ -271,7 +272,7 @@
             </div>
             <button id="btn-admin-nav" class="btn-admin-nav" onclick="switchTab('admin')">الإدارة</button>
             <div id="user-area" class="user-area">
-                <!-- التعديل هنا: زر جوجل مع اللوجو والنص الجديد -->
+                <!-- زر جوجل بالتصميم الداكن الأنيق -->
                 <button class="btn-google" onclick="loginWithGoogle()">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google"> 
                     <span>سجل دخولك</span>
@@ -661,7 +662,7 @@
             } else {
                 userGemsBalance = 0; useGemsActive = false; document.getElementById('gems-use-area').classList.remove('active');
                 isAdmin = false; 
-                // التعديل هنا أيضاً ليظهر الزر الجديد للزوار غير المسجلين
+                // التعديل هنا: نفس التصميم الداكن عند تسجيل الخروج
                 uArea.innerHTML = `<button class="btn-google" onclick="loginWithGoogle()"><img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google"> <span>سجل دخولك</span></button>`;
                 btnAdmin.style.display = 'none'; document.getElementById('user-orders-list').innerHTML = '<div style="text-align:center; color:var(--text-muted);">سجل الدخول لرؤية طلباتك</div>';
             }
