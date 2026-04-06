@@ -52,11 +52,10 @@
 
         .user-area { display: flex; align-items: center; gap: 10px; }
         
-        .btn-google { background: transparent; border: 2px solid var(--primary); color: var(--text-main); padding: 6px 18px; border-radius: 25px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; font-size: 14px; position: relative; overflow: hidden; z-index: 1; }
-        .btn-google::before { content: ''; position: absolute; top: 0; right: 100%; width: 100%; height: 100%; background: var(--primary); transition: 0.3s; z-index: -1; }
-        .btn-google:hover::before { right: 0; }
-        .btn-google:hover { color: #000; box-shadow: 0 5px 15px rgba(248, 158, 27, 0.4); border-color: var(--primary);}
-        .btn-google img { width: 18px; background: white; border-radius: 50%; padding: 2px; transition: 0.2s;}
+        /* تصميم زر تسجيل الدخول (جوجل G) */
+        .btn-google { background: #ffffff; border: 1px solid #e5e7eb; color: #374151; padding: 8px 20px; border-radius: 30px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: all 0.3s ease; font-size: 14px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); position: relative; z-index: 1; }
+        .btn-google:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(248, 158, 27, 0.25); border-color: var(--primary); color: #000; }
+        .btn-google img { width: 18px; height: 18px; object-fit: contain; }
 
         .user-profile { display: flex; align-items: center; gap: 8px; background: var(--bg-dark); padding: 5px 15px 5px 5px; border-radius: 30px; border: 1px solid var(--primary); box-shadow: 0 0 10px rgba(248, 158, 27, 0.1);}
         .user-profile img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
@@ -272,9 +271,10 @@
             </div>
             <button id="btn-admin-nav" class="btn-admin-nav" onclick="switchTab('admin')">الإدارة</button>
             <div id="user-area" class="user-area">
+                <!-- التعديل هنا: زر جوجل مع اللوجو والنص الجديد -->
                 <button class="btn-google" onclick="loginWithGoogle()">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"> 
-                    <span>تسجيل الدخول</span>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google"> 
+                    <span>سجل دخولك</span>
                 </button>
             </div>
         </div>
@@ -323,8 +323,8 @@
         <h4 style="font-size: 13px; color: #fff; margin-bottom: 10px; text-align: right;"><i class="fa-solid fa-fire" style="color:var(--primary);"></i> عروض قد تعجبك:</h4>
         <div class="related-scroll" id="related-products-list"></div>
 
-        <!-- 💬 3. تعليقات الزبائن المكتوبة (Reviews) -->
-        <h4 style="font-size: 13px; color: #fff; margin-bottom: 10px; text-align: right;"><i class="fa-solid fa-comments" style="color:var(--accent);"></i> آراء الزبائن:</h4>
+        <!-- 💬 3. تعليقات الزبائن المكتوبة (Reviews) - تظهر للجميع -->
+        <h4 style="font-size: 13px; color: #fff; margin-bottom: 10px; text-align: right;"><i class="fa-solid fa-comments" style="color:var(--accent);"></i> آراء جميع الزبائن:</h4>
         <div class="reviews-container" id="product-reviews-list"></div>
         <div style="display: flex; gap: 5px;">
             <input type="text" id="review-input-text" class="review-input" placeholder="اكتب رأيك هنا..." style="margin:0; flex:1;">
@@ -353,8 +353,9 @@
         <div class="side-items" id="cart-items"></div>
         <div class="side-footer">
             <div class="input-box">
-                <label>الـ ID / الحساب</label>
-                <input type="text" id="customer-game-id" placeholder="اكتب الـ ID هنا...">
+                <label>الـ ID / الحساب (أرقام فقط - 11 رقم كحد أدنى)</label>
+                <!-- التعديل هنا لضمان كتابة الأرقام فقط -->
+                <input type="text" id="customer-game-id" placeholder="مثال: 12345678901" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
             </div>
             <div class="input-box">
                 <label>رقم الواتساب الخاص بك (مهم للتواصل)</label>
@@ -659,7 +660,9 @@
                 btnAdmin.style.display = isAdmin ? 'inline-block' : 'none'; renderUserOrders(); if(isAdmin) { renderAdminCoupons(); updateAdminDashboard(); }
             } else {
                 userGemsBalance = 0; useGemsActive = false; document.getElementById('gems-use-area').classList.remove('active');
-                isAdmin = false; uArea.innerHTML = `<button class="btn-google" onclick="loginWithGoogle()"><img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"> <span>تسجيل الدخول</span></button>`;
+                isAdmin = false; 
+                // التعديل هنا أيضاً ليظهر الزر الجديد للزوار غير المسجلين
+                uArea.innerHTML = `<button class="btn-google" onclick="loginWithGoogle()"><img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google"> <span>سجل دخولك</span></button>`;
                 btnAdmin.style.display = 'none'; document.getElementById('user-orders-list').innerHTML = '<div style="text-align:center; color:var(--text-muted);">سجل الدخول لرؤية طلباتك</div>';
             }
         });
@@ -698,7 +701,7 @@
             if(!text) return showToast("يرجى كتابة تعليق", true);
             let userStars = allRatings[currentShareProduct.id]?.[currentUser.uid]?.stars || 5;
             let obj = { stars: userStars, text: text, name: currentUser.displayName, date: Date.now() };
-            db.ref(`kemo_ratings/${currentShareProduct.id}/${currentUser.uid}`).set(obj).then(() => { document.getElementById('review-input-text').value = ''; showToast("تم إضافة تعليقك بنجاح"); renderReviewsList(currentShareProduct.id); });
+            db.ref(`kemo_ratings/${currentShareProduct.id}/${currentUser.uid}`).set(obj).then(() => { document.getElementById('review-input-text').value = ''; showToast("تم إضافة تعليقك بنجاح وسيكون مرئياً للجميع"); renderReviewsList(currentShareProduct.id); });
         }
 
         function buildInteractiveStars(productId) {
@@ -714,6 +717,7 @@
             let cont = document.getElementById('product-reviews-list');
             let pRatings = allRatings[productId]; let html = '';
             if(!pRatings) { cont.innerHTML = '<div style="color:gray; font-size:11px; text-align:center;">لا توجد تعليقات حتى الآن. كن أول من يعلق!</div>'; return; }
+            // هذا السطر يقوم بإحضار جميع التعليقات من قاعدة البيانات وعرضها للجميع بدون إخفاء
             let reviews = Object.values(pRatings).filter(r => r.text && r.text.trim() !== "").sort((a,b)=>b.date-a.date);
             if(reviews.length === 0) { cont.innerHTML = '<div style="color:gray; font-size:11px; text-align:center;">توجد تقييمات بالنجوم فقط، أضف تعليقك!</div>'; return; }
             reviews.forEach(r => {
@@ -863,6 +867,10 @@
             if(!currentUser) { showToast("سجل دخول أولاً!",true); return loginWithGoogle(); }
             if(!cart.length) return showToast("السلة فارغة",true);
             const pId = document.getElementById('customer-game-id').value.trim(); if(!pId) return showToast("اكتب الـ ID",true);
+            
+            // التعديل هنا للتأكد من أن الـ ID لا يقل عن 11 رقم
+            if(pId.length < 11) return showToast("عفواً، يجب أن يتكون الـ ID من 11 رقم على الأقل", true);
+
             const cPhone = document.getElementById('customer-phone').value.trim(); if(!cPhone) return showToast("يرجى كتابة رقم الواتساب الخاص بك", true);
 
             const orderId = 'KEMO-' + Date.now().toString().slice(-6) + Math.floor(Math.random() * 10);
