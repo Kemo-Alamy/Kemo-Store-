@@ -11,6 +11,44 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <title>Kemo Store | شحن ألعاب</title>
+
+    <!-- ================= بداية أكواد SEO المضافة للظهور في بحث جوجل ================= -->
+    <meta name="description" content="متجر كيمو ستور (Kemo Store) الأفضل والأسرع لشحن جميع الألعاب (ببجي، فري فاير، وغيرها) بأرخص الأسعار وبطرق دفع آمنة. تسليم فوري ونظام مكافآت حصري.">
+    <meta name="keywords" content="شحن العاب, شحن ببجي, شحن فري فاير, متجر شحن العاب, جواهر فري فاير, شدات ببجي, Kemo Store, كيمو ستور">
+    <meta name="author" content="Kemo Store">
+    <meta name="robots" content="index, follow"> 
+    
+    <!-- !!! مهم جداً: غير كلمة [لينك-موقعك-هنا] وحط لينك موقعك الحقيقي في السطرين دول !!! -->
+    <link rel="canonical" href="[https://kemo-alamy.github.io/Kemo-Store-/]"> 
+    <meta property="og:url" content="[https://kemo-alamy.github.io/Kemo-Store-/]">
+
+    <meta property="og:title" content="Kemo Store | شحن ألعاب فوري">
+    <meta property="og:description" content="اشحن لعبتك المفضلة الآن في ثواني بأرخص الأسعار في مصر والوطن العربي مع Kemo Store.">
+    <meta property="og:image" content="https://cdn-icons-png.flaticon.com/512/5260/5260498.png"> 
+    <meta property="og:type" content="website">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Kemo Store | شحن ألعاب فوري">
+    <meta name="twitter:description" content="متجر كيمو ستور لشحن جميع الألعاب فورا وبأمان تام.">
+    <meta name="twitter:image" content="https://cdn-icons-png.flaticon.com/512/5260/5260498.png">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Store",
+      "name": "Kemo Store",
+      "image": "https://cdn-icons-png.flaticon.com/512/5260/5260498.png",
+      "description": "متجر لشحن الألعاب الإلكترونية بأرخص الأسعار وتسليم فوري.",
+      "url": "[لينك-موقعك-هنا]",
+      "telephone": "+201115168017",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "EG"
+      },
+      "priceRange": "$$"
+    }
+    </script>
+    <!-- ================= نهاية أكواد SEO المضافة ================= -->
     
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -52,10 +90,6 @@
 
         .user-area { display: flex; align-items: center; gap: 10px; }
         
-        /* 
-         * تصميم زر جوجل الداكن الجديد (مطابق للصورة تماماً)
-         * استخدام !important لضمان عدم تأثره بأي كاش (Cache) قديم
-         */
         .btn-google { 
             background-color: #131314 !important; 
             border: 1px solid #747775 !important; 
@@ -92,7 +126,6 @@
         .btn-logout-small { background: transparent; border: none; color: var(--danger); cursor: pointer; font-size: 16px; padding: 5px; }
         .btn-admin-nav { display: none; background: var(--primary); color: #000; padding: 8px 15px; border-radius: 10px; font-size: 14px; font-weight: bold; border: none; cursor: pointer; transition: 0.2s; }
 
-        /* Loyalty Gems Badge */
         .gems-badge { background: rgba(139, 92, 246, 0.2); color: #c4b5fd; border: 1px solid var(--accent); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 900; display: flex; align-items: center; gap: 5px; box-shadow: 0 0 10px rgba(139, 92, 246, 0.3); }
 
         #btn-install-app { display: none; background: var(--accent); color: white; padding: 8px 15px; border-radius: 10px; font-size: 13px; font-weight: bold; border: none; cursor: pointer; animation: pulse 2s infinite; }
@@ -161,7 +194,6 @@
         @keyframes skeleton-loading { 0% { background-color: var(--border-color); } 100% { background-color: var(--bg-card); } }
         .skeleton-card { height: 250px; border-radius: 12px; }
 
-        /* Related Products & Reviews Scroll */
         .related-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; scrollbar-width: none; }
         .related-scroll::-webkit-scrollbar { display: none; }
         .related-item { min-width: 110px; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 10px; padding: 8px; text-align: center; cursor: pointer; transition: 0.2s; }
@@ -201,7 +233,6 @@
         .coupon-area button { background: var(--accent); border: none; color: white; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: 'Cairo'; transition: 0.2s;}
         .coupon-area button:active { transform: scale(0.95); }
 
-        /* Loyalty Gems Use Area */
         .gems-use-area { background: rgba(139, 92, 246, 0.1); border: 1px dashed var(--accent); padding: 10px; border-radius: 8px; margin-bottom: 15px; display: none; }
         .gems-use-area.active { display: block; }
 
@@ -247,7 +278,6 @@
         #toast { visibility: hidden; min-width: 250px; background-color: var(--bg-dark); color: #fff; text-align: center; border-radius: 8px; padding: 12px; position: fixed; z-index: 10000; left: 50%; transform: translateX(-50%); bottom: 30px; font-size: 14px; font-weight: bold; border: 1px solid var(--primary); opacity: 0; transition: 0.2s; }
         #toast.show { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(-20px); }
 
-        /* Modal Enhanced */
         .custom-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); background: var(--bg-card); padding: 35px 25px; border-radius: 20px; border: 1px solid var(--primary); box-shadow: 0 10px 40px rgba(0,0,0,0.8); z-index: 3000; width: 90%; max-width: 400px; max-height: 90vh; overflow-y: auto; text-align: center; opacity: 0; visibility: hidden; transition: 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .custom-modal.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
         .custom-modal::-webkit-scrollbar { width: 5px; }
@@ -288,7 +318,6 @@
     <header>
         <div class="logo"><i class="fa-solid fa-gamepad"></i> 𝑲𝒆𝒎𝒐 𝑺𝒕𝒐𝒓𝒆</div>
         <div class="nav-actions">
-            <!-- PWA Install Btn -->
             <button id="btn-install-app"><i class="fa-solid fa-download"></i> تثبيت التطبيق</button>
             
             <div class="icon-btn-wrapper">
@@ -300,9 +329,6 @@
             </div>
             <button id="btn-admin-nav" class="btn-admin-nav" onclick="switchTab('admin')">الإدارة</button>
             <div id="user-area" class="user-area">
-                <!-- 
-                 زر جوجل مدمج كود الـ SVG الخاص باللوجو جواه عشان عمره ما يختفي
-                 -->
                 <button class="btn-google" onclick="loginWithGoogle()">
                     <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20px" height="20px">
                         <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
@@ -328,7 +354,6 @@
         <button class="btn btn-cart" onclick="saveNewUserName()">حفظ ومتابعة <i class="fa-solid fa-arrow-left"></i></button>
     </div>
 
-    <!-- Product Details Modal (VIP Version) -->
     <div class="overlay" id="details-modal-overlay" style="z-index: 2999;" onclick="closeDetailsModal()"></div>
     <div class="custom-modal" id="details-modal" style="text-align: right; padding-top: 45px;">
         <button class="share-btn-modal" onclick="shareProduct()" title="مشاركة المنتج"><i class="fa-solid fa-share-nodes"></i></button>
@@ -338,7 +363,6 @@
             <img id="details-img" src="" style="width: 140px; height: 140px; object-fit: contain; border-radius: 12px; border: 1px solid var(--primary); padding: 5px; background: #000;">
         </div>
         
-        <!-- نظام التقييم الفعلي (نجوم تفاعلية) -->
         <div class="stars-container" id="details-rating-container">
             <div class="stars" id="interactive-stars"></div>
             <div class="rating-text" id="rating-text-info">قيّم هذا المنتج</div>
@@ -356,11 +380,9 @@
         <div id="details-stock" style="text-align: center; margin-bottom: 10px;"></div>
         <button class="btn btn-cart" id="details-buy-btn" style="margin-bottom: 20px;">شحن الآن <i class="fa-solid fa-cart-plus"></i></button>
         
-        <!-- 🛍️ 4. منتجات ذات صلة (Upselling) -->
         <h4 style="font-size: 13px; color: #fff; margin-bottom: 10px; text-align: right;"><i class="fa-solid fa-fire" style="color:var(--primary);"></i> عروض قد تعجبك:</h4>
         <div class="related-scroll" id="related-products-list"></div>
 
-        <!-- 💬 3. تعليقات الزبائن المكتوبة (Reviews) - تظهر للجميع -->
         <h4 style="font-size: 13px; color: #fff; margin-bottom: 10px; text-align: right;"><i class="fa-solid fa-comments" style="color:var(--accent);"></i> آراء جميع الزبائن:</h4>
         <div class="reviews-container" id="product-reviews-list"></div>
         <div style="display: flex; gap: 5px;">
@@ -391,7 +413,6 @@
         <div class="side-footer">
             <div class="input-box">
                 <label>الـ ID / الحساب (أرقام فقط - 11 رقم كحد أدنى)</label>
-                <!-- التعديل هنا لضمان كتابة الأرقام فقط -->
                 <input type="text" id="customer-game-id" placeholder="مثال: 12345678901" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
             </div>
             <div class="input-box">
@@ -405,7 +426,6 @@
             </div>
             <div id="coupon-msg" style="font-size:12px; margin-bottom:10px; font-weight:bold;"></div>
 
-            <!-- 🎁 1. قسم نظام "نقاط الولاء" (الجواهر) -->
             <div id="gems-use-area" class="gems-use-area">
                 <div style="font-size: 12px; color: #fff; margin-bottom: 5px; font-weight: bold;">
                     لديك <span style="color:var(--accent);">💎 <span id="cart-available-gems">0</span> جوهرة</span>
@@ -467,7 +487,6 @@
             </div>
 
             <div class="sidebar-categories" id="store-category-filter"></div>
-            <!-- Skeleton Loader -->
             <div class="products-grid" id="products-list">
                 <div class="skeleton skeleton-card"></div>
                 <div class="skeleton skeleton-card"></div>
@@ -500,7 +519,6 @@
                     <button onclick="filterAdminOrders('rejected', this)">مرفوض ❌</button>
                 </div>
                 <div style="display:flex; gap:10px;">
-                    <!-- 📊 2. زر تصدير الإكسيل -->
                     <button onclick="exportOrdersToExcel()" style="background: #10B981; color: white; border: none; padding: 5px 15px; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: bold;"><i class="fa-solid fa-file-excel"></i> تصدير Excel</button>
                     <button onclick="deleteAllFilteredOrders()" style="background: var(--danger); color: white; border: none; padding: 5px 15px; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: bold;"><i class="fa-solid fa-trash-can"></i> حذف المعروض</button>
                 </div>
@@ -566,7 +584,6 @@
     <div id="toast">رسالة</div>
 
     <script>
-        // PWA Installation
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault(); deferredPrompt = e;
@@ -654,10 +671,8 @@
             t.className = "show"; setTimeout(() => t.className = t.className.replace("show",""), 3000);
         }
 
-        // Ratings & Reviews Listener
         db.ref('kemo_ratings').on('value', snap => { allRatings = snap.val() || {}; renderProducts(); if(currentShareProduct) renderReviewsList(currentShareProduct.id); });
 
-        // Stats Reset Logic
         db.ref('kemo_settings/stats_reset').on('value', snap => {
             let val = snap.val(); let now = new Date(); let firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
             if(!val || val < firstOfMonth) { db.ref('kemo_settings/stats_reset').set(firstOfMonth); statsResetTime = firstOfMonth; } else { statsResetTime = val; }
@@ -683,7 +698,6 @@
             if(user) {
                 isAdmin = (user.email.toLowerCase() === ADMIN_EMAIL);
                 
-                // الاستماع لجواهر المستخدم
                 db.ref(`kemo_users/${user.uid}/gems`).on('value', snap => {
                     userGemsBalance = snap.val() || 0;
                     document.getElementById('cart-available-gems').innerText = userGemsBalance.toFixed(2);
@@ -698,7 +712,6 @@
             } else {
                 userGemsBalance = 0; useGemsActive = false; document.getElementById('gems-use-area').classList.remove('active');
                 isAdmin = false; 
-                // التعديل هنا: عند تسجيل الخروج يظهر نفس الزر الداكن المدمج كود الـ SVG داخله
                 uArea.innerHTML = `<button class="btn-google" onclick="loginWithGoogle()">
                     <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20px" height="20px"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path><path fill="none" d="M0 0h48v48H0z"></path></svg>
                     <span>سجل دخولك</span>
@@ -717,11 +730,10 @@
             else { navigator.clipboard.writeText(text); showToast("تم نسخ الرابط والعرض! شاركه مع أصدقائك."); }
         }
 
-        // Ratings & Reviews Logic
         function getProductRating(productId) {
             let pRatings = allRatings[productId];
             if(!pRatings) return { avg: 5, total: 0 };
-            let values = Object.values(pRatings).map(r => r.stars || r); // دعم القديم والجديد
+            let values = Object.values(pRatings).map(r => r.stars || r); 
             if(values.length === 0) return { avg: 5, total: 0 };
             let sum = values.reduce((a, b) => a + b, 0);
             return { avg: (sum / values.length).toFixed(1), total: values.length };
@@ -757,7 +769,6 @@
             let cont = document.getElementById('product-reviews-list');
             let pRatings = allRatings[productId]; let html = '';
             if(!pRatings) { cont.innerHTML = '<div style="color:gray; font-size:11px; text-align:center;">لا توجد تعليقات حتى الآن. كن أول من يعلق!</div>'; return; }
-            // هذا السطر يقوم بإحضار جميع التعليقات من قاعدة البيانات وعرضها للجميع بدون إخفاء
             let reviews = Object.values(pRatings).filter(r => r.text && r.text.trim() !== "").sort((a,b)=>b.date-a.date);
             if(reviews.length === 0) { cont.innerHTML = '<div style="color:gray; font-size:11px; text-align:center;">توجد تقييمات بالنجوم فقط، أضف تعليقك!</div>'; return; }
             reviews.forEach(r => {
@@ -768,7 +779,6 @@
             cont.innerHTML = html;
         }
 
-        // Upselling (Related Products)
         function renderRelatedProducts(p) {
             let related = products.filter(x => x.category === p.category && x.id !== p.id && x.isActive !== false).slice(0, 5);
             let relHtml = '';
@@ -857,14 +867,13 @@
         }
         function deleteCoupon(id) { if(confirm("حذف الكوبون؟")) db.ref('kemo_coupons/'+id).remove(); }
 
-        // Gems Math: 1 Gem = 2.4 EGP discount (25 Gems = 60 EGP)
         function toggleGemsDiscount() {
             if(!currentUser || userGemsBalance <= 0) return;
             let btn = document.getElementById('btn-apply-gems');
             if(useGemsActive) {
                 useGemsActive = false; btn.innerText = "استبدال الجواهر بخصم"; btn.style.background = "transparent"; btn.style.color = "var(--accent)";
             } else {
-                appliedDiscount = 0; document.getElementById('promo-code').value = ''; document.getElementById('coupon-msg').innerText = ''; // Cancel coupons
+                appliedDiscount = 0; document.getElementById('promo-code').value = ''; document.getElementById('coupon-msg').innerText = ''; 
                 useGemsActive = true; btn.innerText = "تم استخدام الجواهر ✅"; btn.style.background = "var(--accent)"; btn.style.color = "#fff";
             }
             renderCart();
@@ -908,7 +917,6 @@
             if(!cart.length) return showToast("السلة فارغة",true);
             const pId = document.getElementById('customer-game-id').value.trim(); if(!pId) return showToast("اكتب الـ ID",true);
             
-            // التعديل هنا للتأكد من أن الـ ID لا يقل عن 11 رقم
             if(pId.length < 11) return showToast("عفواً، يجب أن يتكون الـ ID من 11 رقم على الأقل", true);
 
             const cPhone = document.getElementById('customer-phone').value.trim(); if(!cPhone) return showToast("يرجى كتابة رقم الواتساب الخاص بك", true);
@@ -933,7 +941,6 @@
 
             let updatedProducts = [...products]; cart.forEach(cartItem => { let pIndex = updatedProducts.findIndex(p => String(p.id) === String(cartItem.id)); if(pIndex !== -1 && updatedProducts[pIndex].stock !== undefined && updatedProducts[pIndex].stock !== '') { let currentStock = parseInt(updatedProducts[pIndex].stock); let newStock = currentStock - cartItem.qty; updatedProducts[pIndex].stock = newStock < 0 ? 0 : newStock; } });
 
-            // خصم الجواهر من الحساب لو استُخدمت
             if(usedGemsCount > 0) { db.ref(`kemo_users/${currentUser.uid}/gems`).set(userGemsBalance - usedGemsCount); }
 
             db.ref('kemo_products').set(updatedProducts).then(() => { db.ref('kemo_orders/' + orderId).set(order).then(() => { cart=[]; appliedDiscount=0; useGemsActive=false; document.getElementById('promo-code').value=''; document.getElementById('coupon-msg').innerText=''; document.getElementById('btn-apply-gems').innerText = "استبدال الجواهر بخصم"; document.getElementById('btn-apply-gems').style.background = "transparent"; document.getElementById('btn-apply-gems').style.color = "var(--accent)"; saveCart(); closeAllSidebars(); showToast("تم تسجيل الطلب!"); window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, '_blank'); }); });
@@ -960,11 +967,10 @@
             document.getElementById('stat-profit').innerText = totalProfit + ' ج.م'; document.getElementById('stat-pending').innerText = pendingCount; document.getElementById('stat-completed').innerText = completedCount;
         }
 
-        // 📊 2. تصدير الإكسيل
         function exportOrdersToExcel() {
             let list = adminCurrentOrderFilter === 'all' ? allOrders : allOrders.filter(o => o.status === adminCurrentOrderFilter);
             if(!list.length) return showToast("لا يوجد طلبات للتصدير", true);
-            let csv = '\uFEFF'; // لدعم اللغة العربية في إكسيل
+            let csv = '\uFEFF'; 
             csv += "رقم الطلب,اسم العميل,رقم الواتساب,الـ ID,الإجمالي (ج.م),الحالة,التاريخ\n";
             list.forEach(o => {
                 let statusAr = o.status==='pending'?'معلق':o.status==='completed'?'مكتمل':'مرفوض';
@@ -1010,7 +1016,6 @@
             if(confirm("تأكيد الشحن؟ سيتم فتح الواتساب لإبلاغ العميل وإضافة الجواهر لحسابه.")) {
                 const order = allOrders.find(o => String(o.id) === String(id));
                 db.ref('kemo_orders/'+id).update({status:'completed'}).then(() => {
-                    // حساب الجواهر المكتسبة وإضافتها لحساب العميل
                     let earnedGems = parseFloat((order.total * 0.00024).toFixed(2));
                     if(earnedGems > 0 && order.uid) {
                         db.ref(`kemo_users/${order.uid}/gems`).transaction(currentGems => (currentGems || 0) + earnedGems);
