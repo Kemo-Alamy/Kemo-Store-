@@ -82,6 +82,58 @@
         
         button, a, input, select, .product-card, .close-side { touch-action: manipulation; }
         
+        /* ================= شاشة البداية (Splash Screen) ================= */
+        #splash-screen {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: var(--bg-dark); z-index: 99999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.6s ease-out, visibility 0.6s;
+            overflow: hidden;
+        }
+        #splash-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        
+        .splash-img {
+            width: 180px; height: 180px; object-fit: contain; margin-bottom: 20px;
+            transform: translateY(150px); opacity: 0;
+            animation: splashSlideUp 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 0.2s;
+        }
+        .splash-text-welcome {
+            font-size: 26px; font-weight: 800; color: var(--text-main); margin-bottom: 5px;
+            transform: translateX(150px); opacity: 0; text-shadow: 0 0 10px rgba(255,255,255,0.2);
+            animation: splashSlideRight 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 0.8s;
+        }
+        .splash-text-brand {
+            font-size: 40px; font-weight: 900; color: var(--primary);
+            transform: translateY(50px); opacity: 0; text-shadow: 0 5px 15px rgba(248, 158, 27, 0.4);
+            animation: splashSlideUpFade 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 1.5s;
+        }
+        .splash-buttons-container {
+            display: flex; gap: 20px; margin-top: 40px;
+            opacity: 0; transform: scale(0.9);
+            animation: splashFadeIn 0.8s ease-out forwards 2.5s;
+        }
+        .splash-btn-wrapper { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .splash-btn {
+            background: var(--primary); color: #000; border: none; padding: 12px 30px;
+            border-radius: 30px; font-size: 16px; font-weight: 900; font-family: 'Cairo'; cursor: pointer;
+            min-width: 130px; box-shadow: 0 5px 15px rgba(248, 158, 27, 0.3); transition: 0.2s;
+        }
+        .splash-btn.outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); box-shadow: none; }
+        .splash-btn:active { transform: scale(0.95); }
+        .splash-btn-desc { font-size: 11px; color: var(--text-muted); font-weight: bold; }
+        
+        .splash-skip-btn {
+            margin-top: 30px; background: transparent; border: none; color: var(--text-muted);
+            text-decoration: underline; cursor: pointer; font-size: 13px; font-family: 'Cairo';
+            opacity: 0; animation: splashFadeIn 0.8s ease-out forwards 3s;
+        }
+
+        @keyframes splashSlideUp { to { transform: translateY(0); opacity: 1; } }
+        @keyframes splashSlideRight { to { transform: translateX(0); opacity: 1; } }
+        @keyframes splashSlideUpFade { to { transform: translateY(0); opacity: 1; } }
+        @keyframes splashFadeIn { to { opacity: 1; transform: scale(1); } }
+        /* ================================================================ */
+
         header { background: var(--bg-card); position: sticky; top: 0; z-index: 1000; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; border-bottom: 1px solid var(--border-color); }
         .logo { font-size: 24px; font-weight: 900; color: var(--primary); display: flex; align-items: center; gap: 8px; }
         .logo i { color: var(--accent); }
@@ -320,6 +372,31 @@
 
     <audio id="welcome-audio" src="welcome.mp3" preload="auto"></audio>
 
+    <!-- ================= شاشة البداية (Splash Screen) ================= -->
+    <div id="splash-screen">
+        <!-- حط اسم صورتك الخاصة بـ شاشة البداية هنا بدل welcome-image.png -->
+        <img src="welcome-image.png" id="splash-img" class="splash-img" alt="Welcome Character">
+        
+        <div style="text-align: center;">
+            <div class="splash-text-welcome">✨ أهلاً بك في ✨</div>
+            <div class="splash-text-brand">𝑲𝒆𝒎𝒐 𝑺𝒕𝒐𝒓𝒆</div>
+        </div>
+
+        <div class="splash-buttons-container">
+            <div class="splash-btn-wrapper">
+                <button class="splash-btn" onclick="loginWithGoogle()">Log In</button>
+                <span class="splash-btn-desc">تسجيل الدخول لحسابك</span>
+            </div>
+            <div class="splash-btn-wrapper">
+                <button class="splash-btn outline" onclick="loginWithGoogle()">Sign Up</button>
+                <span class="splash-btn-desc">مستخدم جديد</span>
+            </div>
+        </div>
+
+        <button class="splash-skip-btn" onclick="skipSplashScreen()">تصفح المتجر كزائر مؤقتاً</button>
+    </div>
+    <!-- ================================================================ -->
+
     <header>
         <div class="logo"><i class="fa-solid fa-gamepad"></i> 𝑲𝒆𝒎𝒐 𝑺𝒕𝒐𝒓𝒆</div>
         <div class="nav-actions">
@@ -517,7 +594,6 @@
             <h3 style="color:var(--primary); margin: 0;"><i class="fa-solid fa-chart-pie"></i> إحصائيات المتجر</h3>
             <button onclick="manualResetStats()" style="background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 5px 10px; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: bold;"><i class="fa-solid fa-rotate-right"></i> تصفير الإحصائيات</button>
         </div>
-        <!-- إضافة قسم صافي الربح هنا -->
         <div class="dashboard-stats" style="background: var(--bg-card); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 30px;">
             <div class="stat-card"><h4>إجمالي المبيعات</h4><div class="val" id="stat-revenue">0 ج.م</div></div>
             <div class="stat-card"><h4>صافي الربح</h4><div class="val" style="color:var(--accent);" id="stat-net-profit">0 ج.م</div></div>
@@ -554,11 +630,9 @@
                 <div class="input-group"><label>نسبة الخصم (%)</label><input type="number" id="c-percent" placeholder="مثال: 10"></div>
                 <div class="input-group"><label>عدد الاستخدامات المسموحة</label><input type="number" id="c-uses" placeholder="مثال: 50"></div>
                 
-                <!-- تعديل قسم اختيار المنتجات للكوبون ليصبح مربعات تحديد بدل كتابة الـ ID -->
                 <div class="input-group" style="grid-column: 1 / -1;">
                     <label>تحديد المنتجات المشمولة بالخصم (اتركها بدون تحديد لتطبيق الكود على كل المنتجات)</label>
                     <div id="coupon-products-checkboxes" style="background:var(--bg-dark); padding:10px; border-radius:8px; border:1px solid var(--border-color); max-height:200px; overflow-y:auto; display:flex; flex-direction:column; gap:10px;">
-                        <!-- سيتم إضافة المنتجات هنا تلقائياً عبر الجافاسكريبت -->
                     </div>
                 </div>
 
@@ -621,6 +695,12 @@
                 deferredPrompt.userChoice.then((choiceResult) => { deferredPrompt = null; });
             });
         });
+
+        // دالة تخطي شاشة البداية
+        function skipSplashScreen() {
+            document.getElementById('splash-screen').classList.add('hidden');
+            localStorage.setItem('kemo_splash_skipped', 'true');
+        }
 
         window.addEventListener('load', () => {
             if(!localStorage.getItem('kemo_tutorial_seen')) {
@@ -723,13 +803,12 @@
 
         db.ref('kemo_categories').on('value', snap => { categories = snap.val()||[]; renderCategoriesUI(); });
         
-        // جلب المنتجات وتحديث الكوبونات معها
         db.ref('kemo_products').on('value', snap => { 
             products = snap.val()||[]; 
             renderProducts(); 
             renderCart(); 
             renderWishlist();
-            if(isAdmin) renderCouponProducts(); // تحديث قائمة الخيارات في الكوبونات
+            if(isAdmin) renderCouponProducts(); 
         });
         
         db.ref('kemo_coupons').on('value', snap => { coupons = snap.val() ? Object.values(snap.val()) :[]; if(isAdmin) renderAdminCoupons(); });
@@ -739,14 +818,43 @@
             if(isAdmin) { updateAdminDashboard(); let searchBox = document.getElementById('admin-order-search'); if (searchBox && searchBox.value.trim() !== '') searchOrders(); else filterAdminOrders(adminCurrentOrderFilter); }
         });
 
-        function loginWithGoogle() { auth.signInWithPopup(provider).then((result) => { if (result.additionalUserInfo && result.additionalUserInfo.isNewUser) { tempUserResult = result; document.getElementById('name-modal-overlay').classList.add('active'); document.getElementById('name-modal').classList.add('active'); } else { showToast("تم الدخول بنجاح"); } }).catch(e => showToast(e.message, true)); }
-        function saveNewUserName() { let customName = document.getElementById('new-user-name-input').value.trim(); if (!customName) return showToast("يجب كتابة اسمك للمتابعة!", true); tempUserResult.user.updateProfile({ displayName: customName }).then(() => { currentUser.displayName = customName; document.getElementById('name-modal-overlay').classList.remove('active'); document.getElementById('name-modal').classList.remove('active'); showToast("تم التسجيل والدخول بنجاح"); const userProfileSpan = document.querySelector('.user-profile span'); if(userProfileSpan) userProfileSpan.innerText = customName.split(' ')[0]; }); }
+        function loginWithGoogle() { 
+            auth.signInWithPopup(provider).then((result) => { 
+                if (result.additionalUserInfo && result.additionalUserInfo.isNewUser) { 
+                    tempUserResult = result; 
+                    document.getElementById('name-modal-overlay').classList.add('active'); 
+                    document.getElementById('name-modal').classList.add('active'); 
+                } else { 
+                    showToast("تم الدخول بنجاح"); 
+                } 
+            }).catch(e => showToast(e.message, true)); 
+        }
+
+        function saveNewUserName() { 
+            let customName = document.getElementById('new-user-name-input').value.trim(); 
+            if (!customName) return showToast("يجب كتابة اسمك للمتابعة!", true); 
+            tempUserResult.user.updateProfile({ displayName: customName }).then(() => { 
+                currentUser.displayName = customName; 
+                document.getElementById('name-modal-overlay').classList.remove('active'); 
+                document.getElementById('name-modal').classList.remove('active'); 
+                showToast("تم التسجيل والدخول بنجاح"); 
+                const userProfileSpan = document.querySelector('.user-profile span'); 
+                if(userProfileSpan) userProfileSpan.innerText = customName.split(' ')[0]; 
+            }); 
+        }
+        
         function logout() { auth.signOut().then(()=>{ showToast("تم الخروج"); switchTab('store'); }); }
 
         auth.onAuthStateChanged(user => {
             currentUser = user; 
-            const uArea = document.getElementById('user-area'), btnAdmin = document.getElementById('btn-admin-nav');
+            const splashScreen = document.getElementById('splash-screen');
+            const uArea = document.getElementById('user-area');
+            const btnAdmin = document.getElementById('btn-admin-nav');
+            
             if(user) {
+                // المستخدم مسجل الدخول، إخفاء شاشة البداية فوراً
+                if(splashScreen) splashScreen.classList.add('hidden');
+
                 isAdmin = (user.email.toLowerCase() === ADMIN_EMAIL);
                 
                 db.ref(`kemo_users/${user.uid}/gems`).on('value', snap => {
@@ -767,6 +875,11 @@
                     renderCouponProducts(); 
                 }
             } else {
+                // المستخدم غير مسجل، نظهر له شاشة البداية (إلا إذا تخطاها)
+                if(splashScreen && localStorage.getItem('kemo_splash_skipped')) {
+                    splashScreen.classList.add('hidden');
+                }
+
                 userGemsBalance = 0; useGemsActive = false; document.getElementById('gems-use-area').classList.remove('active');
                 isAdmin = false; 
                 uArea.innerHTML = `<button class="btn-google" onclick="loginWithGoogle()">
@@ -916,7 +1029,6 @@
             renderCart();
         }
 
-        // عرض قائمة المنتجات بعلامة صح عند إنشاء الكوبون
         function renderCouponProducts() {
             const cont = document.getElementById('coupon-products-checkboxes');
             if(!cont || !isAdmin) return;
@@ -940,21 +1052,15 @@
             const percent = parseInt(document.getElementById('c-percent').value); 
             const uses = parseInt(document.getElementById('c-uses').value);
             
-            // جمع أيديهات المنتجات المحددة
             let allowedArr = [];
-            document.querySelectorAll('.coupon-prod-cb:checked').forEach(cb => {
-                allowedArr.push(cb.value);
-            });
+            document.querySelectorAll('.coupon-prod-cb:checked').forEach(cb => { allowedArr.push(cb.value); });
             const allowedProducts = allowedArr.join(',');
 
             if(!code || !percent || !uses) return showToast("أكمل بيانات الكوبون", true);
             const newC = { id: Date.now().toString(), code: code, percent: percent, uses: uses, allowedProducts: allowedProducts };
             db.ref('kemo_coupons/'+newC.id).set(newC).then(()=>{ 
                 showToast("تم إضافة الكود بنجاح"); 
-                document.getElementById('c-code').value=''; 
-                document.getElementById('c-percent').value=''; 
-                document.getElementById('c-uses').value=''; 
-                // إزالة علامة الصح بعد الحفظ
+                document.getElementById('c-code').value=''; document.getElementById('c-percent').value=''; document.getElementById('c-uses').value=''; 
                 document.querySelectorAll('.coupon-prod-cb').forEach(cb => cb.checked = false);
             });
         }
@@ -989,7 +1095,6 @@
             if(isOfferExpired(p.countdown)) return showToast("لقد انتهى العرض ولا يمكن إضافة المنتج للسلة", true);
             if(p.stock && parseInt(p.stock) <= 0) return showToast("الكمية غير متوفرة", true);
             
-            // حفظ سعر التكلفة مع المنتج في السلة عشان نحسب منه الربح الصافي بعدين
             const ex = cart.find(x => String(x.id) === String(id)); 
             if(ex) ex.qty++; else cart.push({id:p.id, name:p.name, price:p.price, costPrice: p.costPrice || 0, image:p.image, waMessage:p.waMessage||'', qty:1});
             saveCart(); showToast("أضيف للسلة");
@@ -1007,7 +1112,6 @@
                 let itTotal = it.price * it.qty;
                 subTotal += itTotal; cnt += it.qty;
 
-                // التحقق من الكوبون لكل منتج
                 let itemDiscount = 0;
                 if(appliedCouponObj) {
                     let isAllowed = true;
@@ -1023,7 +1127,6 @@
                         let fullP = products.find(x => String(x.id) === String(it.id));
                         if(fullP && fullP.costPrice) pCost = Number(fullP.costPrice);
 
-                        // لو السعر بعد الخصم أقل من أو يساوي التكلفة (مفيش ربح) نلغي الكوبون
                         if(finalPrice <= pCost) { 
                             couponValid = false; 
                         } else { 
@@ -1081,7 +1184,9 @@
 
             const order = { id: orderId, uid: currentUser.uid, userName: currentUser.displayName || 'عميل', email: currentUser.email, phone: cPhone, playerId: pId, items: cart, total: finalTotal, status: 'pending', timestamp: Date.now(), dateStr: fullDateTime };
 
-            let msg = `مرحباً Kemo Store 👋\nأريد شحن المنتجات التالية:\n\n📅 *تاريخ الطلب:* ${fullDateTime}\n\n👤 *معلومات المشتري:*\n   الاسم: ${order.userName}\n   رقم التواصل: ${order.phone}\n\n🎮 *معلومات اللعبة:*\n   الـ ID / الحساب: *${pId}*\n\n📦 *تفاصيل الشحنة:*\n`;
+            // هنا تم إضافة البريد الإلكتروني للعميل إلى رسالة الواتساب 
+            let msg = `مرحباً Kemo Store 👋\nأريد شحن المنتجات التالية:\n\n📅 *تاريخ الطلب:* ${fullDateTime}\n\n👤 *معلومات المشتري:*\n   الاسم: ${order.userName}\n   رقم التواصل: ${order.phone}\n   البريد: ${order.email}\n\n🎮 *معلومات اللعبة:*\n   الـ ID / الحساب: *${pId}*\n\n📦 *تفاصيل الشحنة:*\n`;
+            
             cart.forEach((it, i) => { let itTotal = it.price * it.qty; msg += `${i+1}- *${it.name}*\n   الكمية: ${it.qty} | السعر: ${itTotal} ج.م\n`; if(it.waMessage) msg += `   💬: ${it.waMessage}\n`; });
             msg += `\n💰 *الإجمالي الكلي:* ${finalTotal} ج.م\n`; 
             if(appliedCouponObj) msg += `🎁 (تم تطبيق كود خصم ${appliedCouponObj.code})\n`; 
@@ -1119,14 +1224,11 @@
             recentOrders.forEach(o => { 
                 if(o.status === 'completed') { 
                     totalRevenue += Number(o.total); 
-                    
-                    // حساب صافي الربح
                     let orderCost = 0;
                     if(o.items && o.items.length) {
                         o.items.forEach(item => {
                             let cost = item.costPrice;
                             if(cost === undefined) {
-                                // جلب التكلفة من المنتج الحالي كبديل للطلبات القديمة
                                 let currentP = products.find(p => String(p.id) === String(item.id));
                                 cost = currentP ? (currentP.costPrice || 0) : 0;
                             }
@@ -1134,7 +1236,6 @@
                         });
                     }
                     totalNetProfit += (Number(o.total) - orderCost);
-                    
                     completedCount++; 
                 } 
                 if(o.status === 'pending') pendingCount++; 
