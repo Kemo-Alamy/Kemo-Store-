@@ -12,11 +12,6 @@
     
     <title>Kemo Store | شحن ألعاب</title>
 
-    <!-- ================= كود أيقونة الموقع (Favicon) المضافة ================= -->
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="favicon.png">
-    <!-- =================================================================== -->
-
     <!-- ================= بداية أكواد SEO المضافة للظهور في بحث جوجل ================= -->
     <meta name="description" content="متجر كيمو ستور (Kemo Store) الأفضل والأسرع لشحن جميع الألعاب (ببجي، فري فاير، وغيرها) بأرخص الأسعار وبطرق دفع آمنة. تسليم فوري ونظام مكافآت حصري.">
     <meta name="keywords" content="شحن العاب, شحن ببجي, شحن فري فاير, متجر شحن العاب, جواهر فري فاير, شدات ببجي, Kemo Store, كيمو ستور">
@@ -350,6 +345,15 @@
 
     <div class="overlay" id="main-overlay" onclick="closeAllSidebars()"></div>
 
+    <!-- نافذة التعليمات للمستخدم الجديد -->
+    <div class="overlay" id="tutorial-modal-overlay" style="z-index: 3000;"></div>
+    <div class="custom-modal" id="tutorial-modal" style="z-index: 3001;">
+        <i class="fa-solid fa-circle-play main-icon"></i>
+        <h3>كيفية الشراء من المتجر 🛒</h3>
+        <p style="text-align: right;">1- اختر المنتج اللي محتاجه واضغط "شحن الآن".<br><br>2- روح للسلة 🛒 واكتب الـ ID بتاعك ورقم الواتساب.<br><br>3- اضغط "إرسال الطلب" هيحولك للواتساب لتأكيد الدفع والشحن فوراً.</p>
+        <button class="btn btn-cart" onclick="closeTutorial()">فهمت، يلا نبدأ <i class="fa-solid fa-check"></i></button>
+    </div>
+
     <div class="overlay" id="name-modal-overlay" style="z-index: 2999;"></div>
     <div class="custom-modal" id="name-modal">
         <i class="fa-solid fa-user-astronaut main-icon"></i>
@@ -417,7 +421,7 @@
         <div class="side-items" id="cart-items"></div>
         <div class="side-footer">
             <div class="input-box">
-                <label>الـ ID / الحساب (أرقام فقط - 11 رقم كحد أدنى)</label>
+                <label>الـ ID / الحساب (أرقام فقط - 10 أرقام كحد أدنى)</label>
                 <input type="text" id="customer-game-id" placeholder="مثال: 12345678901" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
             </div>
             <div class="input-box">
@@ -542,6 +546,7 @@
                 <div class="input-group"><label>كود الكوبون</label><input type="text" id="c-code" placeholder="مثال: KEMO10"></div>
                 <div class="input-group"><label>نسبة الخصم (%)</label><input type="number" id="c-percent" placeholder="مثال: 10"></div>
                 <div class="input-group"><label>عدد الاستخدامات المسموحة</label><input type="number" id="c-uses" placeholder="مثال: 50"></div>
+                <div class="input-group" style="grid-column: 1 / -1;"><label>ID المنتجات המسموحة (اختياري - مفصولة بفاصلة، اتركه فارغاً للكل)</label><input type="text" id="c-products" placeholder="مثال للحصر على منتجات معينة: 171223344,171223355"></div>
                 <button class="btn btn-cart" style="grid-column: 1 / -1;" onclick="addCoupon()">حفظ الكوبون</button>
             </div>
             <div id="admin-coupons-list" style="margin-top:15px; display:flex; gap:10px; flex-wrap:wrap;"></div>
@@ -558,7 +563,8 @@
                     <button type="button" id="btn-delete-cat" onclick="deleteSelectedCategory()" style="display:none; background:var(--danger); color:white; padding:8px 15px; border:none; border-radius:8px; margin-top:5px; cursor:pointer; font-size:12px; font-weight:bold; width:max-content;"><i class="fa-solid fa-trash"></i> حذف هذا القسم</button>
                 </div>
                 <div class="input-group"><label>الاسم (مثال: 210 جوهرة)</label><input type="text" id="p-name"></div>
-                <div class="input-group"><label>السعر الحالي (ج.م)</label><input type="number" id="p-price"></div>
+                <div class="input-group"><label>السعر الحالي للبيع (ج.م)</label><input type="number" id="p-price"></div>
+                <div class="input-group"><label>سعر التكلفة عليك (لحساب الربح ومنع الخسارة بالكوبون)</label><input type="number" id="p-cost" placeholder="سعر الشراء الفعلي"></div>
                 <div class="input-group"><label>السعر القديم (مكانه مشطوب)</label><input type="number" id="p-old-price" placeholder="اختياري"></div>
                 <div class="input-group"><label>نص الخصم (زي: Sale أو Off 7%)</label><input type="text" id="p-badge" placeholder="اختياري"></div>
                 <div class="input-group"><label>الكمية المتاحة (المخزون)</label><input type="number" id="p-stock" placeholder="لو أقل من 10 هيكتبله قربت تخلص"></div>
@@ -600,6 +606,21 @@
                 deferredPrompt.userChoice.then((choiceResult) => { deferredPrompt = null; });
             });
         });
+
+        // رسالة ترحيب للمستخدم الجديد
+        window.addEventListener('load', () => {
+            if(!localStorage.getItem('kemo_tutorial_seen')) {
+                setTimeout(() => {
+                    document.getElementById('tutorial-modal-overlay').classList.add('active');
+                    document.getElementById('tutorial-modal').classList.add('active');
+                }, 1500);
+            }
+        });
+        function closeTutorial() {
+            localStorage.setItem('kemo_tutorial_seen', 'true');
+            document.getElementById('tutorial-modal-overlay').classList.remove('active');
+            document.getElementById('tutorial-modal').classList.remove('active');
+        }
 
         let currentSlide = 0;
         const slides = document.querySelectorAll('.slide');
@@ -666,10 +687,13 @@
         const whatsappNumber = "201115168017";
         
         let cart = JSON.parse(localStorage.getItem('kemo_cart')) ||[], likes = (JSON.parse(localStorage.getItem('kemo_likes')) ||[]).map(String);
-        let currentFilter = 'all', uploadedImageData = "", currentUser = null, isAdmin = false, appliedDiscount = 0;
+        let currentFilter = 'all', uploadedImageData = "", currentUser = null, isAdmin = false;
         let tempUserResult = null; let currentShareProduct = null; let adminCurrentOrderFilter = 'all';
         let allRatings = {}; let statsResetTime = 0;
         let userGemsBalance = 0; let useGemsActive = false;
+        
+        // المتغيرات الجديدة الخاصة بالكوبون
+        let appliedCouponObj = null; 
 
         function showToast(msg, isError=false) {
             const t = document.getElementById("toast"); t.innerHTML = msg; t.style.borderColor = isError?"var(--danger)":"var(--primary)";
@@ -851,23 +875,45 @@
 
         function applyCoupon() {
             let code = document.getElementById('promo-code').value.trim(); let c = coupons.find(x => x.code === code); let msgBox = document.getElementById('coupon-msg');
-            if(!code) { appliedDiscount = 0; msgBox.innerText = ""; renderCart(); return; }
-            if(!c) { msgBox.innerText = "كود غير صحيح ❌"; msgBox.style.color = "var(--danger)"; appliedDiscount = 0; }
-            else if (c.uses <= 0) { msgBox.innerText = "انتهى الحد الأقصى لاستخدام الكود ❌"; msgBox.style.color = "var(--danger)"; appliedDiscount = 0; }
-            else { appliedDiscount = c.percent; msgBox.innerText = `تم تطبيق خصم ${c.percent}% بنجاح! ✅`; msgBox.style.color = "var(--success)"; useGemsActive = false; document.getElementById('btn-apply-gems').innerText = "استبدال الجواهر بخصم"; document.getElementById('btn-apply-gems').style.background = "transparent"; document.getElementById('btn-apply-gems').style.color = "var(--accent)"; }
+            if(!code) { appliedCouponObj = null; msgBox.innerText = ""; renderCart(); return; }
+            if(!c) { msgBox.innerText = "كود غير صحيح ❌"; msgBox.style.color = "var(--danger)"; appliedCouponObj = null; }
+            else if (c.uses <= 0) { msgBox.innerText = "تم انتهاء صلاحية الكود ❌"; msgBox.style.color = "var(--danger)"; appliedCouponObj = null; }
+            else { 
+                appliedCouponObj = c; 
+                useGemsActive = false; 
+                document.getElementById('btn-apply-gems').innerText = "استبدال الجواهر بخصم"; 
+                document.getElementById('btn-apply-gems').style.background = "transparent"; 
+                document.getElementById('btn-apply-gems').style.color = "var(--accent)"; 
+            }
             renderCart();
         }
 
         function addCoupon() {
             if(!isAdmin) return;
-            const code = document.getElementById('c-code').value.trim().toUpperCase(); const percent = parseInt(document.getElementById('c-percent').value); const uses = parseInt(document.getElementById('c-uses').value);
+            const code = document.getElementById('c-code').value.trim().toUpperCase(); 
+            const percent = parseInt(document.getElementById('c-percent').value); 
+            const uses = parseInt(document.getElementById('c-uses').value);
+            const allowedProducts = document.getElementById('c-products').value.trim();
+
             if(!code || !percent || !uses) return showToast("أكمل بيانات الكوبون", true);
-            const newC = { id: Date.now().toString(), code: code, percent: percent, uses: uses };
-            db.ref('kemo_coupons/'+newC.id).set(newC).then(()=>{ showToast("تم إضافة الكود"); document.getElementById('c-code').value=''; document.getElementById('c-percent').value=''; document.getElementById('c-uses').value=''; });
+            const newC = { id: Date.now().toString(), code: code, percent: percent, uses: uses, allowedProducts: allowedProducts };
+            db.ref('kemo_coupons/'+newC.id).set(newC).then(()=>{ 
+                showToast("تم إضافة الكود"); 
+                document.getElementById('c-code').value=''; 
+                document.getElementById('c-percent').value=''; 
+                document.getElementById('c-uses').value=''; 
+                document.getElementById('c-products').value='';
+            });
         }
+
         function renderAdminCoupons() {
             const cont = document.getElementById('admin-coupons-list'); let html = '';
-            coupons.forEach(c => { html += `<span style="background:var(--bg-card); padding:8px 15px; border-radius:10px; border:1px solid var(--primary); display:flex; gap:10px; align-items:center; font-size:12px;"><b>${c.code}</b> (${c.percent}%) - متبقي: ${c.uses} <i class="fa-solid fa-trash" style="color:var(--danger); cursor:pointer;" onclick="deleteCoupon('${c.id}')"></i></span>`; });
+            coupons.forEach(c => { 
+                html += `<span style="background:var(--bg-card); padding:8px 15px; border-radius:10px; border:1px solid var(--primary); display:flex; flex-direction:column; gap:5px; align-items:start; font-size:12px;">
+                    <div><b>${c.code}</b> (${c.percent}%) - متبقي: ${c.uses} <i class="fa-solid fa-trash" style="color:var(--danger); cursor:pointer; margin-right: 5px;" onclick="deleteCoupon('${c.id}')"></i></div>
+                    <div style="font-size:10px; color:var(--text-muted);">مخصص لمنتجات: ${c.allowedProducts || 'الكل'}</div>
+                </span>`; 
+            });
             cont.innerHTML = html;
         }
         function deleteCoupon(id) { if(confirm("حذف الكوبون؟")) db.ref('kemo_coupons/'+id).remove(); }
@@ -878,7 +924,7 @@
             if(useGemsActive) {
                 useGemsActive = false; btn.innerText = "استبدال الجواهر بخصم"; btn.style.background = "transparent"; btn.style.color = "var(--accent)";
             } else {
-                appliedDiscount = 0; document.getElementById('promo-code').value = ''; document.getElementById('coupon-msg').innerText = ''; 
+                appliedCouponObj = null; document.getElementById('promo-code').value = ''; document.getElementById('coupon-msg').innerText = ''; 
                 useGemsActive = true; btn.innerText = "تم استخدام الجواهر ✅"; btn.style.background = "var(--accent)"; btn.style.color = "#fff";
             }
             renderCart();
@@ -897,16 +943,59 @@
 
         function renderCart() {
             const cont = document.getElementById('cart-items'); let subTotal=0, cnt=0; let html = '';
+            let discountValue = 0; let couponValid = true;
+
             if(!cart.length) html = '<div style="text-align:center; color:var(--text-muted);">السلة فارغة</div>';
             else cart.forEach(it => {
-                subTotal += (it.price*it.qty); cnt+=it.qty;
+                let itTotal = it.price * it.qty;
+                subTotal += itTotal; cnt += it.qty;
+
+                // التحقق من الكوبون لكل منتج
+                let itemDiscount = 0;
+                if(appliedCouponObj) {
+                    let isAllowed = true;
+                    if(appliedCouponObj.allowedProducts && appliedCouponObj.allowedProducts.trim() !== "") {
+                        let allowedArr = appliedCouponObj.allowedProducts.split(',').map(x=>x.trim());
+                        if(!allowedArr.includes(String(it.id))) isAllowed = false;
+                    }
+                    if(isAllowed) {
+                        let singleDiscount = it.price * (appliedCouponObj.percent / 100);
+                        let finalPrice = it.price - singleDiscount;
+                        
+                        let pCost = 0;
+                        let fullP = products.find(x => String(x.id) === String(it.id));
+                        if(fullP && fullP.costPrice) pCost = Number(fullP.costPrice);
+
+                        // لو السعر بعد الخصم أقل من أو يساوي التكلفة (مفيش ربح) نلغي الكوبون
+                        if(finalPrice <= pCost) { 
+                            couponValid = false; 
+                        } else { 
+                            itemDiscount = singleDiscount * it.qty; 
+                        }
+                    }
+                }
+                discountValue += itemDiscount;
+
                 html += `<div class="cart-item"><img src="${it.image}"><div class="cart-item-details"><div class="cart-item-title">${it.name}</div><div style="color:var(--primary); font-weight:bold;">${it.price} ج.م</div><div class="qty-controls"><button class="qty-btn" onclick="updateCartQty('${it.id}', 1)">+</button><span>${it.qty}</span><button class="qty-btn" onclick="updateCartQty('${it.id}', -1)">-</button></div></div><button class="cart-item-delete" onclick="removeFromCart('${it.id}')" title="حذف المنتج من السلة"><i class="fa-solid fa-trash"></i></button></div>`;
             });
             cont.innerHTML = html; 
-            let finalTotal = subTotal; 
+
+            let msgBox = document.getElementById('coupon-msg');
+            if (appliedCouponObj) {
+                if (!couponValid) {
+                    appliedCouponObj = null; discountValue = 0;
+                    msgBox.innerText = "تم انتهاء صلاحية الكود ❌"; msgBox.style.color = "var(--danger)";
+                } else if (discountValue > 0) {
+                    msgBox.innerText = `تم تطبيق خصم ${appliedCouponObj.percent}% بنجاح! ✅`; msgBox.style.color = "var(--success)";
+                } else {
+                    appliedCouponObj = null; discountValue = 0;
+                    msgBox.innerText = "الكود لا يشمل المنتجات الموجودة بالسلة ❌"; msgBox.style.color = "var(--danger)";
+                }
+            }
+
+            let finalTotal = subTotal - discountValue; 
             
-            if(appliedDiscount > 0) finalTotal = subTotal - (subTotal * (appliedDiscount / 100));
-            else if (useGemsActive && userGemsBalance > 0) {
+            if (useGemsActive && userGemsBalance > 0 && !appliedCouponObj) {
                 let maxGemsToUse = Math.min(userGemsBalance, finalTotal / 2.4);
                 let discountAmount = maxGemsToUse * 2.4;
                 finalTotal -= discountAmount;
@@ -922,7 +1011,7 @@
             if(!cart.length) return showToast("السلة فارغة",true);
             const pId = document.getElementById('customer-game-id').value.trim(); if(!pId) return showToast("اكتب الـ ID",true);
             
-            if(pId.length < 11) return showToast("عفواً، يجب أن يتكون الـ ID من 11 رقم على الأقل", true);
+            if(pId.length < 10) return showToast("عفواً، يجب أن يتكون الـ ID من 10 أرقام على الأقل", true);
 
             const cPhone = document.getElementById('customer-phone').value.trim(); if(!cPhone) return showToast("يرجى كتابة رقم الواتساب الخاص بك", true);
 
@@ -931,24 +1020,24 @@
             const now = new Date(); const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }; const fullDateTime = `${now.toLocaleDateString('ar-EG', dateOptions)} - الساعة ${now.toLocaleTimeString('ar-EG')}`;
 
             let usedGemsCount = 0; let baseTotal = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
-            if(useGemsActive && userGemsBalance > 0 && appliedDiscount === 0) { usedGemsCount = Math.min(userGemsBalance, baseTotal / 2.4); }
+            if(useGemsActive && userGemsBalance > 0 && !appliedCouponObj) { usedGemsCount = Math.min(userGemsBalance, baseTotal / 2.4); }
 
             const order = { id: orderId, uid: currentUser.uid, userName: currentUser.displayName || 'عميل', email: currentUser.email, phone: cPhone, playerId: pId, items: cart, total: finalTotal, status: 'pending', timestamp: Date.now(), dateStr: fullDateTime };
 
             let msg = `مرحباً Kemo Store 👋\nأريد شحن المنتجات التالية:\n\n📅 *تاريخ الطلب:* ${fullDateTime}\n\n👤 *معلومات المشتري:*\n   الاسم: ${order.userName}\n   رقم التواصل: ${order.phone}\n\n🎮 *معلومات اللعبة:*\n   الـ ID / الحساب: *${pId}*\n\n📦 *تفاصيل الشحنة:*\n`;
             cart.forEach((it, i) => { let itTotal = it.price * it.qty; msg += `${i+1}- *${it.name}*\n   الكمية: ${it.qty} | السعر: ${itTotal} ج.م\n`; if(it.waMessage) msg += `   💬: ${it.waMessage}\n`; });
             msg += `\n💰 *الإجمالي الكلي:* ${finalTotal} ج.م\n`; 
-            if(appliedDiscount > 0) msg += `🎁 (تم تطبيق كود خصم ${appliedDiscount}%)\n`; 
+            if(appliedCouponObj) msg += `🎁 (تم تطبيق كود خصم ${appliedCouponObj.code})\n`; 
             if(usedGemsCount > 0) msg += `💎 (تم خصم ${Math.round(usedGemsCount * 2.4)} ج.م باستخدام ${usedGemsCount.toFixed(2)} جوهرة)\n`;
             msg += `\nبرجاء تأكيد الشحن معي. (رقم الطلب: #${orderId})`;
 
-            let code = document.getElementById('promo-code').value.trim(); if(code && appliedDiscount > 0) { let c = coupons.find(x => x.code === code); if(c) db.ref('kemo_coupons/'+c.id).update({uses: c.uses - 1}); }
+            let code = document.getElementById('promo-code').value.trim(); if(code && appliedCouponObj) { let c = coupons.find(x => x.code === code); if(c) db.ref('kemo_coupons/'+c.id).update({uses: c.uses - 1}); }
 
             let updatedProducts = [...products]; cart.forEach(cartItem => { let pIndex = updatedProducts.findIndex(p => String(p.id) === String(cartItem.id)); if(pIndex !== -1 && updatedProducts[pIndex].stock !== undefined && updatedProducts[pIndex].stock !== '') { let currentStock = parseInt(updatedProducts[pIndex].stock); let newStock = currentStock - cartItem.qty; updatedProducts[pIndex].stock = newStock < 0 ? 0 : newStock; } });
 
             if(usedGemsCount > 0) { db.ref(`kemo_users/${currentUser.uid}/gems`).set(userGemsBalance - usedGemsCount); }
 
-            db.ref('kemo_products').set(updatedProducts).then(() => { db.ref('kemo_orders/' + orderId).set(order).then(() => { cart=[]; appliedDiscount=0; useGemsActive=false; document.getElementById('promo-code').value=''; document.getElementById('coupon-msg').innerText=''; document.getElementById('btn-apply-gems').innerText = "استبدال الجواهر بخصم"; document.getElementById('btn-apply-gems').style.background = "transparent"; document.getElementById('btn-apply-gems').style.color = "var(--accent)"; saveCart(); closeAllSidebars(); showToast("تم تسجيل الطلب!"); window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, '_blank'); }); });
+            db.ref('kemo_products').set(updatedProducts).then(() => { db.ref('kemo_orders/' + orderId).set(order).then(() => { cart=[]; appliedCouponObj=null; useGemsActive=false; document.getElementById('promo-code').value=''; document.getElementById('coupon-msg').innerText=''; document.getElementById('btn-apply-gems').innerText = "استبدال الجواهر بخصم"; document.getElementById('btn-apply-gems').style.background = "transparent"; document.getElementById('btn-apply-gems').style.color = "var(--accent)"; saveCart(); closeAllSidebars(); showToast("تم تسجيل الطلب!"); window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, '_blank'); }); });
         }
 
         function renderUserOrders() {
@@ -1045,10 +1134,53 @@
         document.getElementById('p-image').addEventListener('change', e => { const f = e.target.files[0]; if(!f) return; const r = new FileReader(); r.onload = ev => { const img = new Image(); img.onload = () => { const cv = document.createElement('canvas'); const M = 500; let w = img.width, h = img.height; if(w>h){if(w>M){h*=M/w; w=M;}} else {if(h>M){w*=M/h; h=M;}} cv.width=w; cv.height=h; cv.getContext('2d').drawImage(img,0,0,w,h); uploadedImageData = cv.toDataURL('image/jpeg', 0.6); }; img.src = ev.target.result; }; r.readAsDataURL(f); });
         function checkNewCategory() { const catSelect = document.getElementById('p-category'); const newCatInput = document.getElementById('p-new-cat'); const deleteBtn = document.getElementById('btn-delete-cat'); if (catSelect.value === '__NEW__') { newCatInput.style.display = 'block'; if(deleteBtn) deleteBtn.style.display = 'none'; } else { newCatInput.style.display = 'none'; if(deleteBtn) deleteBtn.style.display = (catSelect.value !== 'none') ? 'block' : 'none'; } }
         function deleteSelectedCategory() { if(!isAdmin) return; const catSelect = document.getElementById('p-category'); const selectedName = catSelect.value; if (selectedName === 'none' || selectedName === '__NEW__') return; if (confirm(`هل أنت متأكد من حذف قسم "${selectedName}" نهائياً؟`)) { const updatedCategories = categories.filter(c => c.name !== selectedName); db.ref('kemo_categories').set(updatedCategories).then(() => { showToast("تم حذف القسم بنجاح"); catSelect.value = 'none'; checkNewCategory(); }).catch(err => showToast("حدث خطأ أثناء الحذف", true)); } }
-        function saveProduct() { if(!isAdmin) return; const pid = document.getElementById('p-id').value, name = document.getElementById('p-name').value, price = document.getElementById('p-price').value; const oldPrice = document.getElementById('p-old-price').value, badge = document.getElementById('p-badge').value, stock = document.getElementById('p-stock').value, msg = document.getElementById('p-msg').value, details = document.getElementById('p-details').value; const countdown = document.getElementById('p-countdown').value; const isActive = document.getElementById('p-is-active').checked; let cat = document.getElementById('p-category').value; if(cat==='__NEW__'){ const nc = document.getElementById('p-new-cat').value.trim(); if(!nc) return showToast("اكتب اسم القسم",true); cat = nc; db.ref('kemo_categories').set([...categories, {id:Date.now().toString(), name:nc}]); } if(!name || !price || (!uploadedImageData && !pid)) return showToast("أكمل البيانات",true); const pObj = { id: pid?Number(pid):Date.now(), category: cat, name: name, price: price, oldPrice: oldPrice, badge: badge, stock: stock, waMessage: msg, details: details, countdown: countdown, isActive: isActive }; if(uploadedImageData) pObj.image = uploadedImageData; else pObj.image = products.find(x=>String(x.id)===String(pid)).image; let newList = pid ? products.map(x=>String(x.id)===String(pid)?pObj:x) :[...products, pObj]; db.ref('kemo_products').set(newList).then(()=>{ showToast("تم الحفظ"); cancelEdit(); }); }
-        function editProduct(id) { const p = products.find(x => String(x.id) === String(id)); if(!p) return; document.getElementById('p-id').value = p.id; document.getElementById('p-name').value = p.name; document.getElementById('p-price').value = p.price; document.getElementById('p-old-price').value = p.oldPrice||''; document.getElementById('p-badge').value = p.badge||''; document.getElementById('p-stock').value = p.stock||''; document.getElementById('p-msg').value = p.waMessage||''; document.getElementById('p-details').value = p.details||''; document.getElementById('p-category').value = p.category; document.getElementById('p-countdown').value = p.countdown||''; document.getElementById('p-is-active').checked = p.isActive !== false; document.getElementById('add-btn').innerText = "تحديث المنتج"; document.getElementById('cancel-edit-btn').style.display = "block"; window.scrollTo(0, document.getElementById('admin-section').offsetTop); }
+        
+        function saveProduct() { 
+            if(!isAdmin) return; 
+            const pid = document.getElementById('p-id').value, name = document.getElementById('p-name').value, price = document.getElementById('p-price').value; 
+            const cost = document.getElementById('p-cost').value;
+            const oldPrice = document.getElementById('p-old-price').value, badge = document.getElementById('p-badge').value, stock = document.getElementById('p-stock').value, msg = document.getElementById('p-msg').value, details = document.getElementById('p-details').value; 
+            const countdown = document.getElementById('p-countdown').value; const isActive = document.getElementById('p-is-active').checked; 
+            
+            let cat = document.getElementById('p-category').value; 
+            if(cat==='__NEW__'){ 
+                const nc = document.getElementById('p-new-cat').value.trim(); 
+                if(!nc) return showToast("اكتب اسم القسم",true); 
+                cat = nc; db.ref('kemo_categories').set([...categories, {id:Date.now().toString(), name:nc}]); 
+            } 
+            if(!name || !price || (!uploadedImageData && !pid)) return showToast("أكمل البيانات",true); 
+            
+            const pObj = { 
+                id: pid?Number(pid):Date.now(), category: cat, name: name, price: price, costPrice: cost ? Number(cost) : 0, 
+                oldPrice: oldPrice, badge: badge, stock: stock, waMessage: msg, details: details, countdown: countdown, isActive: isActive 
+            }; 
+            
+            if(uploadedImageData) pObj.image = uploadedImageData; else pObj.image = products.find(x=>String(x.id)===String(pid)).image; 
+            let newList = pid ? products.map(x=>String(x.id)===String(pid)?pObj:x) :[...products, pObj]; 
+            db.ref('kemo_products').set(newList).then(()=>{ showToast("تم الحفظ"); cancelEdit(); }); 
+        }
+
+        function editProduct(id) { 
+            const p = products.find(x => String(x.id) === String(id)); if(!p) return; 
+            document.getElementById('p-id').value = p.id; 
+            document.getElementById('p-name').value = p.name; 
+            document.getElementById('p-price').value = p.price; 
+            document.getElementById('p-cost').value = p.costPrice || '';
+            document.getElementById('p-old-price').value = p.oldPrice||''; 
+            document.getElementById('p-badge').value = p.badge||''; 
+            document.getElementById('p-stock').value = p.stock||''; 
+            document.getElementById('p-msg').value = p.waMessage||''; 
+            document.getElementById('p-details').value = p.details||''; 
+            document.getElementById('p-category').value = p.category; 
+            document.getElementById('p-countdown').value = p.countdown||''; 
+            document.getElementById('p-is-active').checked = p.isActive !== false; 
+            document.getElementById('add-btn').innerText = "تحديث المنتج"; 
+            document.getElementById('cancel-edit-btn').style.display = "block"; 
+            window.scrollTo(0, document.getElementById('admin-section').offsetTop); 
+        }
+
         function toggleProductActive(id) { if(!isAdmin) return; let updatedProducts = [...products]; let pIndex = updatedProducts.findIndex(p => String(p.id) === String(id)); if(pIndex !== -1) { updatedProducts[pIndex].isActive = updatedProducts[pIndex].isActive === false ? true : false; db.ref('kemo_products').set(updatedProducts).then(()=>showToast(updatedProducts[pIndex].isActive ? "تم التفعيل" : "تم الإيقاف")); } }
-        function cancelEdit() {['p-id','p-name','p-price','p-old-price','p-badge','p-stock','p-msg','p-new-cat','p-details','p-countdown'].forEach(i=>document.getElementById(i).value=''); document.getElementById('p-is-active').checked=true; document.getElementById('p-category').value='none'; document.getElementById('p-image').value=''; uploadedImageData=""; document.getElementById('add-btn').innerText="حفظ ونشر"; document.getElementById('cancel-edit-btn').style.display="none"; }
+        function cancelEdit() {['p-id','p-name','p-price','p-cost','p-old-price','p-badge','p-stock','p-msg','p-new-cat','p-details','p-countdown'].forEach(i=>document.getElementById(i).value=''); document.getElementById('p-is-active').checked=true; document.getElementById('p-category').value='none'; document.getElementById('p-image').value=''; uploadedImageData=""; document.getElementById('add-btn').innerText="حفظ ونشر"; document.getElementById('cancel-edit-btn').style.display="none"; }
         function deleteProduct(id) { if(confirm("حذف المنتج؟")) db.ref('kemo_products').set(products.filter(p=>String(p.id)!==String(id))); }
         function switchTab(t) { document.getElementById('store-section').style.display = t==='store'?'block':'none'; document.getElementById('admin-section').style.display = t==='admin'?'block':'none'; }
 
@@ -1082,8 +1214,11 @@
 
             if(products.length)[...products].reverse().forEach(p => {
                 let stockInfo = p.stock !== undefined && p.stock !== '' ? `<div style="font-size:12px; color:var(--success);">المخزون: ${p.stock}</div>` : '';
+                let profit = p.price - (p.costPrice || 0);
+                stockInfo += `<div style="font-size:12px; color:var(--accent);">التكلفة: ${p.costPrice||0} | الربح: ${profit} ج.م</div><div style="font-size:10px; color:gray;">ID: ${p.id}</div>`;
+
                 let activeClass = p.isActive === false ? 'inactive' : ''; let toggleBtnText = p.isActive === false ? '<i class="fa-solid fa-eye-slash"></i> مخفي' : '<i class="fa-solid fa-eye"></i> مفعل';
-                adHTML += `<div class="product-card ${activeClass}"><div class="product-img-wrapper"><img src="${p.image}"></div><div class="product-info"><div class="product-title">${p.name}</div>${stockInfo}<div style="display:flex; gap:5px; margin-bottom: 5px;"><button class="btn btn-toggle" onclick="toggleProductActive('${p.id}')">${toggleBtnText}</button><button class="btn btn-edit" onclick="editProduct('${p.id}')">تعديل</button></div><button class="btn" style="background:rgba(239,68,68,0.1); color:var(--danger);" onclick="deleteProduct('${p.id}')">حذف نهائي</button></div></div>`;
+                adHTML += `<div class="product-card ${activeClass}"><div class="product-img-wrapper"><img src="${p.image}"></div><div class="product-info"><div class="product-title">${p.name}</div>${stockInfo}<div style="display:flex; gap:5px; margin-bottom: 5px; margin-top:5px;"><button class="btn btn-toggle" onclick="toggleProductActive('${p.id}')">${toggleBtnText}</button><button class="btn btn-edit" onclick="editProduct('${p.id}')">تعديل</button></div><button class="btn" style="background:rgba(239,68,68,0.1); color:var(--danger);" onclick="deleteProduct('${p.id}')">حذف نهائي</button></div></div>`;
             });
             ad.innerHTML = adHTML;
         }
