@@ -12,11 +12,16 @@
     
     <title>Kemo Store | شحن ألعاب</title>
 
-    <!-- ================= بداية أكواد SEO المضافة للظهور في بحث جوجل ================= -->
+    <!-- ================= بداية أكواد SEO وأيقونات الموقع ================= -->
     <meta name="description" content="متجر كيمو ستور (Kemo Store) الأفضل والأسرع لشحن جميع الألعاب (ببجي، فري فاير، وغيرها) بأرخص الأسعار وبطرق دفع آمنة. تسليم فوري ونظام مكافآت حصري.">
     <meta name="keywords" content="شحن العاب, شحن ببجي, شحن فري فاير, متجر شحن العاب, جواهر فري فاير, شدات ببجي, Kemo Store, كيمو ستور">
     <meta name="author" content="Kemo Store">
     <meta name="robots" content="index, follow"> 
+    
+    <!-- الأيقونات القياسية التي تظهر في تاب المتصفح ونتائج بحث جوجل -->
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/5260/5260498.png" sizes="192x192" type="image/png">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/5260/5260498.png">
+    <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/5260/5260498.png" type="image/png">
     
     <!-- !!! مهم جداً: غير كلمة [لينك-موقعك-هنا] وحط لينك موقعك الحقيقي في السطرين دول !!! -->
     <link rel="canonical" href="[https://kemo-alamy.github.io/Kemo-Store-/]"> 
@@ -512,8 +517,10 @@
             <h3 style="color:var(--primary); margin: 0;"><i class="fa-solid fa-chart-pie"></i> إحصائيات المتجر</h3>
             <button onclick="manualResetStats()" style="background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 5px 10px; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: bold;"><i class="fa-solid fa-rotate-right"></i> تصفير الإحصائيات</button>
         </div>
+        <!-- إضافة قسم صافي الربح هنا -->
         <div class="dashboard-stats" style="background: var(--bg-card); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 30px;">
-            <div class="stat-card"><h4>إجمالي الأرباح</h4><div class="val" id="stat-profit">0 ج.م</div></div>
+            <div class="stat-card"><h4>إجمالي المبيعات</h4><div class="val" id="stat-revenue">0 ج.م</div></div>
+            <div class="stat-card"><h4>صافي الربح</h4><div class="val" style="color:var(--accent);" id="stat-net-profit">0 ج.م</div></div>
             <div class="stat-card"><h4>مكتمل</h4><div class="val" style="color:var(--success);" id="stat-completed">0</div></div>
             <div class="stat-card"><h4>معلق</h4><div class="val" style="color:var(--danger);" id="stat-pending">0</div></div>
         </div>
@@ -546,7 +553,15 @@
                 <div class="input-group"><label>كود الكوبون</label><input type="text" id="c-code" placeholder="مثال: KEMO10"></div>
                 <div class="input-group"><label>نسبة الخصم (%)</label><input type="number" id="c-percent" placeholder="مثال: 10"></div>
                 <div class="input-group"><label>عدد الاستخدامات المسموحة</label><input type="number" id="c-uses" placeholder="مثال: 50"></div>
-                <div class="input-group" style="grid-column: 1 / -1;"><label>ID المنتجات המسموحة (اختياري - مفصولة بفاصلة، اتركه فارغاً للكل)</label><input type="text" id="c-products" placeholder="مثال للحصر على منتجات معينة: 171223344,171223355"></div>
+                
+                <!-- تعديل قسم اختيار المنتجات للكوبون ليصبح مربعات تحديد بدل كتابة الـ ID -->
+                <div class="input-group" style="grid-column: 1 / -1;">
+                    <label>تحديد المنتجات المشمولة بالخصم (اتركها بدون تحديد لتطبيق الكود على كل المنتجات)</label>
+                    <div id="coupon-products-checkboxes" style="background:var(--bg-dark); padding:10px; border-radius:8px; border:1px solid var(--border-color); max-height:200px; overflow-y:auto; display:flex; flex-direction:column; gap:10px;">
+                        <!-- سيتم إضافة المنتجات هنا تلقائياً عبر الجافاسكريبت -->
+                    </div>
+                </div>
+
                 <button class="btn btn-cart" style="grid-column: 1 / -1;" onclick="addCoupon()">حفظ الكوبون</button>
             </div>
             <div id="admin-coupons-list" style="margin-top:15px; display:flex; gap:10px; flex-wrap:wrap;"></div>
@@ -607,7 +622,6 @@
             });
         });
 
-        // رسالة ترحيب للمستخدم الجديد
         window.addEventListener('load', () => {
             if(!localStorage.getItem('kemo_tutorial_seen')) {
                 setTimeout(() => {
@@ -692,7 +706,6 @@
         let allRatings = {}; let statsResetTime = 0;
         let userGemsBalance = 0; let useGemsActive = false;
         
-        // المتغيرات الجديدة الخاصة بالكوبون
         let appliedCouponObj = null; 
 
         function showToast(msg, isError=false) {
@@ -709,7 +722,16 @@
         });
 
         db.ref('kemo_categories').on('value', snap => { categories = snap.val()||[]; renderCategoriesUI(); });
-        db.ref('kemo_products').on('value', snap => { products = snap.val()||[]; renderProducts(); renderCart(); renderWishlist(); });
+        
+        // جلب المنتجات وتحديث الكوبونات معها
+        db.ref('kemo_products').on('value', snap => { 
+            products = snap.val()||[]; 
+            renderProducts(); 
+            renderCart(); 
+            renderWishlist();
+            if(isAdmin) renderCouponProducts(); // تحديث قائمة الخيارات في الكوبونات
+        });
+        
         db.ref('kemo_coupons').on('value', snap => { coupons = snap.val() ? Object.values(snap.val()) :[]; if(isAdmin) renderAdminCoupons(); });
         db.ref('kemo_orders').on('value', snap => { 
             if(snap.val()) { allOrders = Object.values(snap.val()).filter(o => o && o.id && String(o.id) !== 'undefined').sort((a,b)=>b.timestamp-a.timestamp); } else { allOrders =[]; }
@@ -737,7 +759,13 @@
                     renderCart();
                 });
 
-                btnAdmin.style.display = isAdmin ? 'inline-block' : 'none'; renderUserOrders(); if(isAdmin) { renderAdminCoupons(); updateAdminDashboard(); }
+                btnAdmin.style.display = isAdmin ? 'inline-block' : 'none'; 
+                renderUserOrders(); 
+                if(isAdmin) { 
+                    renderAdminCoupons(); 
+                    updateAdminDashboard(); 
+                    renderCouponProducts(); 
+                }
             } else {
                 userGemsBalance = 0; useGemsActive = false; document.getElementById('gems-use-area').classList.remove('active');
                 isAdmin = false; 
@@ -888,30 +916,56 @@
             renderCart();
         }
 
+        // عرض قائمة المنتجات بعلامة صح عند إنشاء الكوبون
+        function renderCouponProducts() {
+            const cont = document.getElementById('coupon-products-checkboxes');
+            if(!cont || !isAdmin) return;
+            let html = '';
+            let activeProducts = products.filter(p => p.isActive !== false);
+            activeProducts.forEach(p => {
+                html += `
+                <label style="display:flex; align-items:center; gap:10px; color:var(--text-main); font-size:12px; cursor:pointer; background:var(--bg-card); padding:8px; border-radius:8px; border:1px solid var(--border-color);">
+                    <input type="checkbox" class="coupon-prod-cb" value="${p.id}" style="width:18px; height:18px; cursor:pointer; accent-color:var(--primary);">
+                    <img src="${p.image}" style="width:30px; height:30px; border-radius:4px; object-fit:contain; background:#000;">
+                    <span style="flex:1;">${p.name}</span>
+                    <span style="color:var(--primary); font-weight:bold;">${p.price} ج.م</span>
+                </label>`;
+            });
+            cont.innerHTML = html || '<div style="color:gray; font-size:12px; text-align:center;">لا توجد منتجات حالياً</div>';
+        }
+
         function addCoupon() {
             if(!isAdmin) return;
             const code = document.getElementById('c-code').value.trim().toUpperCase(); 
             const percent = parseInt(document.getElementById('c-percent').value); 
             const uses = parseInt(document.getElementById('c-uses').value);
-            const allowedProducts = document.getElementById('c-products').value.trim();
+            
+            // جمع أيديهات المنتجات المحددة
+            let allowedArr = [];
+            document.querySelectorAll('.coupon-prod-cb:checked').forEach(cb => {
+                allowedArr.push(cb.value);
+            });
+            const allowedProducts = allowedArr.join(',');
 
             if(!code || !percent || !uses) return showToast("أكمل بيانات الكوبون", true);
             const newC = { id: Date.now().toString(), code: code, percent: percent, uses: uses, allowedProducts: allowedProducts };
             db.ref('kemo_coupons/'+newC.id).set(newC).then(()=>{ 
-                showToast("تم إضافة الكود"); 
+                showToast("تم إضافة الكود بنجاح"); 
                 document.getElementById('c-code').value=''; 
                 document.getElementById('c-percent').value=''; 
                 document.getElementById('c-uses').value=''; 
-                document.getElementById('c-products').value='';
+                // إزالة علامة الصح بعد الحفظ
+                document.querySelectorAll('.coupon-prod-cb').forEach(cb => cb.checked = false);
             });
         }
 
         function renderAdminCoupons() {
             const cont = document.getElementById('admin-coupons-list'); let html = '';
             coupons.forEach(c => { 
+                let allowedText = c.allowedProducts ? `مخصص لمنتجات محددة (${c.allowedProducts.split(',').length} منتجات)` : 'لكل المنتجات';
                 html += `<span style="background:var(--bg-card); padding:8px 15px; border-radius:10px; border:1px solid var(--primary); display:flex; flex-direction:column; gap:5px; align-items:start; font-size:12px;">
                     <div><b>${c.code}</b> (${c.percent}%) - متبقي: ${c.uses} <i class="fa-solid fa-trash" style="color:var(--danger); cursor:pointer; margin-right: 5px;" onclick="deleteCoupon('${c.id}')"></i></div>
-                    <div style="font-size:10px; color:var(--text-muted);">مخصص لمنتجات: ${c.allowedProducts || 'الكل'}</div>
+                    <div style="font-size:10px; color:var(--text-muted);">${allowedText}</div>
                 </span>`; 
             });
             cont.innerHTML = html;
@@ -934,7 +988,10 @@
             if (event) event.stopPropagation(); const p = products.find(x => String(x.id) === String(id)); if(!p) return;
             if(isOfferExpired(p.countdown)) return showToast("لقد انتهى العرض ولا يمكن إضافة المنتج للسلة", true);
             if(p.stock && parseInt(p.stock) <= 0) return showToast("الكمية غير متوفرة", true);
-            const ex = cart.find(x => String(x.id) === String(id)); if(ex) ex.qty++; else cart.push({id:p.id, name:p.name, price:p.price, image:p.image, waMessage:p.waMessage||'', qty:1});
+            
+            // حفظ سعر التكلفة مع المنتج في السلة عشان نحسب منه الربح الصافي بعدين
+            const ex = cart.find(x => String(x.id) === String(id)); 
+            if(ex) ex.qty++; else cart.push({id:p.id, name:p.name, price:p.price, costPrice: p.costPrice || 0, image:p.image, waMessage:p.waMessage||'', qty:1});
             saveCart(); showToast("أضيف للسلة");
         }
         function updateCartQty(id, ch) { const it = cart.find(x => String(x.id) === String(id)); if(it){ it.qty += ch; if(it.qty <= 0) cart = cart.filter(x => String(x.id) !== String(id)); saveCart(); } }
@@ -1056,9 +1113,37 @@
         function manualResetStats() { if(confirm("تحذير: هل أنت متأكد من تصفير إحصائيات الأرباح والطلبات للبدء من جديد؟")) { db.ref('kemo_settings/stats_reset').set(Date.now()); showToast("تم تصفير الإحصائيات بنجاح"); } }
 
         function updateAdminDashboard() {
-            let totalProfit = 0, pendingCount = 0, completedCount = 0; let recentOrders = allOrders.filter(o => o.timestamp >= statsResetTime);
-            recentOrders.forEach(o => { if(o.status === 'completed') { totalProfit += Number(o.total); completedCount++; } if(o.status === 'pending') pendingCount++; });
-            document.getElementById('stat-profit').innerText = totalProfit + ' ج.م'; document.getElementById('stat-pending').innerText = pendingCount; document.getElementById('stat-completed').innerText = completedCount;
+            let totalRevenue = 0, totalNetProfit = 0, pendingCount = 0, completedCount = 0; 
+            let recentOrders = allOrders.filter(o => o.timestamp >= statsResetTime);
+            
+            recentOrders.forEach(o => { 
+                if(o.status === 'completed') { 
+                    totalRevenue += Number(o.total); 
+                    
+                    // حساب صافي الربح
+                    let orderCost = 0;
+                    if(o.items && o.items.length) {
+                        o.items.forEach(item => {
+                            let cost = item.costPrice;
+                            if(cost === undefined) {
+                                // جلب التكلفة من المنتج الحالي كبديل للطلبات القديمة
+                                let currentP = products.find(p => String(p.id) === String(item.id));
+                                cost = currentP ? (currentP.costPrice || 0) : 0;
+                            }
+                            orderCost += (Number(cost) * item.qty);
+                        });
+                    }
+                    totalNetProfit += (Number(o.total) - orderCost);
+                    
+                    completedCount++; 
+                } 
+                if(o.status === 'pending') pendingCount++; 
+            });
+            
+            document.getElementById('stat-revenue').innerText = totalRevenue + ' ج.م'; 
+            document.getElementById('stat-net-profit').innerText = totalNetProfit + ' ج.م';
+            document.getElementById('stat-pending').innerText = pendingCount; 
+            document.getElementById('stat-completed').innerText = completedCount;
         }
 
         function exportOrdersToExcel() {
@@ -1215,7 +1300,7 @@
             if(products.length)[...products].reverse().forEach(p => {
                 let stockInfo = p.stock !== undefined && p.stock !== '' ? `<div style="font-size:12px; color:var(--success);">المخزون: ${p.stock}</div>` : '';
                 let profit = p.price - (p.costPrice || 0);
-                stockInfo += `<div style="font-size:12px; color:var(--accent);">التكلفة: ${p.costPrice||0} | الربح: ${profit} ج.م</div><div style="font-size:10px; color:gray;">ID: ${p.id}</div>`;
+                stockInfo += `<div style="font-size:12px; color:var(--accent);">التكلفة: ${p.costPrice||0} | الربح: ${profit} ج.م</div>`;
 
                 let activeClass = p.isActive === false ? 'inactive' : ''; let toggleBtnText = p.isActive === false ? '<i class="fa-solid fa-eye-slash"></i> مخفي' : '<i class="fa-solid fa-eye"></i> مفعل';
                 adHTML += `<div class="product-card ${activeClass}"><div class="product-img-wrapper"><img src="${p.image}"></div><div class="product-info"><div class="product-title">${p.name}</div>${stockInfo}<div style="display:flex; gap:5px; margin-bottom: 5px; margin-top:5px;"><button class="btn btn-toggle" onclick="toggleProductActive('${p.id}')">${toggleBtnText}</button><button class="btn btn-edit" onclick="editProduct('${p.id}')">تعديل</button></div><button class="btn" style="background:rgba(239,68,68,0.1); color:var(--danger);" onclick="deleteProduct('${p.id}')">حذف نهائي</button></div></div>`;
