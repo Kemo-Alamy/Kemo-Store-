@@ -18,12 +18,10 @@
     <meta name="author" content="Kemo Store">
     <meta name="robots" content="index, follow"> 
     
-    <!-- الأيقونات القياسية التي تظهر في تاب المتصفح ونتائج بحث جوجل -->
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/5260/5260498.png" sizes="192x192" type="image/png">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/5260/5260498.png">
     <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/5260/5260498.png" type="image/png">
     
-    <!-- !!! مهم جداً: غير كلمة [لينك-موقعك-هنا] وحط لينك موقعك الحقيقي في السطرين دول !!! -->
     <link rel="canonical" href="[https://kemo-alamy.github.io/Kemo-Store-/]"> 
     <meta property="og:url" content="[https://kemo-alamy.github.io/Kemo-Store-/]">
 
@@ -53,7 +51,6 @@
       "priceRange": "$$"
     }
     </script>
-    <!-- ================= نهاية أكواد SEO المضافة ================= -->
     
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -92,8 +89,9 @@
         }
         #splash-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
         
+        /* تم تكبير الصورة هنا */
         .splash-img {
-            width: 180px; height: 180px; object-fit: contain; margin-bottom: 20px;
+            width: 250px; height: 250px; max-width: 80vw; object-fit: contain; margin-bottom: 20px;
             transform: translateY(150px); opacity: 0;
             animation: splashSlideUp 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 0.2s;
         }
@@ -367,6 +365,13 @@
             .live-popup.show { top: 80px; bottom: auto; }
         }
     </style>
+    
+    <!-- كود ذكي لمنع وميض شاشة البداية (تظهر وتمشي) للمستخدم المسجل أو الذي اختار التخطي -->
+    <script>
+        if(localStorage.getItem('kemo_is_logged_in') === 'true' || localStorage.getItem('kemo_splash_skipped') === 'true') {
+            document.write('<style>#splash-screen { display: none !important; }</style>');
+        }
+    </script>
 </head>
 <body>
 
@@ -561,7 +566,7 @@
                 <div class="slide" style="background: linear-gradient(135deg, #8B5CF6, #6b21a8);">
                     <div class="slide-content">
                         <h2>🚀 شحن فوري وآمن 100%</h2>
-                        <p>طلبك بيوصلك في ثواني معدودة وبكل أمان</p>
+                        <p>طلب بيوصلك في ثواني معدودة وبكل أمان</p>
                     </div>
                 </div>
                 <div class="slide" style="background: linear-gradient(135deg, #10B981, #047857);">
@@ -696,9 +701,11 @@
             });
         });
 
-        // دالة تخطي شاشة البداية
+        // دالة تخطي شاشة البداية وإزالتها تماماً
         function skipSplashScreen() {
-            document.getElementById('splash-screen').classList.add('hidden');
+            const splash = document.getElementById('splash-screen');
+            splash.classList.add('hidden');
+            setTimeout(() => splash.style.display = 'none', 600);
             localStorage.setItem('kemo_splash_skipped', 'true');
         }
 
@@ -820,6 +827,15 @@
 
         function loginWithGoogle() { 
             auth.signInWithPopup(provider).then((result) => { 
+                
+                // إخفاء شاشة البداية نهائياً بمجرد نجاح تسجيل الدخول
+                const splash = document.getElementById('splash-screen');
+                if(splash) {
+                    splash.classList.add('hidden');
+                    setTimeout(() => splash.style.display = 'none', 600);
+                }
+                localStorage.setItem('kemo_is_logged_in', 'true');
+
                 if (result.additionalUserInfo && result.additionalUserInfo.isNewUser) { 
                     tempUserResult = result; 
                     document.getElementById('name-modal-overlay').classList.add('active'); 
@@ -843,7 +859,13 @@
             }); 
         }
         
-        function logout() { auth.signOut().then(()=>{ showToast("تم الخروج"); switchTab('store'); }); }
+        function logout() { 
+            auth.signOut().then(()=>{ 
+                localStorage.removeItem('kemo_is_logged_in'); // إزالة حالة الحفظ
+                showToast("تم الخروج"); 
+                switchTab('store'); 
+            }); 
+        }
 
         auth.onAuthStateChanged(user => {
             currentUser = user; 
@@ -853,7 +875,11 @@
             
             if(user) {
                 // المستخدم مسجل الدخول، إخفاء شاشة البداية فوراً
-                if(splashScreen) splashScreen.classList.add('hidden');
+                localStorage.setItem('kemo_is_logged_in', 'true');
+                if(splashScreen) {
+                    splashScreen.classList.add('hidden');
+                    setTimeout(() => splashScreen.style.display = 'none', 600);
+                }
 
                 isAdmin = (user.email.toLowerCase() === ADMIN_EMAIL);
                 
@@ -875,9 +901,9 @@
                     renderCouponProducts(); 
                 }
             } else {
-                // المستخدم غير مسجل، نظهر له شاشة البداية (إلا إذا تخطاها)
-                if(splashScreen && localStorage.getItem('kemo_splash_skipped')) {
-                    splashScreen.classList.add('hidden');
+                // إذا لم يكن مسجلاً، ولكنه تخطى الشاشة سابقاً، نخفيها
+                if(splashScreen && localStorage.getItem('kemo_splash_skipped') === 'true') {
+                    splashScreen.style.display = 'none';
                 }
 
                 userGemsBalance = 0; useGemsActive = false; document.getElementById('gems-use-area').classList.remove('active');
@@ -1184,7 +1210,6 @@
 
             const order = { id: orderId, uid: currentUser.uid, userName: currentUser.displayName || 'عميل', email: currentUser.email, phone: cPhone, playerId: pId, items: cart, total: finalTotal, status: 'pending', timestamp: Date.now(), dateStr: fullDateTime };
 
-            // هنا تم إضافة البريد الإلكتروني للعميل إلى رسالة الواتساب 
             let msg = `مرحباً Kemo Store 👋\nأريد شحن المنتجات التالية:\n\n📅 *تاريخ الطلب:* ${fullDateTime}\n\n👤 *معلومات المشتري:*\n   الاسم: ${order.userName}\n   رقم التواصل: ${order.phone}\n   البريد: ${order.email}\n\n🎮 *معلومات اللعبة:*\n   الـ ID / الحساب: *${pId}*\n\n📦 *تفاصيل الشحنة:*\n`;
             
             cart.forEach((it, i) => { let itTotal = it.price * it.qty; msg += `${i+1}- *${it.name}*\n   الكمية: ${it.qty} | السعر: ${itTotal} ج.م\n`; if(it.waMessage) msg += `   💬: ${it.waMessage}\n`; });
