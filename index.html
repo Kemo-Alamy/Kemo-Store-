@@ -89,7 +89,6 @@
         }
         #splash-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
         
-        /* تم تكبير الصورة هنا */
         .splash-img {
             width: 250px; height: 250px; max-width: 80vw; object-fit: contain; margin-bottom: 20px;
             transform: translateY(150px); opacity: 0;
@@ -366,7 +365,7 @@
         }
     </style>
     
-    <!-- كود ذكي لمنع وميض شاشة البداية (تظهر وتمشي) للمستخدم المسجل أو الذي اختار التخطي -->
+    <!-- كود ذكي لمنع وميض شاشة البداية للمستخدم المسجل أو الذي اختار التخطي -->
     <script>
         if(localStorage.getItem('kemo_is_logged_in') === 'true' || localStorage.getItem('kemo_splash_skipped') === 'true') {
             document.write('<style>#splash-screen { display: none !important; }</style>');
@@ -379,7 +378,6 @@
 
     <!-- ================= شاشة البداية (Splash Screen) ================= -->
     <div id="splash-screen">
-        <!-- حط اسم صورتك الخاصة بـ شاشة البداية هنا بدل welcome-image.png -->
         <img src="welcome-image.png" id="splash-img" class="splash-img" alt="Welcome Character">
         
         <div style="text-align: center;">
@@ -432,7 +430,6 @@
 
     <div class="overlay" id="main-overlay" onclick="closeAllSidebars()"></div>
 
-    <!-- نافذة التعليمات للمستخدم الجديد -->
     <div class="overlay" id="tutorial-modal-overlay" style="z-index: 3000;"></div>
     <div class="custom-modal" id="tutorial-modal" style="z-index: 3001;">
         <i class="fa-solid fa-circle-play main-icon"></i>
@@ -701,7 +698,6 @@
             });
         });
 
-        // دالة تخطي شاشة البداية وإزالتها تماماً
         function skipSplashScreen() {
             const splash = document.getElementById('splash-screen');
             splash.classList.add('hidden');
@@ -827,8 +823,6 @@
 
         function loginWithGoogle() { 
             auth.signInWithPopup(provider).then((result) => { 
-                
-                // إخفاء شاشة البداية نهائياً بمجرد نجاح تسجيل الدخول
                 const splash = document.getElementById('splash-screen');
                 if(splash) {
                     splash.classList.add('hidden');
@@ -861,7 +855,7 @@
         
         function logout() { 
             auth.signOut().then(()=>{ 
-                localStorage.removeItem('kemo_is_logged_in'); // إزالة حالة الحفظ
+                localStorage.removeItem('kemo_is_logged_in'); 
                 showToast("تم الخروج"); 
                 switchTab('store'); 
             }); 
@@ -874,7 +868,6 @@
             const btnAdmin = document.getElementById('btn-admin-nav');
             
             if(user) {
-                // المستخدم مسجل الدخول، إخفاء شاشة البداية فوراً
                 localStorage.setItem('kemo_is_logged_in', 'true');
                 if(splashScreen) {
                     splashScreen.classList.add('hidden');
@@ -901,7 +894,6 @@
                     renderCouponProducts(); 
                 }
             } else {
-                // إذا لم يكن مسجلاً، ولكنه تخطى الشاشة سابقاً، نخفيها
                 if(splashScreen && localStorage.getItem('kemo_splash_skipped') === 'true') {
                     splashScreen.style.display = 'none';
                 }
@@ -1192,25 +1184,38 @@
             document.getElementById('cart-total-price').innerText = Math.round(finalTotal); document.getElementById('cart-badge-count').innerText = cnt;
         }
 
+        // ================= تم إصلاح دالة الشراء لتعمل بنسبة 100% =================
         function checkoutWhatsApp() {
             if(!currentUser) { showToast("سجل دخول أولاً!",true); return loginWithGoogle(); }
             if(!cart.length) return showToast("السلة فارغة",true);
-            const pId = document.getElementById('customer-game-id').value.trim(); if(!pId) return showToast("اكتب الـ ID",true);
             
+            const pId = document.getElementById('customer-game-id').value.trim(); 
+            if(!pId) return showToast("اكتب الـ ID",true);
             if(pId.length < 10) return showToast("عفواً، يجب أن يتكون الـ ID من 10 أرقام على الأقل", true);
 
-            const cPhone = document.getElementById('customer-phone').value.trim(); if(!cPhone) return showToast("يرجى كتابة رقم الواتساب الخاص بك", true);
+            const cPhone = document.getElementById('customer-phone').value.trim(); 
+            if(!cPhone) return showToast("يرجى كتابة رقم الواتساب", true);
+
+            // تغيير شكل الزر لإعطاء إحساس بالتحميل (يمنع ضغطات متعددة)
+            const btnBuy = document.querySelector('.btn-buy');
+            const originalBtnText = btnBuy.innerHTML;
+            btnBuy.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري تحويلك...';
+            btnBuy.disabled = true;
 
             const orderId = 'KEMO-' + Date.now().toString().slice(-6) + Math.floor(Math.random() * 10);
             let finalTotal = parseInt(document.getElementById('cart-total-price').innerText);
-            const now = new Date(); const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }; const fullDateTime = `${now.toLocaleDateString('ar-EG', dateOptions)} - الساعة ${now.toLocaleTimeString('ar-EG')}`;
+            const now = new Date(); const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }; 
+            const fullDateTime = `${now.toLocaleDateString('ar-EG', dateOptions)} - الساعة ${now.toLocaleTimeString('ar-EG')}`;
 
             let usedGemsCount = 0; let baseTotal = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
             if(useGemsActive && userGemsBalance > 0 && !appliedCouponObj) { usedGemsCount = Math.min(userGemsBalance, baseTotal / 2.4); }
 
-            const order = { id: orderId, uid: currentUser.uid, userName: currentUser.displayName || 'عميل', email: currentUser.email, phone: cPhone, playerId: pId, items: cart, total: finalTotal, status: 'pending', timestamp: Date.now(), dateStr: fullDateTime };
+            // حماية قاعدة البيانات من الأخطاء في حال كان الإيميل غير متوفر
+            const userEmail = currentUser.email || 'غير متوفر';
 
-            let msg = `مرحباً Kemo Store 👋\nأريد شحن المنتجات التالية:\n\n📅 *تاريخ الطلب:* ${fullDateTime}\n\n👤 *معلومات المشتري:*\n   الاسم: ${order.userName}\n   رقم التواصل: ${order.phone}\n   البريد: ${order.email}\n\n🎮 *معلومات اللعبة:*\n   الـ ID / الحساب: *${pId}*\n\n📦 *تفاصيل الشحنة:*\n`;
+            const order = { id: orderId, uid: currentUser.uid, userName: currentUser.displayName || 'عميل', email: userEmail, phone: cPhone, playerId: pId, items: cart, total: finalTotal, status: 'pending', timestamp: Date.now(), dateStr: fullDateTime };
+
+            let msg = `مرحباً Kemo Store 👋\nأريد شحن المنتجات التالية:\n\n📅 *تاريخ الطلب:* ${fullDateTime}\n\n👤 *معلومات المشتري:*\n   الاسم: ${order.userName}\n   رقم التواصل: ${order.phone}\n   البريد: ${userEmail}\n\n🎮 *معلومات اللعبة:*\n   الـ ID / الحساب: *${pId}*\n\n📦 *تفاصيل الشحنة:*\n`;
             
             cart.forEach((it, i) => { let itTotal = it.price * it.qty; msg += `${i+1}- *${it.name}*\n   الكمية: ${it.qty} | السعر: ${itTotal} ج.م\n`; if(it.waMessage) msg += `   💬: ${it.waMessage}\n`; });
             msg += `\n💰 *الإجمالي الكلي:* ${finalTotal} ج.م\n`; 
@@ -1218,14 +1223,60 @@
             if(usedGemsCount > 0) msg += `💎 (تم خصم ${Math.round(usedGemsCount * 2.4)} ج.م باستخدام ${usedGemsCount.toFixed(2)} جوهرة)\n`;
             msg += `\nبرجاء تأكيد الشحن معي. (رقم الطلب: #${orderId})`;
 
-            let code = document.getElementById('promo-code').value.trim(); if(code && appliedCouponObj) { let c = coupons.find(x => x.code === code); if(c) db.ref('kemo_coupons/'+c.id).update({uses: c.uses - 1}); }
+            // تجهيز رابط الواتساب مسبقاً
+            const waLink = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`;
 
-            let updatedProducts = [...products]; cart.forEach(cartItem => { let pIndex = updatedProducts.findIndex(p => String(p.id) === String(cartItem.id)); if(pIndex !== -1 && updatedProducts[pIndex].stock !== undefined && updatedProducts[pIndex].stock !== '') { let currentStock = parseInt(updatedProducts[pIndex].stock); let newStock = currentStock - cartItem.qty; updatedProducts[pIndex].stock = newStock < 0 ? 0 : newStock; } });
+            // تجهيز البيانات
+            let code = document.getElementById('promo-code').value.trim(); 
+            if(code && appliedCouponObj) { 
+                let c = coupons.find(x => x.code === code); 
+                if(c) db.ref('kemo_coupons/'+c.id).update({uses: c.uses - 1}).catch(()=>{}); 
+            }
 
-            if(usedGemsCount > 0) { db.ref(`kemo_users/${currentUser.uid}/gems`).set(userGemsBalance - usedGemsCount); }
+            let updatedProducts = [...products]; 
+            cart.forEach(cartItem => { 
+                let pIndex = updatedProducts.findIndex(p => String(p.id) === String(cartItem.id)); 
+                if(pIndex !== -1 && updatedProducts[pIndex].stock !== undefined && updatedProducts[pIndex].stock !== '') { 
+                    let currentStock = parseInt(updatedProducts[pIndex].stock); 
+                    let newStock = currentStock - cartItem.qty; 
+                    updatedProducts[pIndex].stock = newStock < 0 ? 0 : newStock; 
+                } 
+            });
 
-            db.ref('kemo_products').set(updatedProducts).then(() => { db.ref('kemo_orders/' + orderId).set(order).then(() => { cart=[]; appliedCouponObj=null; useGemsActive=false; document.getElementById('promo-code').value=''; document.getElementById('coupon-msg').innerText=''; document.getElementById('btn-apply-gems').innerText = "استبدال الجواهر بخصم"; document.getElementById('btn-apply-gems').style.background = "transparent"; document.getElementById('btn-apply-gems').style.color = "var(--accent)"; saveCart(); closeAllSidebars(); showToast("تم تسجيل الطلب!"); window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, '_blank'); }); });
+            // تسجيل البيانات بشكل متوازي
+            let dbPromises = [];
+            dbPromises.push(db.ref('kemo_orders/' + orderId).set(order));
+            dbPromises.push(db.ref('kemo_products').set(updatedProducts));
+            if(usedGemsCount > 0) { dbPromises.push(db.ref(`kemo_users/${currentUser.uid}/gems`).set(userGemsBalance - usedGemsCount)); }
+
+            // التنفيذ (بمجرد الانتهاء يتم تحويل العميل للواتساب)
+            Promise.all(dbPromises).then(() => {
+                finishCheckout(waLink, originalBtnText, btnBuy);
+            }).catch(err => {
+                // حتى لو فشل التسجيل (لأي سبب)، لا نوقف العميل، بل نوجهه للواتساب ليكمل الشراء!
+                console.error(err);
+                finishCheckout(waLink, originalBtnText, btnBuy);
+            });
         }
+
+        // دالة مساعدة لتفريغ السلة وفتح الواتساب
+        function finishCheckout(waLink, originalBtnText, btnBuy) {
+            cart=[]; appliedCouponObj=null; useGemsActive=false; 
+            document.getElementById('promo-code').value=''; 
+            document.getElementById('coupon-msg').innerText=''; 
+            document.getElementById('btn-apply-gems').innerText = "استبدال الجواهر بخصم"; 
+            document.getElementById('btn-apply-gems').style.background = "transparent"; 
+            document.getElementById('btn-apply-gems').style.color = "var(--accent)"; 
+            saveCart(); 
+            closeAllSidebars(); 
+            
+            btnBuy.innerHTML = originalBtnText;
+            btnBuy.disabled = false;
+            
+            // استخدام location.href بدلاً من window.open لتجاوز حظر المتصفحات
+            window.location.href = waLink;
+        }
+        // =========================================================================
 
         function renderUserOrders() {
             const cont = document.getElementById('user-orders-list'); let html=''; const myO = allOrders.filter(o=>o.uid === currentUser.uid);
@@ -1317,6 +1368,7 @@
             if(confirm(`تحذير خطير: هل أنت متأكد من حذف (${list.length}) من ${typeName} نهائياً؟ لا يمكن التراجع عن هذا الإجراء.`)) { let updates = {}; list.forEach(o => updates[o.id] = null); db.ref('kemo_orders').update(updates).then(() => showToast("تم الحذف الجماعي بنجاح", true)); }
         }
 
+        // تم تعديل أزرار الأدمن لتستخدم location.href لضمان العمل على الموبايل
         function completeOrder(id) { 
             if(confirm("تأكيد الشحن؟ سيتم فتح الواتساب لإبلاغ العميل وإضافة الجواهر لحسابه.")) {
                 const order = allOrders.find(o => String(o.id) === String(id));
@@ -1332,13 +1384,13 @@
                         if(earnedGems > 0) msg += `\n🎁 مبروك! تمت إضافة (💎 ${earnedGems}) جوهرة لحسابك في المتجر كهدية ولاء!\n`;
                         msg += `\nشكراً لثقتك في Kemo Store 🎮❤️`;
                         let formattedPhone = order.phone.startsWith('0') ? '2' + order.phone : order.phone;
-                        window.open(`https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+                        window.location.href = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`;
                     }
                 });
             }
         }
-        function rejectOrder(id) { if(confirm("هل أنت متأكد من رفض وإلغاء هذا الطلب؟")) { const order = allOrders.find(o => String(o.id) === String(id)); db.ref('kemo_orders/'+id).update({status:'rejected'}).then(() => { showToast("تم رفض الطلب", true); if (order && order.phone) { let msg = `مرحباً يا ${order.userName.split(' ')[0]}\n\n❌ نأسف لإبلاغك بأنه *تم إلغاء طلبك* (رقم: #${order.id}).\n\nيرجى التواصل معنا لمعرفة السبب.\nKemo Store 🎮`; let formattedPhone = order.phone.startsWith('0') ? '2' + order.phone : order.phone; window.open(`https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`, '_blank'); } }); } }
-        function sendLateMessage(id) { const order = allOrders.find(o => String(o.id) === String(id)); if (order && order.phone) { let msg = `مرحباً يا ${order.userName.split(' ')[0]} 👋\n\nنعتذر عن التأخير البسيط في طلبك رقم (#${order.id}).\nالطلب حالياً قيد المراجعة وسوف يتم شحن (ID: ${order.playerId}) في أقرب وقت.\n\nKemo Store 🎮`; let formattedPhone = order.phone.startsWith('0') ? '2' + order.phone : order.phone; window.open(`https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`, '_blank'); } }
+        function rejectOrder(id) { if(confirm("هل أنت متأكد من رفض وإلغاء هذا الطلب؟")) { const order = allOrders.find(o => String(o.id) === String(id)); db.ref('kemo_orders/'+id).update({status:'rejected'}).then(() => { showToast("تم رفض الطلب", true); if (order && order.phone) { let msg = `مرحباً يا ${order.userName.split(' ')[0]}\n\n❌ نأسف لإبلاغك بأنه *تم إلغاء طلبك* (رقم: #${order.id}).\n\nيرجى التواصل معنا لمعرفة السبب.\nKemo Store 🎮`; let formattedPhone = order.phone.startsWith('0') ? '2' + order.phone : order.phone; window.location.href = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`; } }); } }
+        function sendLateMessage(id) { const order = allOrders.find(o => String(o.id) === String(id)); if (order && order.phone) { let msg = `مرحباً يا ${order.userName.split(' ')[0]} 👋\n\nنعتذر عن التأخير البسيط في طلبك رقم (#${order.id}).\nالطلب حالياً قيد المراجعة وسوف يتم شحن (ID: ${order.playerId}) في أقرب وقت.\n\nKemo Store 🎮`; let formattedPhone = order.phone.startsWith('0') ? '2' + order.phone : order.phone; window.location.href = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`; } }
 
         function renderCategoriesUI() { let cHtml = `<option value="none">بدون قسم</option>`, fHtml = `<button class="cat-btn active" onclick="filterCat('all',this)">الكل</button>`; categories.forEach(c => { cHtml+=`<option value="${c.name}">${c.name}</option>`; fHtml+=`<button class="cat-btn" onclick="filterCat('${c.name}',this)">${c.name}</button>`; }); cHtml+=`<option value="__NEW__">➕ قسم جديد...</option>`; document.getElementById('p-category').innerHTML = cHtml; document.getElementById('store-category-filter').innerHTML = fHtml; }
         function filterCat(cat, btn) { currentFilter = cat; document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderProducts(); }
