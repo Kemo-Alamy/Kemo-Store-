@@ -18,10 +18,11 @@
     <meta name="author" content="Kemo Store">
     <meta name="robots" content="index, follow"> 
     
-    <link rel="icon" href="./1000490757.jpg" type="image/jpeg">
-    <link rel="apple-touch-icon" href="./1000490757.jpg">
-    <link rel="shortcut icon" href="./1000490757.jpg" type="image/jpeg">
-    <meta itemprop="image" content="./1000490757.jpg">
+    <!-- تم إضافة ?v=2 لإجبار المتصفحات وجوجل على تحديث الأيقونة فوراً -->
+    <link rel="icon" href="1000490757.jpg?v=2" type="image/jpeg">
+    <link rel="apple-touch-icon" href="1000490757.jpg?v=2">
+    <link rel="shortcut icon" href="1000490757.jpg?v=2" type="image/jpeg">
+    <meta itemprop="image" content="1000490757.jpg?v=2">
     
     <link rel="canonical" href="https://kemo-alamy.github.io/Kemo-Store-/"> 
     <meta property="og:url" content="https://kemo-alamy.github.io/Kemo-Store-/">
@@ -774,7 +775,7 @@
         let allRatings = {}; let statsResetTime = 0;
         
         let appliedCouponObj = null; 
-        let isAuthProcessing = false; // المتغير السحري لمنع التداخل
+        let isAuthProcessing = false;
 
         function showToast(msg, isError=false) {
             const t = document.getElementById("toast"); t.innerHTML = msg; t.style.borderColor = isError?"var(--danger)":"var(--primary)";
@@ -810,47 +811,38 @@
             isAuthProcessing = true; 
             
             auth.signInWithPopup(provider).then((result) => { 
-                const isNewUser = result.additionalUserInfo && result.additionalUserInfo.isNewUser;
-                const splash = document.getElementById('splash-screen');
-
-                // التحقق من قاعدة البيانات لضمان عدم وجود الحساب
                 db.ref(`kemo_users/${result.user.uid}/registered`).once('value').then(snap => {
                     const isRegistered = snap.exists();
 
                     if (actionType === 'login') {
-                        if (isNewUser || !isRegistered) {
-                            // طرد المستخدم الذي يحاول الدخول بحساب غير مسجل
+                        if (!isRegistered) {
                             result.user.delete().catch(()=>{});
                             auth.signOut().then(() => {
                                 isAuthProcessing = false;
                                 updateUIForLogOut();
-                                showToast("عفواً، الإيميل غير مسجل! اضغط على 'حساب جديد' أولاً.", true);
+                                showToast("عفواً، الحساب غير مسجل! يرجى الضغط على 'حساب جديد'.", true);
                             });
-                            return;
                         } else {
-                            // مستخدم مسجل فعلياً
                             isAuthProcessing = false;
                             updateUIForLogIn(result.user);
-                            finalizeLoginSuccess(result, false, splash);
+                            finalizeLoginSuccess(result, false, document.getElementById('splash-screen'));
                         }
                     } 
                     else if (actionType === 'signup') {
-                        if (isNewUser || !isRegistered) {
-                            // إنشاء حساب جديد وتأكيده في الداتا بيز
+                        if (isRegistered) {
+                            auth.signOut().then(() => {
+                                isAuthProcessing = false;
+                                updateUIForLogOut();
+                                showToast("هذا الحساب مسجل بالفعل! يرجى الضغط على 'تسجيل الدخول'.", true);
+                            });
+                        } else {
                             db.ref(`kemo_users/${result.user.uid}/registered`).set(true);
                             isAuthProcessing = false;
                             updateUIForLogIn(result.user);
-                            finalizeLoginSuccess(result, true, splash);
-                        } else {
-                            // يمتلك حساب بالفعل
-                            isAuthProcessing = false;
-                            updateUIForLogIn(result.user);
-                            showToast("لديك حساب بالفعل! تم تسجيل دخولك بنجاح.");
-                            finalizeLoginSuccess(result, false, splash);
+                            finalizeLoginSuccess(result, true, document.getElementById('splash-screen'));
                         }
                     }
                 });
-
             }).catch(e => {
                 isAuthProcessing = false;
                 if(e.code !== 'auth/popup-closed-by-user') { showToast(e.message, true); }
@@ -921,7 +913,7 @@
         }
 
         auth.onAuthStateChanged(user => {
-            if(isAuthProcessing) return; // منع التداخل مع زر الدخول
+            if(isAuthProcessing) return;
 
             const splashScreen = document.getElementById('splash-screen');
             if(user) {
@@ -1190,7 +1182,6 @@
             document.getElementById('cart-total-price').innerText = Math.round(finalTotal); document.getElementById('cart-badge-count').innerText = cnt;
         }
 
-        // ================= تم مسح الجواهر والتوجيه الفوري للواتساب =================
         function checkoutWhatsApp() {
             if(!currentUser) { showToast("سجل دخول أولاً!",true); return handleAuth('login'); }
             if(!cart.length) return showToast("السلة فارغة",true);
@@ -1236,11 +1227,9 @@
                 } 
             });
 
-            // تسجيل الداتا بشكل مخفي في الخلفية (عدم استخدام .then لتأخير العميل)
             db.ref('kemo_orders/' + orderId).set(order);
             db.ref('kemo_products').set(updatedProducts);
 
-            // توجيه العميل فوراً
             finishCheckout(waLink);
         }
 
@@ -1358,7 +1347,6 @@
             }
         }
         
-        // تم إضافة رقم الدعم في رسالة الرفض
         function rejectOrder(id) { 
             if(confirm("هل أنت متأكد من رفض وإلغاء هذا الطلب؟")) { 
                 const order = allOrders.find(o => String(o.id) === String(id)); 
