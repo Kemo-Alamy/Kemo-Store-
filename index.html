@@ -512,32 +512,51 @@
             <button onclick="manualResetStats()" style="background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 5px 10px; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: bold;"><i class="fa-solid fa-rotate-right"></i> تصفير الإحصائيات</button>
         </div>
         <div class="dashboard-stats" style="background: var(--bg-card); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 30px;">
-            <div class="stat-card"><h4>إجمالي المبيعات</h4><div class="val" id="stat-revenue">0 ج.م</div></div>
-            <div class="stat-card"><h4>صافي الربح</h4><div class="val" style="color:var(--accent);" id="stat-net-profit">0 ج.م</div></div>
-            <div class="stat-card"><h4>مكتمل</h4><div class="val" style="color:var(--success);" id="stat-completed">0</div></div>
-            <div class="stat-card"><h4>معلق</h4><div class="val" style="color:var(--danger);" id="stat-pending">0</div></div>
-        </div>
-
-        <h3 style="margin-bottom:15px; color:var(--primary);"><i class="fa-solid fa-sliders"></i> إعدادات المتجر</h3>
-        <div class="admin-panel" id="store-settings-panel">
-            <div class="form-grid">
-                <div class="input-group">
-                    <label><i class="fa-solid fa-percent" style="color:var(--accent);"></i> نسبة الربح المستهدفة (%)</label>
-                    <input type="number" id="setting-profit-margin" placeholder="مثال: 20" min="0" max="100">
+            <div class="stat-card" style="position:relative;">
+                <button onclick="openStatEdit('revenue','إجمالي المبيعات','ج.م')" style="position:absolute;top:6px;left:6px;background:transparent;border:none;color:var(--text-muted);cursor:pointer;font-size:12px;padding:2px;"><i class="fa-solid fa-pen"></i></button>
+                <h4>إجمالي المبيعات</h4><div class="val" id="stat-revenue">0 ج.م</div>
+                <div id="edit-revenue" style="display:none;margin-top:8px;">
+                    <input type="number" id="adj-revenue" placeholder="مثال: +50 أو -20" style="width:100%;background:var(--bg-dark);border:1px solid var(--primary);color:white;padding:5px 8px;border-radius:6px;font-family:Cairo;font-size:12px;text-align:center;">
+                    <div style="display:flex;gap:5px;margin-top:5px;">
+                        <button onclick="applyStatAdj('revenue','ج.م')" style="flex:1;background:var(--primary);color:#000;border:none;border-radius:6px;padding:4px;font-size:11px;font-weight:bold;cursor:pointer;">✓ تطبيق</button>
+                        <button onclick="closeStatEdit('revenue')" style="flex:1;background:var(--border-color);color:white;border:none;border-radius:6px;padding:4px;font-size:11px;cursor:pointer;">✕</button>
+                    </div>
                 </div>
-                <div class="input-group">
-                    <label><i class="fa-solid fa-box" style="color:var(--primary);"></i> هدف عدد الطلبات (شهرياً)</label>
-                    <input type="number" id="setting-target-orders" placeholder="مثال: 100" min="0">
-                </div>
-                <div class="input-group" style="grid-column: 1 / -1;">
-                    <label><i class="fa-solid fa-money-bill-wave" style="color:var(--success);"></i> هدف المبلغ المُنفق (ج.م شهرياً)</label>
-                    <input type="number" id="setting-target-revenue" placeholder="مثال: 5000" min="0">
-                </div>
-                <button class="btn btn-cart" style="grid-column: 1 / -1;" onclick="saveStoreSettings()"><i class="fa-solid fa-floppy-disk"></i> حفظ الإعدادات</button>
             </div>
-            <div id="settings-status" style="margin-top:10px; font-size:13px; color:var(--text-muted); text-align:center;"></div>
+            <div class="stat-card" style="position:relative;">
+                <button onclick="openStatEdit('net-profit','صافي الربح','ج.م')" style="position:absolute;top:6px;left:6px;background:transparent;border:none;color:var(--text-muted);cursor:pointer;font-size:12px;padding:2px;"><i class="fa-solid fa-pen"></i></button>
+                <h4>صافي الربح</h4><div class="val" style="color:var(--accent);" id="stat-net-profit">0 ج.م</div>
+                <div id="edit-net-profit" style="display:none;margin-top:8px;">
+                    <input type="number" id="adj-net-profit" placeholder="مثال: +50 أو -20" style="width:100%;background:var(--bg-dark);border:1px solid var(--accent);color:white;padding:5px 8px;border-radius:6px;font-family:Cairo;font-size:12px;text-align:center;">
+                    <div style="display:flex;gap:5px;margin-top:5px;">
+                        <button onclick="applyStatAdj('net-profit','ج.م')" style="flex:1;background:var(--accent);color:white;border:none;border-radius:6px;padding:4px;font-size:11px;font-weight:bold;cursor:pointer;">✓ تطبيق</button>
+                        <button onclick="closeStatEdit('net-profit')" style="flex:1;background:var(--border-color);color:white;border:none;border-radius:6px;padding:4px;font-size:11px;cursor:pointer;">✕</button>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card" style="position:relative;">
+                <button onclick="openStatEdit('completed','مكتمل','')" style="position:absolute;top:6px;left:6px;background:transparent;border:none;color:var(--text-muted);cursor:pointer;font-size:12px;padding:2px;"><i class="fa-solid fa-pen"></i></button>
+                <h4>مكتمل</h4><div class="val" style="color:var(--success);" id="stat-completed">0</div>
+                <div id="edit-completed" style="display:none;margin-top:8px;">
+                    <input type="number" id="adj-completed" placeholder="مثال: +5 أو -2" style="width:100%;background:var(--bg-dark);border:1px solid var(--success);color:white;padding:5px 8px;border-radius:6px;font-family:Cairo;font-size:12px;text-align:center;">
+                    <div style="display:flex;gap:5px;margin-top:5px;">
+                        <button onclick="applyStatAdj('completed','')" style="flex:1;background:var(--success);color:white;border:none;border-radius:6px;padding:4px;font-size:11px;font-weight:bold;cursor:pointer;">✓ تطبيق</button>
+                        <button onclick="closeStatEdit('completed')" style="flex:1;background:var(--border-color);color:white;border:none;border-radius:6px;padding:4px;font-size:11px;cursor:pointer;">✕</button>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card" style="position:relative;">
+                <button onclick="openStatEdit('pending','معلق','')" style="position:absolute;top:6px;left:6px;background:transparent;border:none;color:var(--text-muted);cursor:pointer;font-size:12px;padding:2px;"><i class="fa-solid fa-pen"></i></button>
+                <h4>معلق</h4><div class="val" style="color:var(--danger);" id="stat-pending">0</div>
+                <div id="edit-pending" style="display:none;margin-top:8px;">
+                    <input type="number" id="adj-pending" placeholder="مثال: +5 أو -2" style="width:100%;background:var(--bg-dark);border:1px solid var(--danger);color:white;padding:5px 8px;border-radius:6px;font-family:Cairo;font-size:12px;text-align:center;">
+                    <div style="display:flex;gap:5px;margin-top:5px;">
+                        <button onclick="applyStatAdj('pending','')" style="flex:1;background:var(--danger);color:white;border:none;border-radius:6px;padding:4px;font-size:11px;font-weight:bold;cursor:pointer;">✓ تطبيق</button>
+                        <button onclick="closeStatEdit('pending')" style="flex:1;background:var(--border-color);color:white;border:none;border-radius:6px;padding:4px;font-size:11px;cursor:pointer;">✕</button>
+                    </div>
+                </div>
+            </div>
         </div>
-
         <h3 style="margin-bottom:15px; color:var(--primary);"><i class="fa-solid fa-truck-fast"></i> إدارة الطلبات</h3>
         <div class="admin-panel">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
@@ -816,7 +835,7 @@
             const btnAdmin = document.getElementById('btn-admin-nav');
             btnAdmin.style.display = isAdmin ? 'inline-block' : 'none'; 
             renderUserOrders(); 
-            if(isAdmin) { renderAdminCoupons(); updateAdminDashboard(); renderCouponProducts(); loadStoreSettings(); }
+            if(isAdmin) { renderAdminCoupons(); updateAdminDashboard(); renderCouponProducts(); }
         }
 
         function updateUIForLogOut() {
@@ -1218,37 +1237,37 @@
             document.getElementById('stat-pending').innerText = pendingCount; 
             document.getElementById('stat-completed').innerText = completedCount;
         }
+        // --- stat adjustments stored in memory ---
+        let statAdj = { revenue: 0, 'net-profit': 0, completed: 0, pending: 0 };
 
-        function loadStoreSettings() {
-            db.ref('kemo_settings/store_config').once('value').then(snap => {
-                const cfg = snap.val() || {};
-                const pm = document.getElementById('setting-profit-margin');
-                const to = document.getElementById('setting-target-orders');
-                const tr = document.getElementById('setting-target-revenue');
-                if(pm) pm.value = cfg.profitMargin || '';
-                if(to) to.value = cfg.targetOrders || '';
-                if(tr) tr.value = cfg.targetRevenue || '';
-                const status = document.getElementById('settings-status');
-                if(status && cfg.profitMargin) {
-                    status.innerHTML = `<i class="fa-solid fa-circle-check" style="color:var(--success);"></i> الإعدادات المحفوظة: نسبة ربح <b>${cfg.profitMargin}%</b> | هدف طلبات <b>${cfg.targetOrders || '-'}</b> | هدف مبلغ <b>${cfg.targetRevenue || '-'} ج.م</b>`;
-                }
+        function openStatEdit(key) {
+            // close all others first
+            ['revenue','net-profit','completed','pending'].forEach(k => {
+                const el = document.getElementById('edit-' + k);
+                if(el) el.style.display = 'none';
             });
+            const box = document.getElementById('edit-' + key);
+            if(box) { box.style.display = 'block'; document.getElementById('adj-' + key).focus(); }
         }
 
-        function saveStoreSettings() {
-            if(!isAdmin) return;
-            const pm = document.getElementById('setting-profit-margin').value.trim();
-            const to = document.getElementById('setting-target-orders').value.trim();
-            const tr = document.getElementById('setting-target-revenue').value.trim();
-            if(!pm && !to && !tr) return showToast('أدخل قيمة واحدة على الأقل', true);
-            const cfg = {};
-            if(pm) cfg.profitMargin = Number(pm);
-            if(to) cfg.targetOrders  = Number(to);
-            if(tr) cfg.targetRevenue = Number(tr);
-            db.ref('kemo_settings/store_config').update(cfg).then(() => {
-                showToast('تم حفظ الإعدادات بنجاح ✅');
-                loadStoreSettings();
-            }).catch(() => showToast('خطأ في الحفظ', true));
+        function closeStatEdit(key) {
+            const box = document.getElementById('edit-' + key);
+            if(box) { box.style.display = 'none'; document.getElementById('adj-' + key).value = ''; }
+        }
+
+        function applyStatAdj(key, unit) {
+            const input = document.getElementById('adj-' + key);
+            const val = parseFloat(input.value);
+            if(isNaN(val)) return showToast('أدخل رقم صحيح', true);
+            statAdj[key] = (statAdj[key] || 0) + val;
+            // update display
+            const el = document.getElementById('stat-' + key);
+            const baseText = el.innerText.replace(' ج.م','').replace(/,/g,'');
+            const base = parseFloat(baseText) || 0;
+            const newVal = base + val;
+            el.innerText = unit ? (newVal + ' ' + unit) : newVal;
+            closeStatEdit(key);
+            showToast((val >= 0 ? '+' : '') + val + (unit ? ' ' + unit : '') + ' تم التطبيق ✅');
         }
 
         function exportOrdersToExcel() {
@@ -1379,7 +1398,7 @@
         function toggleProductActive(id) { if(!isAdmin) return; let updatedProducts = [...products]; let pIndex = updatedProducts.findIndex(p => String(p.id) === String(id)); if(pIndex !== -1) { updatedProducts[pIndex].isActive = updatedProducts[pIndex].isActive === false ? true : false; db.ref('kemo_products').set(updatedProducts).then(()=>showToast(updatedProducts[pIndex].isActive ? "تم التفعيل" : "تم الإيقاف")); } }
         function cancelEdit() {['p-id','p-name','p-price','p-cost','p-old-price','p-badge','p-stock','p-msg','p-new-cat','p-details','p-countdown'].forEach(i=>document.getElementById(i).value=''); document.getElementById('p-is-active').checked=true; document.getElementById('p-category').value='none'; document.getElementById('p-image').value=''; uploadedImageData=""; document.getElementById('add-btn').innerText="حفظ ونشر"; document.getElementById('cancel-edit-btn').style.display="none"; }
         function deleteProduct(id) { if(confirm("حذف المنتج؟")) db.ref('kemo_products').set(products.filter(p=>String(p.id)!==String(id))); }
-        function switchTab(t) { document.getElementById('store-section').style.display = t==='store'?'block':'none'; document.getElementById('admin-section').style.display = t==='admin'?'block':'none'; if(t==='admin' && isAdmin) loadStoreSettings(); }
+        function switchTab(t) { document.getElementById('store-section').style.display = t==='store'?'block':'none'; document.getElementById('admin-section').style.display = t==='admin'?'block':'none'; }
 
         function renderProducts() {
             const st = document.getElementById('products-list'), ad = document.getElementById('admin-products-list'); let stHTML = '', adHTML = ''; 
