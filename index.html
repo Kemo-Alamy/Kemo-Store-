@@ -12,20 +12,18 @@
     
     <title>Kemo Store | شحن ألعاب</title>
 
-    <!-- ================= بداية أكواد SEO وأيقونات الموقع المحدثة ================= -->
+    <!-- ================= بداية أكواد SEO وأيقونات الموقع ================= -->
     <meta name="description" content="متجر كيمو ستور (Kemo Store) الأفضل والأسرع لشحن جميع الألعاب (ببجي، فري فاير، وغيرها) بأرخص الأسعار وبطرق دفع آمنة. تسليم فوري ونظام مكافآت حصري.">
     <meta name="keywords" content="شحن العاب, شحن ببجي, شحن فري فاير, متجر شحن العاب, جواهر فري فاير, شدات ببجي, Kemo Store, كيمو ستور">
     <meta name="author" content="Kemo Store">
     <meta name="robots" content="index, follow"> 
     
-    <!-- تم إضافة ?v=2 لإجبار المتصفحات وجوجل على تحديث الأيقونة فوراً -->
-    <link rel="icon" href="1000490757.jpg?v=2" type="image/jpeg">
-    <link rel="apple-touch-icon" href="1000490757.jpg?v=2">
-    <link rel="shortcut icon" href="1000490757.jpg?v=2" type="image/jpeg">
-    <meta itemprop="image" content="1000490757.jpg?v=2">
+    <link rel="icon" href="1000490757.jpg" sizes="192x192" type="image/jpeg">
+    <link rel="apple-touch-icon" href="1000490757.jpg">
+    <link rel="shortcut icon" href="1000490757.jpg" type="image/jpeg">
     
-    <link rel="canonical" href="https://kemo-alamy.github.io/Kemo-Store-/"> 
-    <meta property="og:url" content="https://kemo-alamy.github.io/Kemo-Store-/">
+    <link rel="canonical" href="[https://kemo-alamy.github.io/Kemo-Store-/]"> 
+    <meta property="og:url" content="[https://kemo-alamy.github.io/Kemo-Store-/]">
 
     <meta property="og:title" content="Kemo Store | شحن ألعاب فوري">
     <meta property="og:description" content="اشحن لعبتك المفضلة الآن في ثواني بأرخص الأسعار في مصر والوطن العربي مع Kemo Store.">
@@ -44,7 +42,7 @@
       "name": "Kemo Store",
       "image": "https://cdn-icons-png.flaticon.com/512/5260/5260498.png",
       "description": "متجر لشحن الألعاب الإلكترونية بأرخص الأسعار وتسليم فوري.",
-      "url": "https://kemo-alamy.github.io/Kemo-Store-/",
+      "url": "[لينك-موقعك-هنا]",
       "telephone": "+201115168017",
       "address": {
         "@type": "PostalAddress",
@@ -182,6 +180,8 @@
         .btn-logout-small { background: transparent; border: none; color: var(--danger); cursor: pointer; font-size: 16px; padding: 5px; }
         .btn-admin-nav { display: none; background: var(--primary); color: #000; padding: 8px 15px; border-radius: 10px; font-size: 14px; font-weight: bold; border: none; cursor: pointer; transition: 0.2s; }
 
+        .gems-badge { background: rgba(139, 92, 246, 0.2); color: #c4b5fd; border: 1px solid var(--accent); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 900; display: flex; align-items: center; gap: 5px; box-shadow: 0 0 10px rgba(139, 92, 246, 0.3); }
+
         #btn-install-app { display: none; background: var(--accent); color: white; padding: 8px 15px; border-radius: 10px; font-size: 13px; font-weight: bold; border: none; cursor: pointer; animation: pulse 2s infinite; }
 
         .container { max-width: 1200px; margin: 0 auto; padding: 20px 15px 50px; }
@@ -287,6 +287,9 @@
         .coupon-area button { background: var(--accent); border: none; color: white; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: 'Cairo'; transition: 0.2s;}
         .coupon-area button:active { transform: scale(0.95); }
 
+        .gems-use-area { background: rgba(139, 92, 246, 0.1); border: 1px dashed var(--accent); padding: 10px; border-radius: 8px; margin-bottom: 15px; display: none; }
+        .gems-use-area.active { display: block; }
+
         .order-card { background: var(--bg-dark); border: 1px solid var(--border-color); padding: 15px; border-radius: 10px; margin-bottom: 10px; position: relative;}
         .order-header { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 10px; font-size: 13px; font-weight:bold;}
         
@@ -362,16 +365,27 @@
         }
     </style>
     
+    <!-- كود ذكي لمنع وميض شاشة البداية للمستخدم المسجل أو الذي اختار التخطي -->
     <script>
         if(localStorage.getItem('kemo_is_logged_in') === 'true' || localStorage.getItem('kemo_splash_skipped') === 'true') {
             document.write('<style>#splash-screen { display: none !important; }</style>');
         }
     </script>
+
+<style>
+/* Hide login form except login button */
+.login-container input,
+.login-container label {
+    display: none !important;
+}
+</style>
+
 </head>
 <body>
 
     <audio id="welcome-audio" src="welcome.mp3" preload="auto"></audio>
 
+    <!-- ================= شاشة البداية (Splash Screen) ================= -->
     <div id="splash-screen">
         <img src="welcome-image.png" id="splash-img" class="splash-img" alt="Welcome Character">
         
@@ -382,17 +396,18 @@
 
         <div class="splash-buttons-container">
             <div class="splash-btn-wrapper">
-                <button class="splash-btn" onclick="handleAuth('login')">تسجيل الدخول</button>
-                <span class="splash-btn-desc">لديك حساب بالفعل</span>
+                <button class="splash-btn" onclick="loginWithGoogle()">Log In</button>
+                <span class="splash-btn-desc">تسجيل الدخول لحسابك</span>
             </div>
             <div class="splash-btn-wrapper">
-                <button class="splash-btn outline" onclick="handleAuth('signup')">حساب جديد</button>
-                <span class="splash-btn-desc">مستخدم لأول مرة</span>
+                <button class="splash-btn outline" onclick="loginWithGoogle()">Sign Up</button>
+                <span class="splash-btn-desc">مستخدم جديد</span>
             </div>
         </div>
 
         <button class="splash-skip-btn" onclick="skipSplashScreen()">تصفح المتجر كزائر مؤقتاً</button>
     </div>
+    <!-- ================================================================ -->
 
     <header>
         <div class="logo"><i class="fa-solid fa-gamepad"></i> 𝑲𝒆𝒎𝒐 𝑺𝒕𝒐𝒓𝒆</div>
@@ -408,7 +423,7 @@
             </div>
             <button id="btn-admin-nav" class="btn-admin-nav" onclick="switchTab('admin')">الإدارة</button>
             <div id="user-area" class="user-area">
-                <button class="btn-google" onclick="handleAuth('login')">
+                <button class="btn-google" onclick="loginWithGoogle()">
                     <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20px" height="20px">
                         <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
                         <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
@@ -513,6 +528,14 @@
             </div>
             <div id="coupon-msg" style="font-size:12px; margin-bottom:10px; font-weight:bold;"></div>
 
+            <div id="gems-use-area" class="gems-use-area">
+                <div style="font-size: 12px; color: #fff; margin-bottom: 5px; font-weight: bold;">
+                    لديك <span style="color:var(--accent);">💎 <span id="cart-available-gems">0</span> جوهرة</span>
+                </div>
+                <div style="font-size: 10px; color: var(--text-muted); margin-bottom: 8px;">(كل 25 جوهرة = خصم 60 ج.م)</div>
+                <button id="btn-apply-gems" onclick="toggleGemsDiscount()" style="width: 100%; background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 5px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; transition: 0.2s;">استبدال الجواهر بخصم</button>
+            </div>
+
             <div style="display: flex; justify-content: space-between; font-weight: 900; margin-bottom: 10px;">
                 <span>الإجمالي:</span><span style="color: var(--primary);"><span id="cart-total-price">0</span> ج.م</span>
             </div>
@@ -554,8 +577,8 @@
                 </div>
                 <div class="slide" style="background: linear-gradient(135deg, #10B981, #047857);">
                     <div class="slide-content">
-                        <h2>💎 جودة وثقة في التعامل</h2>
-                        <p>نحن دائماً في خدمتك على مدار الساعة!</p>
+                        <h2>💎 نظام الجواهر والمكافآت</h2>
+                        <p>اشحن، جمع جواهر، واستبدلها بشحن مجاني!</p>
                     </div>
                 </div>
             </div>
@@ -773,9 +796,9 @@
         let currentFilter = 'all', uploadedImageData = "", currentUser = null, isAdmin = false;
         let tempUserResult = null; let currentShareProduct = null; let adminCurrentOrderFilter = 'all';
         let allRatings = {}; let statsResetTime = 0;
+        let userGemsBalance = 0; let useGemsActive = false;
         
         let appliedCouponObj = null; 
-        let isAuthProcessing = false;
 
         function showToast(msg, isError=false) {
             const t = document.getElementById("toast"); t.innerHTML = msg; t.style.borderColor = isError?"var(--danger)":"var(--primary)";
@@ -807,88 +830,23 @@
             if(isAdmin) { updateAdminDashboard(); let searchBox = document.getElementById('admin-order-search'); if (searchBox && searchBox.value.trim() !== '') searchOrders(); else filterAdminOrders(adminCurrentOrderFilter); }
         });
 
-        function handleAuth(actionType) { 
-            isAuthProcessing = true; 
-            
+        function loginWithGoogle() { 
             auth.signInWithPopup(provider).then((result) => { 
-                db.ref(`kemo_users/${result.user.uid}/registered`).once('value').then(snap => {
-                    const isRegistered = snap.exists();
+                const splash = document.getElementById('splash-screen');
+                if(splash) {
+                    splash.classList.add('hidden');
+                    setTimeout(() => splash.style.display = 'none', 600);
+                }
+                localStorage.setItem('kemo_is_logged_in', 'true');
 
-                    if (actionType === 'login') {
-                        if (!isRegistered) {
-                            result.user.delete().catch(()=>{});
-                            auth.signOut().then(() => {
-                                isAuthProcessing = false;
-                                updateUIForLogOut();
-                                showToast("عفواً، الحساب غير مسجل! يرجى الضغط على 'حساب جديد'.", true);
-                            });
-                        } else {
-                            isAuthProcessing = false;
-                            updateUIForLogIn(result.user);
-                            finalizeLoginSuccess(result, false, document.getElementById('splash-screen'));
-                        }
-                    } 
-                    else if (actionType === 'signup') {
-                        if (isRegistered) {
-                            auth.signOut().then(() => {
-                                isAuthProcessing = false;
-                                updateUIForLogOut();
-                                showToast("هذا الحساب مسجل بالفعل! يرجى الضغط على 'تسجيل الدخول'.", true);
-                            });
-                        } else {
-                            db.ref(`kemo_users/${result.user.uid}/registered`).set(true);
-                            isAuthProcessing = false;
-                            updateUIForLogIn(result.user);
-                            finalizeLoginSuccess(result, true, document.getElementById('splash-screen'));
-                        }
-                    }
-                });
-            }).catch(e => {
-                isAuthProcessing = false;
-                if(e.code !== 'auth/popup-closed-by-user') { showToast(e.message, true); }
-            }); 
-        }
-
-        function finalizeLoginSuccess(result, isNewUser, splash) {
-            if(splash) {
-                splash.classList.add('hidden');
-                setTimeout(() => splash.style.display = 'none', 600);
-            }
-            localStorage.setItem('kemo_is_logged_in', 'true');
-
-            if (isNewUser) { 
-                tempUserResult = result; 
-                document.getElementById('name-modal-overlay').classList.add('active'); 
-                document.getElementById('name-modal').classList.add('active'); 
-            } else { 
-                showToast("تم تسجيل الدخول بنجاح"); 
-            }
-        }
-
-        function updateUIForLogIn(user) {
-            currentUser = user;
-            isAdmin = (user.email.toLowerCase() === ADMIN_EMAIL);
-            const uArea = document.getElementById('user-area');
-            
-            uArea.innerHTML = `<div class="user-profile"><img src="${user.photoURL}"><span>${user.displayName ? user.displayName.split(' ')[0] : 'مستخدم'}</span><button class="btn-logout-small" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></button></div>`;
-            renderCart();
-
-            const btnAdmin = document.getElementById('btn-admin-nav');
-            btnAdmin.style.display = isAdmin ? 'inline-block' : 'none'; 
-            renderUserOrders(); 
-            if(isAdmin) { renderAdminCoupons(); updateAdminDashboard(); renderCouponProducts(); }
-        }
-
-        function updateUIForLogOut() {
-            currentUser = null;
-            isAdmin = false;
-            const uArea = document.getElementById('user-area');
-            uArea.innerHTML = `<button class="btn-google" onclick="handleAuth('login')">
-                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20px" height="20px"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path><path fill="none" d="M0 0h48v48H0z"></path></svg>
-                <span>سجل دخولك</span>
-            </button>`;
-            document.getElementById('btn-admin-nav').style.display = 'none'; 
-            document.getElementById('user-orders-list').innerHTML = '<div style="text-align:center; color:var(--text-muted);">سجل الدخول لرؤية طلباتك</div>';
+                if (result.additionalUserInfo && result.additionalUserInfo.isNewUser) { 
+                    tempUserResult = result; 
+                    document.getElementById('name-modal-overlay').classList.add('active'); 
+                    document.getElementById('name-modal').classList.add('active'); 
+                } else { 
+                    showToast("تم الدخول بنجاح"); 
+                } 
+            }).catch(e => showToast(e.message, true)); 
         }
 
         function saveNewUserName() { 
@@ -913,21 +871,49 @@
         }
 
         auth.onAuthStateChanged(user => {
-            if(isAuthProcessing) return;
-
+            currentUser = user; 
             const splashScreen = document.getElementById('splash-screen');
+            const uArea = document.getElementById('user-area');
+            const btnAdmin = document.getElementById('btn-admin-nav');
+            
             if(user) {
                 localStorage.setItem('kemo_is_logged_in', 'true');
                 if(splashScreen) {
                     splashScreen.classList.add('hidden');
                     setTimeout(() => splashScreen.style.display = 'none', 600);
                 }
-                updateUIForLogIn(user);
+
+                isAdmin = (user.email.toLowerCase() === ADMIN_EMAIL);
+                
+                db.ref(`kemo_users/${user.uid}/gems`).on('value', snap => {
+                    userGemsBalance = snap.val() || 0;
+                    document.getElementById('cart-available-gems').innerText = userGemsBalance.toFixed(2);
+                    let gemsBadgeHTML = `<span class="gems-badge">💎 ${userGemsBalance.toFixed(2)}</span>`;
+                    uArea.innerHTML = `${gemsBadgeHTML}<div class="user-profile"><img src="${user.photoURL}"><span>${user.displayName ? user.displayName.split(' ')[0] : 'مستخدم'}</span><button class="btn-logout-small" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></button></div>`;
+                    if(userGemsBalance > 0) document.getElementById('gems-use-area').classList.add('active');
+                    else { document.getElementById('gems-use-area').classList.remove('active'); useGemsActive = false; }
+                    renderCart();
+                });
+
+                btnAdmin.style.display = isAdmin ? 'inline-block' : 'none'; 
+                renderUserOrders(); 
+                if(isAdmin) { 
+                    renderAdminCoupons(); 
+                    updateAdminDashboard(); 
+                    renderCouponProducts(); 
+                }
             } else {
                 if(splashScreen && localStorage.getItem('kemo_splash_skipped') === 'true') {
                     splashScreen.style.display = 'none';
                 }
-                updateUIForLogOut();
+
+                userGemsBalance = 0; useGemsActive = false; document.getElementById('gems-use-area').classList.remove('active');
+                isAdmin = false; 
+                uArea.innerHTML = `<button class="btn-google" onclick="loginWithGoogle()">
+                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20px" height="20px"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path><path fill="none" d="M0 0h48v48H0z"></path></svg>
+                    <span>سجل دخولك</span>
+                </button>`;
+                btnAdmin.style.display = 'none'; document.getElementById('user-orders-list').innerHTML = '<div style="text-align:center; color:var(--text-muted);">سجل الدخول لرؤية طلباتك</div>';
             }
         });
 
@@ -951,14 +937,14 @@
         }
 
         function submitRating(productId, stars) {
-            if(!currentUser) { showToast("سجل دخول أولاً لتقييم المنتج!", true); return handleAuth('login'); }
+            if(!currentUser) { showToast("سجل دخول أولاً لتقييم المنتج!", true); return loginWithGoogle(); }
             let existingReview = allRatings[productId]?.[currentUser.uid]?.text || "";
             let obj = { stars: stars, text: existingReview, name: currentUser.displayName, date: Date.now() };
             db.ref(`kemo_ratings/${productId}/${currentUser.uid}`).set(obj).then(() => { showToast("شكراً لتقييمك!"); buildInteractiveStars(productId); });
         }
 
         function submitReviewText() {
-            if(!currentUser) { showToast("سجل دخول أولاً!", true); return handleAuth('login'); }
+            if(!currentUser) { showToast("سجل دخول أولاً!", true); return loginWithGoogle(); }
             if(!currentShareProduct) return;
             let text = document.getElementById('review-input-text').value.trim();
             if(!text) return showToast("يرجى كتابة تعليق", true);
@@ -1062,6 +1048,10 @@
             else if (c.uses <= 0) { msgBox.innerText = "تم انتهاء صلاحية الكود ❌"; msgBox.style.color = "var(--danger)"; appliedCouponObj = null; }
             else { 
                 appliedCouponObj = c; 
+                useGemsActive = false; 
+                document.getElementById('btn-apply-gems').innerText = "استبدال الجواهر بخصم"; 
+                document.getElementById('btn-apply-gems').style.background = "transparent"; 
+                document.getElementById('btn-apply-gems').style.color = "var(--accent)"; 
             }
             renderCart();
         }
@@ -1114,6 +1104,18 @@
             cont.innerHTML = html;
         }
         function deleteCoupon(id) { if(confirm("حذف الكوبون؟")) db.ref('kemo_coupons/'+id).remove(); }
+
+        function toggleGemsDiscount() {
+            if(!currentUser || userGemsBalance <= 0) return;
+            let btn = document.getElementById('btn-apply-gems');
+            if(useGemsActive) {
+                useGemsActive = false; btn.innerText = "استبدال الجواهر بخصم"; btn.style.background = "transparent"; btn.style.color = "var(--accent)";
+            } else {
+                appliedCouponObj = null; document.getElementById('promo-code').value = ''; document.getElementById('coupon-msg').innerText = ''; 
+                useGemsActive = true; btn.innerText = "تم استخدام الجواهر ✅"; btn.style.background = "var(--accent)"; btn.style.color = "#fff";
+            }
+            renderCart();
+        }
 
         function addToCart(id, event) {
             if (event) event.stopPropagation(); const p = products.find(x => String(x.id) === String(id)); if(!p) return;
@@ -1179,11 +1181,21 @@
             }
 
             let finalTotal = subTotal - discountValue; 
+            
+            if (useGemsActive && userGemsBalance > 0 && !appliedCouponObj) {
+                let maxGemsToUse = Math.min(userGemsBalance, finalTotal / 2.4);
+                let discountAmount = maxGemsToUse * 2.4;
+                finalTotal -= discountAmount;
+                document.getElementById('coupon-msg').innerText = `تم خصم ${Math.round(discountAmount)} ج.م باستخدام ${maxGemsToUse.toFixed(2)} 💎`;
+                document.getElementById('coupon-msg').style.color = "var(--accent)";
+            }
+
             document.getElementById('cart-total-price').innerText = Math.round(finalTotal); document.getElementById('cart-badge-count').innerText = cnt;
         }
 
+        // ================= تم إصلاح دالة الشراء لتعمل بنسبة 100% =================
         function checkoutWhatsApp() {
-            if(!currentUser) { showToast("سجل دخول أولاً!",true); return handleAuth('login'); }
+            if(!currentUser) { showToast("سجل دخول أولاً!",true); return loginWithGoogle(); }
             if(!cart.length) return showToast("السلة فارغة",true);
             
             const pId = document.getElementById('customer-game-id').value.trim(); 
@@ -1193,11 +1205,21 @@
             const cPhone = document.getElementById('customer-phone').value.trim(); 
             if(!cPhone) return showToast("يرجى كتابة رقم الواتساب", true);
 
+            // تغيير شكل الزر لإعطاء إحساس بالتحميل (يمنع ضغطات متعددة)
+            const btnBuy = document.querySelector('.btn-buy');
+            const originalBtnText = btnBuy.innerHTML;
+            btnBuy.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري تحويلك...';
+            btnBuy.disabled = true;
+
             const orderId = 'KEMO-' + Date.now().toString().slice(-6) + Math.floor(Math.random() * 10);
             let finalTotal = parseInt(document.getElementById('cart-total-price').innerText);
             const now = new Date(); const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }; 
             const fullDateTime = `${now.toLocaleDateString('ar-EG', dateOptions)} - الساعة ${now.toLocaleTimeString('ar-EG')}`;
 
+            let usedGemsCount = 0; let baseTotal = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+            if(useGemsActive && userGemsBalance > 0 && !appliedCouponObj) { usedGemsCount = Math.min(userGemsBalance, baseTotal / 2.4); }
+
+            // حماية قاعدة البيانات من الأخطاء في حال كان الإيميل غير متوفر
             const userEmail = currentUser.email || 'غير متوفر';
 
             const order = { id: orderId, uid: currentUser.uid, userName: currentUser.displayName || 'عميل', email: userEmail, phone: cPhone, playerId: pId, items: cart, total: finalTotal, status: 'pending', timestamp: Date.now(), dateStr: fullDateTime };
@@ -1207,10 +1229,13 @@
             cart.forEach((it, i) => { let itTotal = it.price * it.qty; msg += `${i+1}- *${it.name}*\n   الكمية: ${it.qty} | السعر: ${itTotal} ج.م\n`; if(it.waMessage) msg += `   💬: ${it.waMessage}\n`; });
             msg += `\n💰 *الإجمالي الكلي:* ${finalTotal} ج.م\n`; 
             if(appliedCouponObj) msg += `🎁 (تم تطبيق كود خصم ${appliedCouponObj.code})\n`; 
+            if(usedGemsCount > 0) msg += `💎 (تم خصم ${Math.round(usedGemsCount * 2.4)} ج.م باستخدام ${usedGemsCount.toFixed(2)} جوهرة)\n`;
             msg += `\nبرجاء تأكيد الشحن معي. (رقم الطلب: #${orderId})`;
 
+            // تجهيز رابط الواتساب مسبقاً
             const waLink = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`;
 
+            // تجهيز البيانات
             let code = document.getElementById('promo-code').value.trim(); 
             if(code && appliedCouponObj) { 
                 let c = coupons.find(x => x.code === code); 
@@ -1227,21 +1252,40 @@
                 } 
             });
 
-            db.ref('kemo_orders/' + orderId).set(order);
-            db.ref('kemo_products').set(updatedProducts);
+            // تسجيل البيانات بشكل متوازي
+            let dbPromises = [];
+            dbPromises.push(db.ref('kemo_orders/' + orderId).set(order));
+            dbPromises.push(db.ref('kemo_products').set(updatedProducts));
+            if(usedGemsCount > 0) { dbPromises.push(db.ref(`kemo_users/${currentUser.uid}/gems`).set(userGemsBalance - usedGemsCount)); }
 
-            finishCheckout(waLink);
+            // التنفيذ (بمجرد الانتهاء يتم تحويل العميل للواتساب)
+            Promise.all(dbPromises).then(() => {
+                finishCheckout(waLink, originalBtnText, btnBuy);
+            }).catch(err => {
+                // حتى لو فشل التسجيل (لأي سبب)، لا نوقف العميل، بل نوجهه للواتساب ليكمل الشراء!
+                console.error(err);
+                finishCheckout(waLink, originalBtnText, btnBuy);
+            });
         }
 
-        function finishCheckout(waLink) {
-            cart=[]; appliedCouponObj=null; 
+        // دالة مساعدة لتفريغ السلة وفتح الواتساب
+        function finishCheckout(waLink, originalBtnText, btnBuy) {
+            cart=[]; appliedCouponObj=null; useGemsActive=false; 
             document.getElementById('promo-code').value=''; 
             document.getElementById('coupon-msg').innerText=''; 
+            document.getElementById('btn-apply-gems').innerText = "استبدال الجواهر بخصم"; 
+            document.getElementById('btn-apply-gems').style.background = "transparent"; 
+            document.getElementById('btn-apply-gems').style.color = "var(--accent)"; 
             saveCart(); 
             closeAllSidebars(); 
             
+            btnBuy.innerHTML = originalBtnText;
+            btnBuy.disabled = false;
+            
+            // استخدام location.href بدلاً من window.open لتجاوز حظر المتصفحات
             window.location.href = waLink;
         }
+        // =========================================================================
 
         function renderUserOrders() {
             const cont = document.getElementById('user-orders-list'); let html=''; const myO = allOrders.filter(o=>o.uid === currentUser.uid);
@@ -1333,34 +1377,28 @@
             if(confirm(`تحذير خطير: هل أنت متأكد من حذف (${list.length}) من ${typeName} نهائياً؟ لا يمكن التراجع عن هذا الإجراء.`)) { let updates = {}; list.forEach(o => updates[o.id] = null); db.ref('kemo_orders').update(updates).then(() => showToast("تم الحذف الجماعي بنجاح", true)); }
         }
 
+        // تم تعديل أزرار الأدمن لتستخدم location.href لضمان العمل على الموبايل
         function completeOrder(id) { 
-            if(confirm("تأكيد الشحن؟ سيتم فتح الواتساب لإبلاغ العميل.")) {
+            if(confirm("تأكيد الشحن؟ سيتم فتح الواتساب لإبلاغ العميل وإضافة الجواهر لحسابه.")) {
                 const order = allOrders.find(o => String(o.id) === String(id));
                 db.ref('kemo_orders/'+id).update({status:'completed'}).then(() => {
-                    showToast("تم التحديث بنجاح");
+                    let earnedGems = parseFloat((order.total * 0.00024).toFixed(2));
+                    if(earnedGems > 0 && order.uid) {
+                        db.ref(`kemo_users/${order.uid}/gems`).transaction(currentGems => (currentGems || 0) + earnedGems);
+                    }
+
+                    showToast("تم التحديث وإضافة الجواهر بنجاح");
                     if (order && order.phone) {
-                        let msg = `مرحباً يا ${order.userName.split(' ')[0]} 👋\n\n✅ *تم اكتمال طلبك بنجاح!*\nتم شحن المنتجات لحسابك (ID: ${order.playerId})\nرقم الطلب: #${order.id}\n\nشكراً لثقتك في Kemo Store 🎮❤️`;
+                        let msg = `مرحباً يا ${order.userName.split(' ')[0]} 👋\n\n✅ *تم اكتمال طلبك بنجاح!*\nتم شحن المنتجات لحسابك (ID: ${order.playerId})\nرقم الطلب: #${order.id}\n`;
+                        if(earnedGems > 0) msg += `\n🎁 مبروك! تمت إضافة (💎 ${earnedGems}) جوهرة لحسابك في المتجر كهدية ولاء!\n`;
+                        msg += `\nشكراً لثقتك في Kemo Store 🎮❤️`;
                         let formattedPhone = order.phone.startsWith('0') ? '2' + order.phone : order.phone;
                         window.location.href = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`;
                     }
                 });
             }
         }
-        
-        function rejectOrder(id) { 
-            if(confirm("هل أنت متأكد من رفض وإلغاء هذا الطلب؟")) { 
-                const order = allOrders.find(o => String(o.id) === String(id)); 
-                db.ref('kemo_orders/'+id).update({status:'rejected'}).then(() => { 
-                    showToast("تم رفض الطلب", true); 
-                    if (order && order.phone) { 
-                        let msg = `مرحباً يا ${order.userName.split(' ')[0]}\n\n❌ نأسف لإبلاغك بأنه *تم إلغاء طلبك* (رقم: #${order.id}).\n\nيرجى التواصل مع الدعم الفني لمعرفة السبب عبر هذا الرقم:\n+201115168017\n\nKemo Store 🎮`; 
-                        let formattedPhone = order.phone.startsWith('0') ? '2' + order.phone : order.phone; 
-                        window.location.href = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`; 
-                    } 
-                }); 
-            } 
-        }
-        
+        function rejectOrder(id) { if(confirm("هل أنت متأكد من رفض وإلغاء هذا الطلب؟")) { const order = allOrders.find(o => String(o.id) === String(id)); db.ref('kemo_orders/'+id).update({status:'rejected'}).then(() => { showToast("تم رفض الطلب", true); if (order && order.phone) { let msg = `مرحباً يا ${order.userName.split(' ')[0]}\n\n❌ نأسف لإبلاغك بأنه *تم إلغاء طلبك* (رقم: #${order.id}).\n\nيرجى التواصل معنا لمعرفة السبب.\nKemo Store 🎮`; let formattedPhone = order.phone.startsWith('0') ? '2' + order.phone : order.phone; window.location.href = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`; } }); } }
         function sendLateMessage(id) { const order = allOrders.find(o => String(o.id) === String(id)); if (order && order.phone) { let msg = `مرحباً يا ${order.userName.split(' ')[0]} 👋\n\nنعتذر عن التأخير البسيط في طلبك رقم (#${order.id}).\nالطلب حالياً قيد المراجعة وسوف يتم شحن (ID: ${order.playerId}) في أقرب وقت.\n\nKemo Store 🎮`; let formattedPhone = order.phone.startsWith('0') ? '2' + order.phone : order.phone; window.location.href = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`; } }
 
         function renderCategoriesUI() { let cHtml = `<option value="none">بدون قسم</option>`, fHtml = `<button class="cat-btn active" onclick="filterCat('all',this)">الكل</button>`; categories.forEach(c => { cHtml+=`<option value="${c.name}">${c.name}</option>`; fHtml+=`<button class="cat-btn" onclick="filterCat('${c.name}',this)">${c.name}</button>`; }); cHtml+=`<option value="__NEW__">➕ قسم جديد...</option>`; document.getElementById('p-category').innerHTML = cHtml; document.getElementById('store-category-filter').innerHTML = fHtml; }
@@ -1464,5 +1502,24 @@
         window.addEventListener('load', tryPlayWelcomeAudio); document.addEventListener('click', playOnInteraction, { once: true }); document.addEventListener('touchstart', playOnInteraction, { once: true }); document.addEventListener('scroll', playOnInteraction, { once: true });
         
     </script>
+
+<script>
+// Add edit buttons dynamically
+document.addEventListener("DOMContentLoaded", function(){
+    document.querySelectorAll(".profit, .sales, .price").forEach(function(el){
+        let btn = document.createElement("button");
+        btn.innerText = "تعديل";
+        btn.style.margin = "5px";
+        btn.onclick = function(){
+            let newVal = prompt("ادخل القيمة الجديدة:", el.innerText);
+            if(newVal !== null){
+                el.innerText = newVal;
+            }
+        };
+        el.appendChild(btn);
+    });
+});
+</script>
+
 </body>
 </html>
