@@ -373,9 +373,7 @@
     </script>
 
 <style>
-/* Hide login form except login button */
-.login-container input,
-.login-container label {
+.hero, .landing, .welcome, .auth, .login, .signup {
     display: none !important;
 }
 </style>
@@ -390,7 +388,7 @@
         <img src="welcome-image.png" id="splash-img" class="splash-img" alt="Welcome Character">
         
         <div style="text-align: center;">
-            <div class="splash-text-welcome">✨ أهلاً بك في ✨</div>
+            
             <div class="splash-text-brand">𝑲𝒆𝒎𝒐 𝑺𝒕𝒐𝒓𝒆</div>
         </div>
 
@@ -562,12 +560,7 @@
     <div id="store-section">
         <div class="container store-layout">
             
-            <div class="hero-slider">
-                <div class="slide active" style="background: linear-gradient(135deg, #f89e1b, #d97706);">
-                    <div class="slide-content">
-                        <h2>🔥 أقوى العروض الحصرية</h2>
-                        <p>شحن جميع الألعاب بأسعار لا تقبل المنافسة</p>
-                    </div>
+            
                 </div>
                 <div class="slide" style="background: linear-gradient(135deg, #8B5CF6, #6b21a8);">
                     <div class="slide-content">
@@ -1502,24 +1495,5 @@
         window.addEventListener('load', tryPlayWelcomeAudio); document.addEventListener('click', playOnInteraction, { once: true }); document.addEventListener('touchstart', playOnInteraction, { once: true }); document.addEventListener('scroll', playOnInteraction, { once: true });
         
     </script>
-
-<script>
-// Add edit buttons dynamically
-document.addEventListener("DOMContentLoaded", function(){
-    document.querySelectorAll(".profit, .sales, .price").forEach(function(el){
-        let btn = document.createElement("button");
-        btn.innerText = "تعديل";
-        btn.style.margin = "5px";
-        btn.onclick = function(){
-            let newVal = prompt("ادخل القيمة الجديدة:", el.innerText);
-            if(newVal !== null){
-                el.innerText = newVal;
-            }
-        };
-        el.appendChild(btn);
-    });
-});
-</script>
-
 </body>
 </html>
