@@ -70,7 +70,7 @@
             --bg-dark: #0f141e; --bg-card: #18202f; --primary: #f89e1b; --primary-hover: #d97706; 
             --accent: #8B5CF6; --text-main: #F3F4F6; --text-muted: #9CA3AF; --danger: #EF4444; 
             --success: #10B981; --whatsapp: #25D366; --border-color: #2a3447;
-            --sale-badge: #6b21a8; --etisalat: #6e9f1a;
+            --sale-badge: #6b21a8; --etisalat: #6e9f1a; --processing: #3b82f6;
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
@@ -103,8 +103,6 @@
         .user-profile span { font-weight: 700; font-size: 14px; }
         .btn-logout-small { background: transparent; border: none; color: var(--danger); cursor: pointer; font-size: 16px; padding: 5px; }
         .btn-admin-nav { display: none; background: var(--primary); color: #000; padding: 8px 15px; border-radius: 10px; font-size: 14px; font-weight: bold; border: none; cursor: pointer; transition: 0.2s; }
-
-        #btn-install-app { display: none; background: var(--accent); color: white; padding: 8px 15px; border-radius: 10px; font-size: 13px; font-weight: bold; border: none; cursor: pointer; animation: pulse 2s infinite; }
 
         .container { max-width: 1200px; margin: 0 auto; padding: 20px 15px 50px; }
         
@@ -216,14 +214,17 @@
         .order-tracker::before { content: ''; position: absolute; top: 12px; left: 20px; right: 20px; height: 2px; background: var(--border-color); z-index: 1; }
         .tracker-step { display: flex; flex-direction: column; align-items: center; gap: 5px; z-index: 2; font-size: 10px; font-weight: bold; color: var(--text-muted); width: 33%; text-align: center;}
         .tracker-step.active { color: var(--primary); }
+        .tracker-step.processing { color: var(--processing); }
         .tracker-step.done { color: var(--success); }
         .tracker-step.rejected { color: var(--danger); }
         .step-icon { width: 25px; height: 25px; border-radius: 50%; background: var(--bg-card); border: 2px solid var(--border-color); display: flex; justify-content: center; align-items: center; font-size: 12px; }
         .tracker-step.active .step-icon { background: var(--primary); border-color: var(--primary); color: #000; box-shadow: 0 0 10px rgba(248, 158, 27, 0.5); }
+        .tracker-step.processing .step-icon { background: var(--processing); border-color: var(--processing); color: #fff; box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
         .tracker-step.done .step-icon { background: var(--success); border-color: var(--success); color: #fff; }
         .tracker-step.rejected .step-icon { background: var(--danger); border-color: var(--danger); color: #fff; }
 
         .badge-pending { background: rgba(245, 158, 11, 0.2); color: var(--primary); padding: 3px 8px; border-radius: 5px; font-size: 12px; }
+        .badge-processing { background: rgba(59, 130, 246, 0.2); color: var(--processing); padding: 3px 8px; border-radius: 5px; font-size: 12px; }
         .badge-completed { background: rgba(16, 185, 129, 0.2); color: var(--success); padding: 3px 8px; border-radius: 5px; font-size: 12px; }
         .badge-rejected { background: rgba(239, 68, 68, 0.2); color: var(--danger); padding: 3px 8px; border-radius: 5px; font-size: 12px; }
         .badge-late { background: var(--danger); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-right: 5px; animation: pulse 1.5s infinite;}
@@ -323,7 +324,6 @@
 
     <div class="overlay" id="main-overlay" onclick="closeAllSidebars()"></div>
 
-    <!-- نافذة الرسالة الجماعية (الإشعار) للعملاء -->
     <div class="overlay" id="announcement-modal-overlay" style="z-index: 5000;" onclick="closeAnnouncement()"></div>
     <div class="custom-modal" id="announcement-modal" style="z-index: 5001;">
         <button onclick="closeAnnouncement()" style="position: absolute; top: 15px; left: 15px; background: transparent; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
@@ -568,6 +568,7 @@
                 <div class="admin-filters" style="margin: 0; padding: 0;">
                     <button class="active" onclick="filterAdminOrders('all', this)">الكل</button>
                     <button onclick="filterAdminOrders('pending', this)">معلق ⏳</button>
+                    <button onclick="filterAdminOrders('processing', this)">جاري الشحن 🚚</button>
                     <button onclick="filterAdminOrders('completed', this)">مكتمل ✅</button>
                     <button onclick="filterAdminOrders('rejected', this)">مرفوض ❌</button>
                 </div>
@@ -590,7 +591,6 @@
             <div id="admin-customers-db" class="customers-grid"></div>
         </div>
 
-        <!-- قسم الإشعار الجماعي (الرسالة الجماعية) -->
         <h3 style="margin-bottom:15px; color:var(--primary); margin-top: 30px;"><i class="fa-solid fa-bullhorn"></i> إرسال إشعار جماعي للعملاء</h3>
         <div class="admin-panel">
             <div class="form-grid">
@@ -719,8 +719,9 @@
                     let o = snap.val();
                     let statusHtml = '';
                     if(o.status === 'pending') statusHtml = `<span style="color:var(--primary); font-weight:bold; font-size:16px;">قيد المراجعة ⏳</span>`;
-                    else if(o.status === 'completed') statusHtml = `<span style="color:var(--success); font-weight:bold; font-size:16px;">تم الشحن ✅</span>`;
-                    else if(o.status === 'rejected') statusHtml = `<span style="color:var(--danger); font-weight:bold; font-size:16px;">مرفوض / ملغي ❌</span>`;
+                    else if(o.status === 'processing') statusHtml = `<span style="color:var(--processing); font-weight:bold; font-size:16px;">جاري الشحن الآن 🚚</span>`;
+                    else if(o.status === 'completed') statusHtml = `<span style="color:var(--success); font-weight:bold; font-size:16px;">مبروك! تم الشحن 🎉</span>`;
+                    else if(o.status === 'rejected') statusHtml = `<span style="color:var(--danger); font-weight:bold; font-size:16px;">للأسف تم رفض طلبك ❌</span>`;
                     
                     resultDiv.innerHTML = `
                         <div style="background: var(--bg-dark); padding: 15px; border-radius: 10px; border: 1px solid var(--border-color);">
@@ -810,7 +811,6 @@
         let isAuthProcessing = false;
         let customerReceiptBase64 = "";
 
-        // ================= كود الرسالة الجماعية (الإشعار) =================
         let currentAnnouncementTime = 0;
 
         function publishAnnouncement() {
@@ -847,7 +847,6 @@
                 localStorage.setItem('kemo_announcement_seen', currentAnnouncementTime);
             }
         }
-        // ====================================================================
 
         window.addEventListener('load', () => {
             const urlParams = new URLSearchParams(window.location.search);
@@ -1314,7 +1313,6 @@
             msg += `\n💰 *الإجمالي الكلي:* ${finalTotal} ج.م\n`; 
             if(appliedCouponObj) msg += `🎁 (تم تطبيق كود خصم ${appliedCouponObj.code})\n`; 
             
-            // إضافة رابط الإيصال لو موجود، أو ملاحظة لو مش موجود
             if (customerReceiptBase64) {
                 msg += `\n🔗 *رابط صورة الإيصال (اضغط للمشاهدة):*\n${receiptLink}\n`;
             } else {
@@ -1363,9 +1361,22 @@
             if(!myO.length) html='<div style="text-align:center; color:gray;">لا توجد طلبات</div>';
             else myO.forEach(o => {
                 let badge = ''; let trackerHtml = '';
-                if(o.status === 'pending') { badge = `<span class="badge-pending">جاري المراجعة ⏳</span>`; trackerHtml = `<div class="order-tracker"><div class="tracker-step active"><div class="step-icon"><i class="fa-solid fa-hourglass-half"></i></div>قيد المراجعة</div><div class="tracker-step"><div class="step-icon"><i class="fa-solid fa-truck"></i></div>جاري الشحن</div><div class="tracker-step"><div class="step-icon"><i class="fa-solid fa-check"></i></div>تم التسليم</div></div>`; }
-                else if(o.status === 'completed') { badge = `<span class="badge-completed">تم الشحن ✅</span>`; trackerHtml = `<div class="order-tracker"><div class="tracker-step done"><div class="step-icon"><i class="fa-solid fa-check"></i></div>تمت المراجعة</div><div class="tracker-step done"><div class="step-icon"><i class="fa-solid fa-check"></i></div>شحن</div><div class="tracker-step done"><div class="step-icon"><i class="fa-solid fa-check-double"></i></div>اكتمل</div></div>`; }
-                else if(o.status === 'rejected') { badge = `<span class="badge-rejected">مرفوض ❌</span>`; trackerHtml = `<div class="order-tracker"><div class="tracker-step done"><div class="step-icon"><i class="fa-solid fa-check"></i></div>استلام الطلب</div><div class="tracker-step rejected" style="width:66%"><div class="step-icon"><i class="fa-solid fa-xmark"></i></div>تم الإلغاء/الرفض</div></div>`; }
+                if(o.status === 'pending') { 
+                    badge = `<span class="badge-pending">قيد المراجعة ⏳</span>`; 
+                    trackerHtml = `<div class="order-tracker"><div class="tracker-step active"><div class="step-icon"><i class="fa-solid fa-hourglass-half"></i></div>قيد المراجعة</div><div class="tracker-step"><div class="step-icon"><i class="fa-solid fa-truck"></i></div>جاري الشحن</div><div class="tracker-step"><div class="step-icon"><i class="fa-solid fa-check"></i></div>تم التسليم</div></div>`; 
+                }
+                else if(o.status === 'processing') { 
+                    badge = `<span class="badge-processing">جاري الشحن 🚚</span>`; 
+                    trackerHtml = `<div class="order-tracker"><div class="tracker-step done"><div class="step-icon"><i class="fa-solid fa-check"></i></div>تمت المراجعة</div><div class="tracker-step processing"><div class="step-icon"><i class="fa-solid fa-truck-fast"></i></div>جاري الشحن</div><div class="tracker-step"><div class="step-icon"><i class="fa-solid fa-check"></i></div>تم التسليم</div></div>`; 
+                }
+                else if(o.status === 'completed') { 
+                    badge = `<span class="badge-completed">تم الشحن ✅</span>`; 
+                    trackerHtml = `<div class="order-tracker"><div class="tracker-step done"><div class="step-icon"><i class="fa-solid fa-check"></i></div>تمت المراجعة</div><div class="tracker-step done"><div class="step-icon"><i class="fa-solid fa-check"></i></div>شحن</div><div class="tracker-step done"><div class="step-icon"><i class="fa-solid fa-check-double"></i></div>اكتمل</div></div>`; 
+                }
+                else if(o.status === 'rejected') { 
+                    badge = `<span class="badge-rejected">مرفوض ❌</span>`; 
+                    trackerHtml = `<div class="order-tracker"><div class="tracker-step done"><div class="step-icon"><i class="fa-solid fa-check"></i></div>استلام الطلب</div><div class="tracker-step rejected" style="width:66%"><div class="step-icon"><i class="fa-solid fa-xmark"></i></div>تم الإلغاء/الرفض</div></div>`; 
+                }
                 html += `<div class="order-card"><div class="order-header"><span>#${o.id}</span>${badge}</div><div style="font-size:12px; color:gray;">الـ ID: ${o.playerId}</div><div style="font-weight:bold; color:var(--primary); margin-top:5px;">الإجمالي: ${o.total} ج.م</div><div style="font-size:11px; color:var(--text-muted); margin-top:5px;"><i class="fa-regular fa-clock"></i> ${o.dateStr || new Date(o.timestamp).toLocaleDateString('ar-EG')}</div>${trackerHtml}</div>`;
             });
             cont.innerHTML = html;
@@ -1394,7 +1405,7 @@
                     totalNetProfit += (Number(o.total) - orderCost);
                     completedCount++; 
                 } 
-                if(o.status === 'pending') pendingCount++; 
+                if(o.status === 'pending' || o.status === 'processing') pendingCount++; 
             });
             
             document.getElementById('stat-revenue').innerText = totalRevenue + ' ج.م'; 
@@ -1436,7 +1447,7 @@
             let csv = '\uFEFF'; 
             csv += "رقم الطلب,اسم العميل,رقم الواتساب,الـ ID,الإجمالي (ج.م),الحالة,التاريخ\n";
             list.forEach(o => {
-                let statusAr = o.status==='pending'?'معلق':o.status==='completed'?'مكتمل':'مرفوض';
+                let statusAr = o.status==='pending'?'معلق':o.status==='processing'?'جاري الشحن':o.status==='completed'?'مكتمل':'مرفوض';
                 let cleanPhone = o.phone ? o.phone.replace(/,/g, '') : "غير مسجل";
                 let cleanName = o.userName ? o.userName.replace(/,/g, ' ') : "عميل";
                 csv += `${o.id},${cleanName},${cleanPhone},${o.playerId},${o.total},${statusAr},${o.dateStr}\n`;
@@ -1460,6 +1471,22 @@
             document.getElementById('receipt-modal').classList.remove('active');
         }
 
+        // دالة جديدة لحذف الإيصال من الطلب
+        function deleteReceipt(orderId) {
+            if(confirm("هل أنت متأكد من حذف صورة الإيصال لهذا الطلب؟")) {
+                db.ref('kemo_orders/' + orderId + '/receiptImage').remove().then(() => {
+                    showToast("تم حذف الإيصال بنجاح", false);
+                });
+            }
+        }
+
+        // دالة جديدة لتحويل الطلب إلى "جاري الشحن"
+        function markOrderProcessing(id) {
+            db.ref('kemo_orders/'+id).update({status: 'processing'}).then(() => {
+                showToast("تم تحويل الطلب إلى: جاري الشحن 🚚", false);
+            });
+        }
+
         function filterAdminOrders(status, btn=null) { adminCurrentOrderFilter = status; if(btn) { document.querySelectorAll('.admin-filters button').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); } let filteredList = status === 'all' ? allOrders : allOrders.filter(o => o.status === status); renderAdminOrders(filteredList); }
 
         function renderAdminOrders(list = allOrders) {
@@ -1467,16 +1494,33 @@
             if(!list.length) html='<div style="color:gray; text-align:center; padding: 20px;">لا يوجد طلبات مطابقة</div>';
             else list.forEach(o => {
                 let adminActions = ''; let lateIndicator = '';
-                if(o.status === 'pending') {
+                
+                if(o.status === 'pending' || o.status === 'processing') {
                     let timePassed = Date.now() - o.timestamp;
-                    if(timePassed > 900000) { lateIndicator = `<span class="badge-late">تأخير ⚠️</span>`; adminActions = `<button class="btn" style="background:var(--primary); color:#000; margin-bottom:10px; font-size:12px;" onclick="sendLateMessage('${o.id}')"><i class="fa-brands fa-whatsapp"></i> إرسال رسالة تأخير</button>`; }
-                    adminActions += `<div style="display:flex; gap:10px; margin-top: 10px;"><button class="btn" style="background:var(--success); color:white; flex:1;" onclick="completeOrder('${o.id}')">تم الشحن ✅</button><button class="btn" style="background:var(--danger); color:white; flex:1;" onclick="rejectOrder('${o.id}')">إلغاء ❌</button></div>`;
-                } else if(o.status === 'completed') { adminActions = `<div style="color:var(--success); font-weight:bold; text-align:center; margin-top: 10px;">تم شحن الطلب ✅</div>`; } 
+                    if(timePassed > 900000 && o.status === 'pending') { 
+                        lateIndicator = `<span class="badge-late">تأخير ⚠️</span>`; 
+                        adminActions += `<button class="btn" style="background:var(--primary); color:#000; margin-bottom:10px; font-size:12px;" onclick="sendLateMessage('${o.id}')"><i class="fa-brands fa-whatsapp"></i> إرسال رسالة تأخير</button>`; 
+                    }
+
+                    // إضافة زر أو رسالة جاري الشحن
+                    let processBtn = o.status === 'pending' 
+                        ? `<button class="btn" style="background: var(--processing); color: white; margin-bottom: 10px; font-size: 13px;" onclick="markOrderProcessing('${o.id}')"><i class="fa-solid fa-truck-fast"></i> تحويل إلى: جاري الشحن</button>`
+                        : `<div style="color:var(--processing); font-weight:bold; text-align:center; margin-bottom: 10px; font-size:13px;"><i class="fa-solid fa-truck-fast"></i> الطلب جاري شحنه الآن...</div>`;
+
+                    adminActions = processBtn + adminActions + `<div style="display:flex; gap:10px; margin-top: 10px;"><button class="btn" style="background:var(--success); color:white; flex:1;" onclick="completeOrder('${o.id}')">تم الشحن ✅</button><button class="btn" style="background:var(--danger); color:white; flex:1;" onclick="rejectOrder('${o.id}')">إلغاء ❌</button></div>`;
+                } 
+                else if(o.status === 'completed') { adminActions = `<div style="color:var(--success); font-weight:bold; text-align:center; margin-top: 10px;">تم شحن الطلب ✅</div>`; } 
                 else if(o.status === 'rejected') { adminActions = `<div style="color:var(--danger); font-weight:bold; text-align:center; margin-top: 10px;">تم رفض الطلب ❌</div>`; }
 
                 let deleteBtnHtml = `<button onclick="deleteSingleOrder('${o.id}')" style="position: absolute; top: 10px; left: 10px; background: transparent; border: none; color: var(--danger); font-size: 14px; cursor: pointer;"><i class="fa-solid fa-trash"></i></button>`;
                 
-                let receiptBtnHtml = o.receiptImage ? `<button class="btn" style="background: var(--etisalat); color: white; padding: 5px; font-size: 11px; margin-top: 8px; width: max-content; display: inline-block;" onclick="viewReceipt('${o.id}')"><i class="fa-solid fa-image"></i> الإيصال</button>` : `<span style="font-size:11px; color:gray; display:block; margin-top:8px;">بدون إيصال</span>`;
+                // تحديث أزرار الإيصال لتشمل زر الحذف
+                let receiptBtnHtml = o.receiptImage ? `
+                    <div style="display: flex; gap: 5px; margin-top: 8px;">
+                        <button class="btn" style="background: var(--etisalat); color: white; padding: 5px; font-size: 11px; flex: 1;" onclick="viewReceipt('${o.id}')"><i class="fa-solid fa-image"></i> الإيصال</button>
+                        <button class="btn" style="background: var(--danger); color: white; padding: 5px; font-size: 11px; width: max-content;" onclick="deleteReceipt('${o.id}')" title="حذف الإيصال"><i class="fa-solid fa-trash"></i></button>
+                    </div>` 
+                    : `<span style="font-size:11px; color:gray; display:block; margin-top:8px;">بدون إيصال</span>`;
 
                 html += `<div class="order-card" style="background:var(--bg-card); position:relative;">${deleteBtnHtml}<div class="order-header"><div>${lateIndicator}<span style="color:var(--primary);">#${o.id}</span></div><span style="padding-left:25px;">${o.userName}</span></div><div style="font-size:13px; margin-bottom:10px;"><b>الرقم:</b> <a href="tel:${o.phone || ''}" style="color:var(--success); text-decoration:none;">${o.phone || 'غير مسجل'}</a><br><b>ID:</b> ${o.playerId} <br> <b>إجمالي:</b> ${o.total} ج.م <br> <b>التاريخ:</b> ${o.dateStr || new Date(o.timestamp).toLocaleDateString('ar-EG')} <br> ${receiptBtnHtml}</div>${adminActions}</div>`;
             });
@@ -1489,7 +1533,7 @@
         function deleteAllFilteredOrders() {
             let list = adminCurrentOrderFilter === 'all' ? allOrders : allOrders.filter(o => o.status === adminCurrentOrderFilter);
             if(list.length === 0) return showToast("لا يوجد طلبات لحذفها", true);
-            let typeName = adminCurrentOrderFilter === 'all' ? 'جميع الطلبات' : adminCurrentOrderFilter === 'pending' ? 'الطلبات المعلقة' : adminCurrentOrderFilter === 'completed' ? 'الطلبات المكتملة' : 'الطلبات المرفوضة';
+            let typeName = adminCurrentOrderFilter === 'all' ? 'جميع الطلبات' : adminCurrentOrderFilter === 'pending' ? 'الطلبات المعلقة' : adminCurrentOrderFilter === 'processing' ? 'طلبات جاري شحنها' : adminCurrentOrderFilter === 'completed' ? 'الطلبات المكتملة' : 'الطلبات المرفوضة';
             if(confirm(`تحذير خطير: هل أنت متأكد من حذف (${list.length}) من ${typeName} نهائياً؟ لا يمكن التراجع عن هذا الإجراء.`)) { let updates = {}; list.forEach(o => updates[o.id] = null); db.ref('kemo_orders').update(updates).then(() => showToast("تم الحذف الجماعي بنجاح", true)); }
         }
 
@@ -1678,4 +1722,3 @@
     </script>
 </body>
 </html>
-ق
