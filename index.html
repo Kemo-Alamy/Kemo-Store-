@@ -39,17 +39,6 @@
       "url": "https://kemo-alamy.github.io/Kemo-Store-/"
     }
     </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Store",
-      "name": "Kemo Store",
-      "image": "https://kemo-alamy.github.io/Kemo-Store-/1000490757.jpg",
-      "description": "متجر لشحن الألعاب الإلكترونية بأرخص الأسعار وتسليم فوري.",
-      "url": "https://kemo-alamy.github.io/Kemo-Store-/",
-      "telephone": "+201115168017"
-    }
-    </script>
     
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -66,38 +55,58 @@
     </script>
 
     <style>
+        /* إعدادات المتغيرات للوضع الليلي (الافتراضي) والنهاري */
         :root { 
-            --bg-dark: #0f141e; --bg-card: #18202f; --primary: #f89e1b; --primary-hover: #d97706; 
-            --accent: #8B5CF6; --text-main: #F3F4F6; --text-muted: #9CA3AF; --danger: #EF4444; 
-            --success: #10B981; --whatsapp: #25D366; --border-color: #2a3447;
-            --sale-badge: #6b21a8; --etisalat: #6e9f1a; --processing: #3b82f6;
+            --bg-dark: #0f141e; 
+            --bg-card: #18202f; 
+            --text-main: #F3F4F6; 
+            --text-muted: #9CA3AF; 
+            --border-color: #2a3447;
+            
+            /* ألوان ثابتة لا تتغير */
+            --primary: #f89e1b; 
+            --primary-hover: #d97706; 
+            --accent: #8B5CF6; 
+            --danger: #EF4444; 
+            --success: #10B981; 
+            --whatsapp: #25D366; 
+            --sale-badge: #6b21a8; 
+            --etisalat: #6e9f1a; 
+            --processing: #3b82f6;
+        }
+
+        body.light-mode {
+            --bg-dark: #f3f4f6; 
+            --bg-card: #ffffff; 
+            --text-main: #111827; 
+            --text-muted: #6b7280; 
+            --border-color: #d1d5db;
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-        body { background-color: var(--bg-dark); color: var(--text-main); overflow-x: hidden; }
+        body { background-color: var(--bg-dark); color: var(--text-main); overflow-x: hidden; transition: background-color 0.3s, color 0.3s; }
         
         button, a, input, select, .product-card, .close-side { touch-action: manipulation; }
         
-        header { background: var(--bg-card); position: sticky; top: 0; z-index: 1000; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; border-bottom: 1px solid var(--border-color); }
+        header { background: var(--bg-card); position: sticky; top: 0; z-index: 1000; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; border-bottom: 1px solid var(--border-color); transition: 0.3s;}
         .logo { font-size: 24px; font-weight: 900; color: var(--primary); display: flex; align-items: center; gap: 8px; }
         .logo i { color: var(--accent); }
         
         .nav-actions { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
         .icon-btn-wrapper { display: flex; gap: 10px; }
-        .cart-icon-btn { background: var(--bg-dark); border: 1px solid var(--border-color); width: 45px; height: 45px; border-radius: 12px; font-size: 18px; color: var(--text-main); cursor: pointer; position: relative; transition: 0.2s; display: flex; justify-content: center; align-items: center; }
+        .cart-icon-btn { background: var(--bg-dark); border: 1px solid var(--border-color); width: 45px; height: 45px; border-radius: 12px; font-size: 18px; color: var(--text-main); cursor: pointer; position: relative; transition: 0.3s; display: flex; justify-content: center; align-items: center; }
         .cart-icon-btn:hover { border-color: var(--primary); color: var(--primary); }
         .cart-icon-btn.heart-icon:hover { border-color: var(--danger); color: var(--danger); }
         .cart-icon-btn.track-icon:hover { border-color: var(--success); color: var(--success); }
+        .cart-icon-btn.theme-icon:hover { border-color: var(--accent); color: var(--accent); }
+        
         .cart-badge { position: absolute; top: -5px; right: -5px; background: var(--primary); color: #000; font-size: 11px; font-weight: 900; width: 20px; height: 20px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid var(--bg-card); }
 
         .user-area { display: flex; align-items: center; gap: 10px; }
         
-        .btn-google { 
-            background-color: #131314 !important; border: 1px solid #747775 !important; color: #e3e3e3 !important; padding: 8px 20px !important; border-radius: 40px !important; font-family: 'Cairo', sans-serif !important; font-weight: 600 !important; font-size: 14px !important; cursor: pointer !important; display: flex !important; align-items: center !important; gap: 12px !important; transition: all 0.2s ease !important; outline: none !important; box-shadow: none !important;
-        }
-        .btn-google:hover { background-color: #1e1e1e !important; border-color: #8e918f !important; }
-        .btn-google svg { width: 20px !important; height: 20px !important; background: transparent !important; border-radius: 0 !important; padding: 0 !important; border: none !important; }
-
+        .btn-google { background-color: #131314 !important; border: 1px solid #747775 !important; color: #e3e3e3 !important; padding: 8px 20px !important; border-radius: 40px !important; font-family: 'Cairo', sans-serif !important; font-weight: 600 !important; font-size: 14px !important; cursor: pointer !important; display: flex !important; align-items: center !important; gap: 12px !important; transition: all 0.2s ease !important; outline: none !important; box-shadow: none !important;}
+        body.light-mode .btn-google { background-color: #ffffff !important; border-color: #c7c7c7 !important; color: #1f1f1f !important; }
+        
         .user-profile { display: flex; align-items: center; gap: 8px; background: var(--bg-dark); padding: 5px 15px 5px 5px; border-radius: 30px; border: 1px solid var(--primary); box-shadow: 0 0 10px rgba(248, 158, 27, 0.1);}
         .user-profile img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
         .user-profile span { font-weight: 700; font-size: 14px; }
@@ -113,31 +122,31 @@
         .slide-content p { color: #fff; font-size: 14px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); font-weight: 600; }
 
         .store-search-container { display: flex; margin-bottom: 20px; position: relative; }
-        .store-search-container input { width: 100%; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); padding: 12px 15px 12px 40px; border-radius: 12px; outline: none; font-family: 'Cairo'; font-size: 14px; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .store-search-container input { width: 100%; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); padding: 12px 15px 12px 40px; border-radius: 12px; outline: none; font-family: 'Cairo'; font-size: 14px; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .store-search-container input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(248, 158, 27, 0.2); }
         .store-search-container i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
 
         .sidebar-categories { width: 100%; display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; margin-bottom: 20px; scrollbar-width: none; }
         .sidebar-categories::-webkit-scrollbar { display: none; }
-        .cat-btn { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color); padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 800; cursor: pointer; transition: 0.2s; white-space: nowrap; }
+        .cat-btn { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color); padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 800; cursor: pointer; transition: 0.3s; white-space: nowrap; }
         .cat-btn.active { background: var(--primary); color: #000; border-color: var(--primary); }
 
         .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; width: 100%; }
         
-        .product-card { background: var(--bg-card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); display: flex; flex-direction: column; position: relative; transition: 0.2s; cursor: pointer;}
-        .product-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.5); border-color: var(--primary);}
+        .product-card { background: var(--bg-card); border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); display: flex; flex-direction: column; position: relative; transition: 0.3s; cursor: pointer;}
+        .product-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); border-color: var(--primary);}
         .product-card.inactive { opacity: 0.5; filter: grayscale(1); }
         .product-card.expired { opacity: 0.7; }
         .sale-badge { position: absolute; top: 0; right: 0; background: var(--sale-badge); color: white; padding: 5px 15px; font-size: 12px; font-weight: 900; border-bottom-left-radius: 12px; z-index: 10; letter-spacing: 1px;}
         
         .product-img-wrapper { height: 160px; background: #000; position: relative; display: flex; justify-content: center; align-items: center; padding: 15px;}
         .product-img-wrapper img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px;}
-        .like-btn { position: absolute; top: 10px; left: 10px; background: rgba(0, 0, 0, 0.6); border: 1px solid var(--border-color); width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 14px; color: var(--text-muted); cursor: pointer; z-index: 10; transition: 0.2s;}
+        .like-btn { position: absolute; top: 10px; left: 10px; background: rgba(0, 0, 0, 0.6); border: 1px solid var(--border-color); width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 14px; color: #fff; cursor: pointer; z-index: 10; transition: 0.2s;}
         .like-btn.liked { color: var(--danger); border-color: var(--danger); }
         .like-btn:hover { color: var(--danger); border-color: var(--danger); transform: scale(1.1); }
         
         .product-info { padding: 15px; text-align: center; display: flex; flex-direction: column; flex: 1; }
-        .product-title { font-size: 14px; font-weight: 800; color: #fff; margin-bottom: 5px; }
+        .product-title { font-size: 14px; font-weight: 800; color: var(--text-main); margin-bottom: 5px; }
         .product-price { font-size: 18px; font-weight: 900; color: var(--primary); margin-bottom: 5px; display: flex; justify-content: center; align-items: center; gap: 8px;}
         .old-price { font-size: 12px; color: var(--text-muted); text-decoration: line-through; font-weight: normal;}
         .stock-warning { font-size: 11px; font-weight: bold; color: var(--danger); margin-bottom: 8px; }
@@ -162,7 +171,7 @@
         .btn-cart:disabled { background: var(--border-color); color: var(--text-muted); cursor: not-allowed; transform: none;}
         .btn-buy { background: var(--whatsapp); color: #fff; }
         .btn-edit { background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid var(--success); }
-        .btn-toggle { background: var(--bg-dark); color: #fff; border: 1px solid var(--border-color); }
+        .btn-toggle { background: var(--bg-dark); color: var(--text-main); border: 1px solid var(--border-color); }
 
         .skeleton { animation: skeleton-loading 1s linear infinite alternate; }
         @keyframes skeleton-loading { 0% { background-color: var(--border-color); } 100% { background-color: var(--bg-card); } }
@@ -170,7 +179,7 @@
 
         .related-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; scrollbar-width: none; }
         .related-scroll::-webkit-scrollbar { display: none; }
-        .related-item { min-width: 110px; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 10px; padding: 8px; text-align: center; cursor: pointer; transition: 0.2s; }
+        .related-item { min-width: 110px; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 10px; padding: 8px; text-align: center; cursor: pointer; transition: 0.3s; }
         .related-item:hover { border-color: var(--primary); transform: translateY(-3px); }
         .related-item img { width: 100%; height: 70px; object-fit: contain; margin-bottom: 5px; border-radius: 5px; }
         .related-item-title { font-size: 11px; color: var(--text-main); font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -183,7 +192,7 @@
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; display: none; opacity: 0; transition: 0.2s; }
         .overlay.active { display: block; opacity: 1; }
         
-        .side-panel { position: fixed; top: 0; right: -100%; width: 350px; max-width: 100%; height: 100%; background: var(--bg-card); z-index: 2001; transition: 0.25s ease-out; display: flex; flex-direction: column; border-left: 1px solid var(--border-color); }
+        .side-panel { position: fixed; top: 0; right: -100%; width: 350px; max-width: 100%; height: 100%; background: var(--bg-card); z-index: 2001; transition: 0.3s ease-out; display: flex; flex-direction: column; border-left: 1px solid var(--border-color); }
         .side-panel.active { right: 0; }
         .side-header { padding: 15px 20px; background: var(--bg-dark); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
         .side-items { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
@@ -203,7 +212,7 @@
         .input-box input { width: 100%; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px; border-radius: 8px; outline: none; font-family: 'Cairo'; }
 
         .coupon-area { display: flex; gap: 10px; margin-bottom: 10px; }
-        .coupon-area input { flex: 1; background: var(--bg-card); border: 1px solid var(--border-color); color: white; padding: 8px; border-radius: 8px; outline: none; font-family: 'Cairo'; }
+        .coupon-area input { flex: 1; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px; border-radius: 8px; outline: none; font-family: 'Cairo'; }
         .coupon-area button { background: var(--accent); border: none; color: white; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: 'Cairo'; transition: 0.2s;}
         .coupon-area button:active { transform: scale(0.95); }
 
@@ -241,15 +250,15 @@
         .admin-filters button.active { background: var(--primary); color: #000; border-color: var(--primary); font-weight: bold; }
 
         .search-box { display: flex; gap: 10px; margin-bottom: 15px; }
-        .search-box input { flex: 1; background: var(--bg-dark); border: 1px solid var(--primary); color: white; padding: 10px; border-radius: 8px; outline: none; font-family: 'Cairo'; box-shadow: 0 0 10px rgba(248, 158, 27, 0.1);}
+        .search-box input { flex: 1; background: var(--bg-dark); border: 1px solid var(--primary); color: var(--text-main); padding: 10px; border-radius: 8px; outline: none; font-family: 'Cairo'; box-shadow: 0 0 10px rgba(248, 158, 27, 0.1);}
         
-        .admin-panel { background: var(--bg-dark); padding: 20px; border-radius: 15px; border: 1px solid var(--border-color); margin-bottom: 30px; }
+        .admin-panel { background: var(--bg-dark); padding: 20px; border-radius: 15px; border: 1px solid var(--border-color); margin-bottom: 30px; transition: 0.3s;}
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .input-group { display: flex; flex-direction: column; gap: 5px; }
         .input-group label { font-weight: 700; color: var(--text-muted); font-size: 12px; }
         .input-group input, .input-group select, .input-group textarea { background: var(--bg-card); color: var(--text-main); padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; outline: none; font-family: 'Cairo'; resize: vertical; }
         
-        #toast { visibility: hidden; min-width: 250px; background-color: var(--bg-dark); color: #fff; text-align: center; border-radius: 8px; padding: 12px; position: fixed; z-index: 10000; left: 50%; transform: translateX(-50%); bottom: 30px; font-size: 14px; font-weight: bold; border: 1px solid var(--primary); opacity: 0; transition: 0.2s; }
+        #toast { visibility: hidden; min-width: 250px; background-color: var(--bg-dark); color: var(--text-main); text-align: center; border-radius: 8px; padding: 12px; position: fixed; z-index: 10000; left: 50%; transform: translateX(-50%); bottom: 30px; font-size: 14px; font-weight: bold; border: 1px solid var(--primary); opacity: 0; transition: 0.2s; }
         #toast.show { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(-20px); }
 
         .custom-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); background: var(--bg-card); padding: 35px 25px; border-radius: 20px; border: 1px solid var(--primary); box-shadow: 0 10px 40px rgba(0,0,0,0.8); z-index: 3000; width: 90%; max-width: 400px; max-height: 90vh; overflow-y: auto; text-align: center; opacity: 0; visibility: hidden; transition: 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -257,24 +266,24 @@
         .custom-modal::-webkit-scrollbar { width: 5px; }
         .custom-modal::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 5px; }
         .custom-modal i.main-icon { font-size: 50px; color: var(--primary); margin-bottom: 15px; text-shadow: 0 0 15px rgba(248, 158, 27, 0.4); }
-        .custom-modal h3 { color: #fff; margin-bottom: 10px; font-size: 20px; font-weight: 900;}
+        .custom-modal h3 { color: var(--text-main); margin-bottom: 10px; font-size: 20px; font-weight: 900;}
         .custom-modal p { color: var(--text-muted); margin-bottom: 25px; font-size: 13px; line-height: 1.6;}
-        .custom-modal input.name-input, .review-input { width: 100%; background: var(--bg-dark); border: 1px solid var(--border-color); color: white; padding: 12px; border-radius: 10px; font-family: 'Cairo'; margin-bottom: 10px; outline: none; font-size: 14px; font-weight: bold;}
+        .custom-modal input.name-input, .review-input { width: 100%; background: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-main); padding: 12px; border-radius: 10px; font-family: 'Cairo'; margin-bottom: 10px; outline: none; font-size: 14px; font-weight: bold;}
         .custom-modal input.name-input:focus, .review-input:focus { border-color: var(--primary); }
 
-        .live-popup { position: fixed; bottom: -100px; right: 20px; background: rgba(24, 32, 47, 0.95); border: 1px solid var(--primary); border-radius: 12px; padding: 10px 15px; display: flex; align-items: center; gap: 12px; z-index: 1500; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity: 0; box-shadow: 0 10px 25px rgba(0,0,0,0.5); backdrop-filter: blur(5px); max-width: 320px; pointer-events: none;}
+        .live-popup { position: fixed; bottom: -100px; right: 20px; background: var(--bg-card); border: 1px solid var(--primary); border-radius: 12px; padding: 10px 15px; display: flex; align-items: center; gap: 12px; z-index: 1500; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); opacity: 0; box-shadow: 0 10px 25px rgba(0,0,0,0.2); max-width: 320px; pointer-events: none;}
         .live-popup.show { bottom: 20px; opacity: 1; }
         .live-popup img { width: 45px; height: 45px; border-radius: 8px; object-fit: contain; background: #000; border: 1px solid var(--border-color); padding: 2px; }
         .live-popup-text { display: flex; flex-direction: column; text-align: right;}
         .live-popup-text .name { font-size: 13px; font-weight: 900; color: var(--primary); margin-bottom: 2px;}
-        .live-popup-text .action { font-size: 11px; color: #fff; margin-bottom: 2px;}
+        .live-popup-text .action { font-size: 11px; color: var(--text-main); margin-bottom: 2px;}
         .live-popup-text .prod { color: var(--success); font-weight: bold; }
         .live-popup-text small { font-size: 10px; color: var(--text-muted); }
 
         .customers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
         .customer-card { background: var(--bg-card); border: 1px solid var(--border-color); padding: 15px; border-radius: 12px; text-align: right; transition: 0.2s;}
         .customer-card:hover { border-color: var(--primary); transform: translateY(-3px); }
-        .customer-card h4 { color: #fff; font-size: 15px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;}
+        .customer-card h4 { color: var(--text-main); font-size: 15px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;}
         .customer-card p { font-size: 12px; color: var(--text-muted); margin-bottom: 5px;}
         .customer-card .stats { display: flex; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-color); font-size: 13px; font-weight: bold;}
 
@@ -299,6 +308,10 @@
         <div class="nav-actions">
             
             <div class="icon-btn-wrapper">
+                <!-- زر تغيير المظهر -->
+                <button class="cart-icon-btn theme-icon" id="theme-toggle-btn" onclick="toggleTheme()" title="تغيير المظهر">
+                    <i class="fa-solid fa-sun"></i>
+                </button>
                 <button class="cart-icon-btn track-icon" onclick="openTrackModal()" title="تتبع طلبك"><i class="fa-solid fa-map-location-dot"></i></button>
                 <button class="cart-icon-btn heart-icon" onclick="openSidebar('wishlist-sidebar')"><i class="fa-solid fa-heart"></i></button>
                 <button class="cart-icon-btn" onclick="openSidebar('orders-sidebar')"><i class="fa-solid fa-box-open"></i></button>
@@ -329,7 +342,7 @@
         <button onclick="closeAnnouncement()" style="position: absolute; top: 15px; left: 15px; background: transparent; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
         <i class="fa-solid fa-bell main-icon" style="color: var(--primary); animation: pulse 2s infinite;"></i>
         <h3 style="color:var(--primary)">إعلان هام!</h3>
-        <p id="announcement-text-display" style="font-size: 15px; font-weight: bold; color: white; margin-bottom: 20px; white-space: pre-wrap;"></p>
+        <p id="announcement-text-display" style="font-size: 15px; font-weight: bold; color: var(--text-main); margin-bottom: 20px; white-space: pre-wrap;"></p>
         <button class="btn btn-cart" onclick="closeAnnouncement()">حسناً، فهمت</button>
     </div>
 
@@ -394,7 +407,7 @@
             <div class="rating-text" id="rating-text-info">قيّم هذا المنتج</div>
         </div>
 
-        <h3 id="details-title" style="color: #fff; font-size: 18px; margin-bottom: 5px; text-align: center;"></h3>
+        <h3 id="details-title" style="color: var(--text-main); font-size: 18px; margin-bottom: 5px; text-align: center;"></h3>
         <div id="details-timer-container"></div>
         <div id="details-price" style="text-align: center; color: var(--primary); font-size: 22px; font-weight: 900; margin-bottom: 15px;"></div>
         
@@ -406,10 +419,10 @@
         <div id="details-stock" style="text-align: center; margin-bottom: 10px;"></div>
         <button class="btn btn-cart" id="details-buy-btn" style="margin-bottom: 20px;">شحن الآن <i class="fa-solid fa-cart-plus"></i></button>
         
-        <h4 style="font-size: 13px; color: #fff; margin-bottom: 10px; text-align: right;"><i class="fa-solid fa-fire" style="color:var(--primary);"></i> عروض قد تعجبك:</h4>
+        <h4 style="font-size: 13px; color: var(--text-main); margin-bottom: 10px; text-align: right;"><i class="fa-solid fa-fire" style="color:var(--primary);"></i> عروض قد تعجبك:</h4>
         <div class="related-scroll" id="related-products-list"></div>
 
-        <h4 style="font-size: 13px; color: #fff; margin-bottom: 10px; text-align: right;"><i class="fa-solid fa-comments" style="color:var(--accent);"></i> آراء جميع الزبائن:</h4>
+        <h4 style="font-size: 13px; color: var(--text-main); margin-bottom: 10px; text-align: right;"><i class="fa-solid fa-comments" style="color:var(--accent);"></i> آراء جميع الزبائن:</h4>
         <div class="reviews-container" id="product-reviews-list"></div>
         <div style="display: flex; gap: 5px;">
             <input type="text" id="review-input-text" class="review-input" placeholder="اكتب رأيك هنا..." style="margin:0; flex:1;">
@@ -420,7 +433,7 @@
     <div class="side-panel" id="cart-sidebar">
         <div class="side-header">
             <h3><i class="fa-solid fa-basket-shopping" style="color:var(--primary)"></i> سلة الشحن</h3>
-            <button class="close-side" onclick="closeAllSidebars()" style="background:transparent; border:none; color:#fff; font-size:20px;"><i class="fa-solid fa-xmark"></i></button>
+            <button class="close-side" onclick="closeAllSidebars()" style="background:transparent; border:none; color:var(--text-main); font-size:20px;"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="side-items" id="cart-items"></div>
         <div class="side-footer">
@@ -440,13 +453,12 @@
             <div id="coupon-msg" style="font-size:12px; margin-bottom:10px; font-weight:bold;"></div>
 
             <div style="background: var(--bg-dark); padding: 10px; border-radius: 8px; border: 1px solid var(--etisalat); margin-bottom: 15px;">
-                <p style="font-size: 13px; color: #fff; margin-bottom: 5px; font-weight: bold; text-align: center;"><i class="fa-solid fa-money-bill-transfer" style="color: var(--etisalat);"></i> الدفع عبر اتصالات كاش فقط</p>
+                <p style="font-size: 13px; color: var(--text-main); margin-bottom: 5px; font-weight: bold; text-align: center;"><i class="fa-solid fa-money-bill-transfer" style="color: var(--etisalat);"></i> الدفع عبر اتصالات كاش فقط</p>
                 <p style="font-size: 18px; color: var(--etisalat); font-weight: 900; text-align: center; margin-bottom: 8px; user-select: all; letter-spacing: 2px;">01115168017</p>
                 <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 5px; text-align: center;">الرجاء تحويل المبلغ ثم إرفاق صورة الإيصال <span style="color: var(--primary);">(اختياري)</span></label>
                 
-                <input type="file" id="receipt-image-input" accept="image/*" style="width: 100%; font-size: 12px; color: white; background: var(--bg-card); padding: 5px; border-radius: 5px; border: 1px dashed var(--etisalat);">
+                <input type="file" id="receipt-image-input" accept="image/*" style="width: 100%; font-size: 12px; color: var(--text-main); background: var(--bg-card); padding: 5px; border-radius: 5px; border: 1px dashed var(--etisalat);">
                 
-                <!-- زر حذف الإيصال للعميل -->
                 <div id="receipt-preview-container" style="display: none; margin-top: 10px; text-align: center;">
                     <span style="font-size: 12px; color: var(--success); display: block; margin-bottom: 5px; font-weight: bold;">تم إرفاق الإيصال بنجاح ✅</span>
                     <button class="btn" style="background: var(--danger); color: white; padding: 5px; font-size: 11px; width: max-content; margin: 0 auto;" onclick="removeCustomerReceipt()"><i class="fa-solid fa-trash"></i> حذف الصورة المرفقة</button>
@@ -463,7 +475,7 @@
     <div class="side-panel" id="orders-sidebar">
         <div class="side-header">
             <h3><i class="fa-solid fa-box-open" style="color:var(--primary)"></i> طلباتي</h3>
-            <button class="close-side" onclick="closeAllSidebars()" style="background:transparent; border:none; color:#fff; font-size:20px;"><i class="fa-solid fa-xmark"></i></button>
+            <button class="close-side" onclick="closeAllSidebars()" style="background:transparent; border:none; color:var(--text-main); font-size:20px;"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="side-items" id="user-orders-list"></div>
     </div>
@@ -471,7 +483,7 @@
     <div class="side-panel" id="wishlist-sidebar">
         <div class="side-header">
             <h3><i class="fa-solid fa-heart" style="color:var(--danger)"></i> المفضلة</h3>
-            <button class="close-side" onclick="closeAllSidebars()" style="background:transparent; border:none; color:#fff; font-size:20px;"><i class="fa-solid fa-xmark"></i></button>
+            <button class="close-side" onclick="closeAllSidebars()" style="background:transparent; border:none; color:var(--text-main); font-size:20px;"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="side-items" id="wishlist-items"></div>
     </div>
@@ -527,10 +539,10 @@
                 <button onclick="openStatEdit('revenue','إجمالي المبيعات','ج.م')" style="position:absolute;top:6px;left:6px;background:transparent;border:none;color:var(--text-muted);cursor:pointer;font-size:12px;padding:2px;"><i class="fa-solid fa-pen"></i></button>
                 <h4>إجمالي المبيعات</h4><div class="val" id="stat-revenue">0 ج.م</div>
                 <div id="edit-revenue" style="display:none;margin-top:8px;">
-                    <input type="number" id="adj-revenue" placeholder="مثال: +50 أو -20" style="width:100%;background:var(--bg-dark);border:1px solid var(--primary);color:white;padding:5px 8px;border-radius:6px;font-family:Cairo;font-size:12px;text-align:center;">
+                    <input type="number" id="adj-revenue" placeholder="مثال: +50 أو -20" style="width:100%;background:var(--bg-dark);border:1px solid var(--primary);color:var(--text-main);padding:5px 8px;border-radius:6px;font-family:Cairo;font-size:12px;text-align:center;">
                     <div style="display:flex;gap:5px;margin-top:5px;">
                         <button onclick="applyStatAdj('revenue','ج.م')" style="flex:1;background:var(--primary);color:#000;border:none;border-radius:6px;padding:4px;font-size:11px;font-weight:bold;cursor:pointer;">✓ تطبيق</button>
-                        <button onclick="closeStatEdit('revenue')" style="flex:1;background:var(--border-color);color:white;border:none;border-radius:6px;padding:4px;font-size:11px;cursor:pointer;">✕</button>
+                        <button onclick="closeStatEdit('revenue')" style="flex:1;background:var(--border-color);color:var(--text-main);border:none;border-radius:6px;padding:4px;font-size:11px;cursor:pointer;">✕</button>
                     </div>
                 </div>
             </div>
@@ -538,10 +550,10 @@
                 <button onclick="openStatEdit('net-profit','صافي الربح','ج.م')" style="position:absolute;top:6px;left:6px;background:transparent;border:none;color:var(--text-muted);cursor:pointer;font-size:12px;padding:2px;"><i class="fa-solid fa-pen"></i></button>
                 <h4>صافي الربح</h4><div class="val" style="color:var(--accent);" id="stat-net-profit">0 ج.م</div>
                 <div id="edit-net-profit" style="display:none;margin-top:8px;">
-                    <input type="number" id="adj-net-profit" placeholder="مثال: +50 أو -20" style="width:100%;background:var(--bg-dark);border:1px solid var(--accent);color:white;padding:5px 8px;border-radius:6px;font-family:Cairo;font-size:12px;text-align:center;">
+                    <input type="number" id="adj-net-profit" placeholder="مثال: +50 أو -20" style="width:100%;background:var(--bg-dark);border:1px solid var(--accent);color:var(--text-main);padding:5px 8px;border-radius:6px;font-family:Cairo;font-size:12px;text-align:center;">
                     <div style="display:flex;gap:5px;margin-top:5px;">
                         <button onclick="applyStatAdj('net-profit','ج.م')" style="flex:1;background:var(--accent);color:white;border:none;border-radius:6px;padding:4px;font-size:11px;font-weight:bold;cursor:pointer;">✓ تطبيق</button>
-                        <button onclick="closeStatEdit('net-profit')" style="flex:1;background:var(--border-color);color:white;border:none;border-radius:6px;padding:4px;font-size:11px;cursor:pointer;">✕</button>
+                        <button onclick="closeStatEdit('net-profit')" style="flex:1;background:var(--border-color);color:var(--text-main);border:none;border-radius:6px;padding:4px;font-size:11px;cursor:pointer;">✕</button>
                     </div>
                 </div>
             </div>
@@ -549,10 +561,10 @@
                 <button onclick="openStatEdit('completed','مكتمل','')" style="position:absolute;top:6px;left:6px;background:transparent;border:none;color:var(--text-muted);cursor:pointer;font-size:12px;padding:2px;"><i class="fa-solid fa-pen"></i></button>
                 <h4>مكتمل</h4><div class="val" style="color:var(--success);" id="stat-completed">0</div>
                 <div id="edit-completed" style="display:none;margin-top:8px;">
-                    <input type="number" id="adj-completed" placeholder="مثال: +5 أو -2" style="width:100%;background:var(--bg-dark);border:1px solid var(--success);color:white;padding:5px 8px;border-radius:6px;font-family:Cairo;font-size:12px;text-align:center;">
+                    <input type="number" id="adj-completed" placeholder="مثال: +5 أو -2" style="width:100%;background:var(--bg-dark);border:1px solid var(--success);color:var(--text-main);padding:5px 8px;border-radius:6px;font-family:Cairo;font-size:12px;text-align:center;">
                     <div style="display:flex;gap:5px;margin-top:5px;">
                         <button onclick="applyStatAdj('completed','')" style="flex:1;background:var(--success);color:white;border:none;border-radius:6px;padding:4px;font-size:11px;font-weight:bold;cursor:pointer;">✓ تطبيق</button>
-                        <button onclick="closeStatEdit('completed')" style="flex:1;background:var(--border-color);color:white;border:none;border-radius:6px;padding:4px;font-size:11px;cursor:pointer;">✕</button>
+                        <button onclick="closeStatEdit('completed')" style="flex:1;background:var(--border-color);color:var(--text-main);border:none;border-radius:6px;padding:4px;font-size:11px;cursor:pointer;">✕</button>
                     </div>
                 </div>
             </div>
@@ -560,10 +572,10 @@
                 <button onclick="openStatEdit('pending','معلق','')" style="position:absolute;top:6px;left:6px;background:transparent;border:none;color:var(--text-muted);cursor:pointer;font-size:12px;padding:2px;"><i class="fa-solid fa-pen"></i></button>
                 <h4>معلق</h4><div class="val" style="color:var(--danger);" id="stat-pending">0</div>
                 <div id="edit-pending" style="display:none;margin-top:8px;">
-                    <input type="number" id="adj-pending" placeholder="مثال: +5 أو -2" style="width:100%;background:var(--bg-dark);border:1px solid var(--danger);color:white;padding:5px 8px;border-radius:6px;font-family:Cairo;font-size:12px;text-align:center;">
+                    <input type="number" id="adj-pending" placeholder="مثال: +5 أو -2" style="width:100%;background:var(--bg-dark);border:1px solid var(--danger);color:var(--text-main);padding:5px 8px;border-radius:6px;font-family:Cairo;font-size:12px;text-align:center;">
                     <div style="display:flex;gap:5px;margin-top:5px;">
                         <button onclick="applyStatAdj('pending','')" style="flex:1;background:var(--danger);color:white;border:none;border-radius:6px;padding:4px;font-size:11px;font-weight:bold;cursor:pointer;">✓ تطبيق</button>
-                        <button onclick="closeStatEdit('pending')" style="flex:1;background:var(--border-color);color:white;border:none;border-radius:6px;padding:4px;font-size:11px;cursor:pointer;">✕</button>
+                        <button onclick="closeStatEdit('pending')" style="flex:1;background:var(--border-color);color:var(--text-main);border:none;border-radius:6px;padding:4px;font-size:11px;cursor:pointer;">✕</button>
                     </div>
                 </div>
             </div>
@@ -671,6 +683,31 @@
     <div id="toast">رسالة</div>
 
     <script>
+        // دالة تبديل المظهر (Dark/Light Mode)
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.querySelector('#theme-toggle-btn i');
+            body.classList.toggle('light-mode');
+            
+            if (body.classList.contains('light-mode')) {
+                localStorage.setItem('kemo_theme', 'light');
+                icon.className = 'fa-solid fa-moon';
+            } else {
+                localStorage.setItem('kemo_theme', 'dark');
+                icon.className = 'fa-solid fa-sun';
+            }
+        }
+
+        // تطبيق المظهر المحفوظ عند التحميل
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('kemo_theme');
+            const icon = document.querySelector('#theme-toggle-btn i');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+                if(icon) icon.className = 'fa-solid fa-moon';
+            }
+        });
+
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault(); deferredPrompt = e;
@@ -731,12 +768,13 @@
                     else if(o.status === 'rejected') statusHtml = `<span style="color:var(--danger); font-weight:bold; font-size:16px;">للأسف تم رفض طلبك ❌</span>`;
                     
                     resultDiv.innerHTML = `
-                        <div style="background: var(--bg-dark); padding: 15px; border-radius: 10px; border: 1px solid var(--border-color);">
-                            <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 5px;">الطلب رقم: #${o.id}</div>
-                            <div style="font-size: 14px; margin-bottom: 10px;">ID اللعبة: <b style="color:white;">${o.playerId}</b></div>
-                            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;"><i class="fa-regular fa-clock"></i> ${o.dateStr}</div>
-                            <hr style="border-color: var(--border-color); margin: 10px 0;">
-                            <div>حالة الطلب الآن: <br><br> ${statusHtml}</div>
+                        <div style="background: var(--bg-dark); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); text-align: center;">
+                            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">الطلب رقم: #${o.id}</div>
+                            <div style="font-size: 15px; margin-bottom: 12px; color: var(--text-main);">ID اللعبة: <b style="font-size: 16px;">${o.playerId}</b></div>
+                            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 15px;"><i class="fa-regular fa-clock"></i> ${o.dateStr}</div>
+                            <hr style="border-color: var(--border-color); margin: 15px 0;">
+                            <div style="font-size: 14px; color: var(--text-main); margin-bottom: 10px;">حالة الطلب الآن:</div>
+                            <div>${statusHtml}</div>
                         </div>
                     `;
                 } else {
@@ -1270,7 +1308,6 @@
             document.getElementById('cart-total-price').innerText = Math.round(finalTotal); document.getElementById('cart-badge-count').innerText = cnt;
         }
 
-        // ===== دالة رفع وحذف صورة الإيصال للعميل في السلة =====
         document.getElementById('receipt-image-input').addEventListener('change', e => {
             const f = e.target.files[0]; if(!f) return;
             const r = new FileReader();
@@ -1283,7 +1320,6 @@
                     cv.width=w; cv.height=h; cv.getContext('2d').drawImage(img,0,0,w,h);
                     customerReceiptBase64 = cv.toDataURL('image/jpeg', 0.5); 
                     
-                    // إخفاء زر الرفع وإظهار رسالة النجاح مع زر الحذف
                     document.getElementById('receipt-image-input').style.display = 'none';
                     document.getElementById('receipt-preview-container').style.display = 'block';
                 };
@@ -1299,7 +1335,6 @@
             document.getElementById('receipt-preview-container').style.display = 'none';
             showToast("تم حذف صورة الإيصال المرفقة");
         }
-        // ========================================================
 
         function checkoutWhatsApp() {
             if(!currentUser) { showToast("سجل دخول أولاً!",true); return openAuthModal(); }
@@ -1371,7 +1406,6 @@
             document.getElementById('promo-code').value=''; 
             document.getElementById('coupon-msg').innerText=''; 
             
-            // إعادة ضبط حقل الإيصال
             document.getElementById('receipt-image-input').value='';
             document.getElementById('receipt-image-input').style.display = 'block';
             document.getElementById('receipt-preview-container').style.display = 'none';
@@ -1529,7 +1563,6 @@
 
                 let deleteBtnHtml = `<button onclick="deleteSingleOrder('${o.id}')" style="position: absolute; top: 10px; left: 10px; background: transparent; border: none; color: var(--danger); font-size: 14px; cursor: pointer;"><i class="fa-solid fa-trash"></i></button>`;
                 
-                // زر عرض الإيصال في الإدارة بدون زر الحذف
                 let receiptBtnHtml = o.receiptImage 
                     ? `<button class="btn" style="background: var(--etisalat); color: white; padding: 5px; font-size: 11px; margin-top: 8px; width: max-content; display: inline-block;" onclick="viewReceipt('${o.id}')"><i class="fa-solid fa-image"></i> الإيصال</button>` 
                     : `<span style="font-size:11px; color:gray; display:block; margin-top:8px;">بدون إيصال</span>`;
@@ -1619,10 +1652,10 @@
                     html += `
                     <div class="customer-card">
                         <h4>${rankIcon} ${c.name}</h4>
-                        <p><i class="fa-solid fa-phone" style="width:15px; color:var(--success)"></i> <a href="tel:${c.phone}" style="color:white; text-decoration:none;">${c.phone || 'غير مسجل'}</a></p>
+                        <p><i class="fa-solid fa-phone" style="width:15px; color:var(--success)"></i> <a href="tel:${c.phone}" style="color:var(--text-main); text-decoration:none;">${c.phone || 'غير مسجل'}</a></p>
                         <p><i class="fa-solid fa-envelope" style="width:15px; color:var(--text-muted)"></i> ${c.email}</p>
                         <div class="stats">
-                            <span style="color:var(--text-muted)">عدد الطلبات: <b style="color:white">${c.orderCount}</b></span>
+                            <span style="color:var(--text-muted)">عدد الطلبات: <b style="color:var(--text-main)">${c.orderCount}</b></span>
                             <span style="color:var(--primary)">دفع: <b>${c.totalSpent} ج.م</b></span>
                         </div>
                     </div>`;
