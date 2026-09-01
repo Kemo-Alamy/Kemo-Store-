@@ -443,7 +443,14 @@
                 <p style="font-size: 13px; color: #fff; margin-bottom: 5px; font-weight: bold; text-align: center;"><i class="fa-solid fa-money-bill-transfer" style="color: var(--etisalat);"></i> الدفع عبر اتصالات كاش فقط</p>
                 <p style="font-size: 18px; color: var(--etisalat); font-weight: 900; text-align: center; margin-bottom: 8px; user-select: all; letter-spacing: 2px;">01115168017</p>
                 <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 5px; text-align: center;">الرجاء تحويل المبلغ ثم إرفاق صورة الإيصال <span style="color: var(--primary);">(اختياري)</span></label>
+                
                 <input type="file" id="receipt-image-input" accept="image/*" style="width: 100%; font-size: 12px; color: white; background: var(--bg-card); padding: 5px; border-radius: 5px; border: 1px dashed var(--etisalat);">
+                
+                <!-- زر حذف الإيصال للعميل -->
+                <div id="receipt-preview-container" style="display: none; margin-top: 10px; text-align: center;">
+                    <span style="font-size: 12px; color: var(--success); display: block; margin-bottom: 5px; font-weight: bold;">تم إرفاق الإيصال بنجاح ✅</span>
+                    <button class="btn" style="background: var(--danger); color: white; padding: 5px; font-size: 11px; width: max-content; margin: 0 auto;" onclick="removeCustomerReceipt()"><i class="fa-solid fa-trash"></i> حذف الصورة المرفقة</button>
+                </div>
             </div>
 
             <div style="display: flex; justify-content: space-between; font-weight: 900; margin-bottom: 10px;">
@@ -1263,6 +1270,7 @@
             document.getElementById('cart-total-price').innerText = Math.round(finalTotal); document.getElementById('cart-badge-count').innerText = cnt;
         }
 
+        // ===== دالة رفع وحذف صورة الإيصال للعميل في السلة =====
         document.getElementById('receipt-image-input').addEventListener('change', e => {
             const f = e.target.files[0]; if(!f) return;
             const r = new FileReader();
@@ -1274,11 +1282,24 @@
                     if(w>h){if(w>M){h*=M/w; w=M;}}else{if(h>M){w*=M/h; h=M;}}
                     cv.width=w; cv.height=h; cv.getContext('2d').drawImage(img,0,0,w,h);
                     customerReceiptBase64 = cv.toDataURL('image/jpeg', 0.5); 
+                    
+                    // إخفاء زر الرفع وإظهار رسالة النجاح مع زر الحذف
+                    document.getElementById('receipt-image-input').style.display = 'none';
+                    document.getElementById('receipt-preview-container').style.display = 'block';
                 };
                 img.src = ev.target.result;
             };
             r.readAsDataURL(f);
         });
+
+        function removeCustomerReceipt() {
+            customerReceiptBase64 = "";
+            document.getElementById('receipt-image-input').value = '';
+            document.getElementById('receipt-image-input').style.display = 'block';
+            document.getElementById('receipt-preview-container').style.display = 'none';
+            showToast("تم حذف صورة الإيصال المرفقة");
+        }
+        // ========================================================
 
         function checkoutWhatsApp() {
             if(!currentUser) { showToast("سجل دخول أولاً!",true); return openAuthModal(); }
@@ -1349,7 +1370,12 @@
             cart=[]; appliedCouponObj=null; customerReceiptBase64="";
             document.getElementById('promo-code').value=''; 
             document.getElementById('coupon-msg').innerText=''; 
+            
+            // إعادة ضبط حقل الإيصال
             document.getElementById('receipt-image-input').value='';
+            document.getElementById('receipt-image-input').style.display = 'block';
+            document.getElementById('receipt-preview-container').style.display = 'none';
+
             saveCart(); 
             closeAllSidebars(); 
             
@@ -1471,16 +1497,6 @@
             document.getElementById('receipt-modal').classList.remove('active');
         }
 
-        // دالة جديدة لحذف الإيصال من الطلب
-        function deleteReceipt(orderId) {
-            if(confirm("هل أنت متأكد من حذف صورة الإيصال لهذا الطلب؟")) {
-                db.ref('kemo_orders/' + orderId + '/receiptImage').remove().then(() => {
-                    showToast("تم حذف الإيصال بنجاح", false);
-                });
-            }
-        }
-
-        // دالة جديدة لتحويل الطلب إلى "جاري الشحن"
         function markOrderProcessing(id) {
             db.ref('kemo_orders/'+id).update({status: 'processing'}).then(() => {
                 showToast("تم تحويل الطلب إلى: جاري الشحن 🚚", false);
@@ -1502,7 +1518,6 @@
                         adminActions += `<button class="btn" style="background:var(--primary); color:#000; margin-bottom:10px; font-size:12px;" onclick="sendLateMessage('${o.id}')"><i class="fa-brands fa-whatsapp"></i> إرسال رسالة تأخير</button>`; 
                     }
 
-                    // إضافة زر أو رسالة جاري الشحن
                     let processBtn = o.status === 'pending' 
                         ? `<button class="btn" style="background: var(--processing); color: white; margin-bottom: 10px; font-size: 13px;" onclick="markOrderProcessing('${o.id}')"><i class="fa-solid fa-truck-fast"></i> تحويل إلى: جاري الشحن</button>`
                         : `<div style="color:var(--processing); font-weight:bold; text-align:center; margin-bottom: 10px; font-size:13px;"><i class="fa-solid fa-truck-fast"></i> الطلب جاري شحنه الآن...</div>`;
@@ -1514,12 +1529,9 @@
 
                 let deleteBtnHtml = `<button onclick="deleteSingleOrder('${o.id}')" style="position: absolute; top: 10px; left: 10px; background: transparent; border: none; color: var(--danger); font-size: 14px; cursor: pointer;"><i class="fa-solid fa-trash"></i></button>`;
                 
-                // تحديث أزرار الإيصال لتشمل زر الحذف
-                let receiptBtnHtml = o.receiptImage ? `
-                    <div style="display: flex; gap: 5px; margin-top: 8px;">
-                        <button class="btn" style="background: var(--etisalat); color: white; padding: 5px; font-size: 11px; flex: 1;" onclick="viewReceipt('${o.id}')"><i class="fa-solid fa-image"></i> الإيصال</button>
-                        <button class="btn" style="background: var(--danger); color: white; padding: 5px; font-size: 11px; width: max-content;" onclick="deleteReceipt('${o.id}')" title="حذف الإيصال"><i class="fa-solid fa-trash"></i></button>
-                    </div>` 
+                // زر عرض الإيصال في الإدارة بدون زر الحذف
+                let receiptBtnHtml = o.receiptImage 
+                    ? `<button class="btn" style="background: var(--etisalat); color: white; padding: 5px; font-size: 11px; margin-top: 8px; width: max-content; display: inline-block;" onclick="viewReceipt('${o.id}')"><i class="fa-solid fa-image"></i> الإيصال</button>` 
                     : `<span style="font-size:11px; color:gray; display:block; margin-top:8px;">بدون إيصال</span>`;
 
                 html += `<div class="order-card" style="background:var(--bg-card); position:relative;">${deleteBtnHtml}<div class="order-header"><div>${lateIndicator}<span style="color:var(--primary);">#${o.id}</span></div><span style="padding-left:25px;">${o.userName}</span></div><div style="font-size:13px; margin-bottom:10px;"><b>الرقم:</b> <a href="tel:${o.phone || ''}" style="color:var(--success); text-decoration:none;">${o.phone || 'غير مسجل'}</a><br><b>ID:</b> ${o.playerId} <br> <b>إجمالي:</b> ${o.total} ج.م <br> <b>التاريخ:</b> ${o.dateStr || new Date(o.timestamp).toLocaleDateString('ar-EG')} <br> ${receiptBtnHtml}</div>${adminActions}</div>`;
