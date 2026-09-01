@@ -1,4 +1,19 @@
+ولا يهمك خالص، التعديلات دي بسيطة جداً ومهمة.
 
+تم تنفيذ المطلوب بالمللي:
+
+1.  صورة التحويل بقت (اختياري): العميل يقدر يبعت الطلب من غير ما يرفع صورة عادي
+    جداً، وساعتها رسالة الواتساب اللي هتوصلك هيتكتب فيها (العميل لم يقم بإرفاق
+    إيصال). ولو رفع الصورة، هيتبعتلك الرابط بتاعها زي ما اتفقنا.
+2.  إضافة نظام "الرسالة الجماعية / الإشعار" 📢:
+      - ضفتلك قسم جديد في لوحة الإدارة اسمه (إرسال رسالة جماعية).
+      - بمجرد ما تكتب رسالة وتدوس "نشر"، أي عميل فاتح الموقع في اللحظة دي أو
+        هيدخل الموقع هتظهرله نافذة شيك جداً في نص الشاشة فيها رسالتك (مثلاً:
+        خصم 20% النهارده بس!).
+      - العميل أول ما يقفلها مش هتظهرله تاني عشان متزعجوش، وتقدر من الإدارة تدوس
+        "إيقاف الإشعار" في أي وقت.
+
+إليك الكود النهائي بكل التحديثات:
 
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -324,6 +339,16 @@
 
     <div class="overlay" id="main-overlay" onclick="closeAllSidebars()"></div>
 
+    <!-- نافذة الرسالة الجماعية (الإشعار) للعملاء -->
+    <div class="overlay" id="announcement-modal-overlay" style="z-index: 5000;" onclick="closeAnnouncement()"></div>
+    <div class="custom-modal" id="announcement-modal" style="z-index: 5001;">
+        <button onclick="closeAnnouncement()" style="position: absolute; top: 15px; left: 15px; background: transparent; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+        <i class="fa-solid fa-bell main-icon" style="color: var(--primary); animation: pulse 2s infinite;"></i>
+        <h3 style="color:var(--primary)">إعلان هام!</h3>
+        <p id="announcement-text-display" style="font-size: 15px; font-weight: bold; color: white; margin-bottom: 20px; white-space: pre-wrap;"></p>
+        <button class="btn btn-cart" onclick="closeAnnouncement()">حسناً، فهمت</button>
+    </div>
+
     <div class="overlay" id="auth-modal-overlay" style="z-index: 3005;" onclick="closeAuthModal()"></div>
     <div class="custom-modal" id="auth-modal" style="z-index: 3006;">
         <button onclick="closeAuthModal()" style="position: absolute; top: 15px; left: 15px; background: transparent; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
@@ -336,7 +361,6 @@
         </div>
     </div>
 
-    <!-- نافذة تتبع الطلب -->
     <div class="overlay" id="track-modal-overlay" style="z-index: 3005;" onclick="closeTrackModal()"></div>
     <div class="custom-modal" id="track-modal" style="z-index: 3006;">
         <button onclick="closeTrackModal()" style="position: absolute; top: 15px; left: 15px; background: transparent; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
@@ -348,7 +372,6 @@
         <div id="track-result" style="margin-top: 15px; text-align: center;"></div>
     </div>
 
-    <!-- نافذة عرض الإيصال للإدارة -->
     <div class="overlay" id="receipt-modal-overlay" style="z-index: 4000;" onclick="closeReceiptModal()"></div>
     <div class="custom-modal" id="receipt-modal" style="z-index: 4001; max-width: 500px; padding: 20px;">
         <button onclick="closeReceiptModal()" style="position: absolute; top: 15px; left: 15px; background: transparent; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
@@ -435,7 +458,7 @@
             <div style="background: var(--bg-dark); padding: 10px; border-radius: 8px; border: 1px solid var(--etisalat); margin-bottom: 15px;">
                 <p style="font-size: 13px; color: #fff; margin-bottom: 5px; font-weight: bold; text-align: center;"><i class="fa-solid fa-money-bill-transfer" style="color: var(--etisalat);"></i> الدفع عبر اتصالات كاش فقط</p>
                 <p style="font-size: 18px; color: var(--etisalat); font-weight: 900; text-align: center; margin-bottom: 8px; user-select: all; letter-spacing: 2px;">01115168017</p>
-                <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 5px; text-align: center;">الرجاء تحويل المبلغ ثم إرفاق صورة الإيصال (إجباري)</label>
+                <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 5px; text-align: center;">الرجاء تحويل المبلغ ثم إرفاق صورة الإيصال <span style="color: var(--primary);">(اختياري)</span></label>
                 <input type="file" id="receipt-image-input" accept="image/*" style="width: 100%; font-size: 12px; color: white; background: var(--bg-card); padding: 5px; border-radius: 5px; border: 1px dashed var(--etisalat);">
             </div>
 
@@ -581,6 +604,19 @@
         <div class="admin-panel">
             <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">هذا القسم يعرض جميع عملائك وإجمالي المبالغ التي دفعوها لك، لتتمكن من تمييز عملائك المخلصين.</p>
             <div id="admin-customers-db" class="customers-grid"></div>
+        </div>
+
+        <!-- قسم الإشعار الجماعي (الرسالة الجماعية) -->
+        <h3 style="margin-bottom:15px; color:var(--primary); margin-top: 30px;"><i class="fa-solid fa-bullhorn"></i> إرسال إشعار جماعي للعملاء</h3>
+        <div class="admin-panel">
+            <div class="form-grid">
+                <div class="input-group" style="grid-column: 1 / -1;">
+                    <label>نص الرسالة (سيظهر كإشعار منبثق لجميع الزوار)</label>
+                    <textarea id="admin-announcement-text" rows="3" placeholder="مثال: خصم 20% بمناسبة العيد استخدام كود KEMO20 ..."></textarea>
+                </div>
+                <button class="btn btn-cart" onclick="publishAnnouncement()">نشر الإشعار 🚀</button>
+                <button class="btn" style="background:var(--danger); color:white;" onclick="stopAnnouncement()">إيقاف الإشعار ❌</button>
+            </div>
         </div>
 
         <h3 style="margin-bottom:15px; color:var(--primary); margin-top: 30px;"><i class="fa-solid fa-ticket"></i> إضافة كوبون خصم</h3>
@@ -790,19 +826,54 @@
         let isAuthProcessing = false;
         let customerReceiptBase64 = "";
 
-        // ===== كود يقرأ الرابط لو جاي من الواتساب وفيه رابط إيصال =====
+        // ================= كود الرسالة الجماعية (الإشعار) =================
+        let currentAnnouncementTime = 0;
+
+        function publishAnnouncement() {
+            if(!isAdmin) return;
+            let text = document.getElementById('admin-announcement-text').value.trim();
+            if(!text) return showToast("اكتب نص الإشعار أولاً", true);
+            db.ref('kemo_settings/announcement').set({ text: text, active: true, time: Date.now() }).then(()=> showToast("تم نشر الإشعار لجميع الزوار 🚀"));
+        }
+
+        function stopAnnouncement() {
+            if(!isAdmin) return;
+            db.ref('kemo_settings/announcement/active').set(false).then(()=> showToast("تم إيقاف الإشعار ❌"));
+        }
+
+        db.ref('kemo_settings/announcement').on('value', snap => {
+            let data = snap.val();
+            if(data && data.active && data.text) {
+                let lastSeen = localStorage.getItem('kemo_announcement_seen');
+                if(lastSeen != data.time) { 
+                    document.getElementById('announcement-text-display').innerText = data.text;
+                    document.getElementById('announcement-modal-overlay').classList.add('active');
+                    document.getElementById('announcement-modal').classList.add('active');
+                    currentAnnouncementTime = data.time;
+                }
+            } else {
+                closeAnnouncement(false);
+            }
+        });
+
+        function closeAnnouncement(saveToLocal = true) {
+            document.getElementById('announcement-modal-overlay').classList.remove('active');
+            document.getElementById('announcement-modal').classList.remove('active');
+            if(saveToLocal && currentAnnouncementTime > 0) {
+                localStorage.setItem('kemo_announcement_seen', currentAnnouncementTime);
+            }
+        }
+        // ====================================================================
+
         window.addEventListener('load', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const receiptOrderId = urlParams.get('receipt');
             if (receiptOrderId) {
-                // البحث عن الطلب وعرض الصورة
                 db.ref('kemo_orders/' + receiptOrderId).once('value').then(snap => {
                     if (snap.exists() && snap.val().receiptImage) {
                         document.getElementById('admin-receipt-img').src = snap.val().receiptImage;
                         document.getElementById('receipt-modal-overlay').classList.add('active');
                         document.getElementById('receipt-modal').classList.add('active');
-                        
-                        // تنظيف الرابط عشان لو عمل ريفريش النافذة متفتحش تاني
                         window.history.replaceState({}, document.title, window.location.pathname);
                     } else {
                         showToast("الإيصال غير موجود أو تم حذفه", true);
@@ -810,7 +881,6 @@
                 });
             }
         });
-        // ==============================================================
 
         function showToast(msg, isError=false) {
             const t = document.getElementById("toast"); t.innerHTML = msg; t.style.borderColor = isError?"var(--danger)":"var(--primary)";
@@ -1227,7 +1297,6 @@
             r.readAsDataURL(f);
         });
 
-        // ===== دالة الدفع مع رابط الإيصال الذكي =====
         function checkoutWhatsApp() {
             if(!currentUser) { showToast("سجل دخول أولاً!",true); return openAuthModal(); }
             if(!cart.length) return showToast("السلة فارغة",true);
@@ -1238,8 +1307,6 @@
 
             const cPhone = document.getElementById('customer-phone').value.trim(); 
             if(!cPhone) return showToast("يرجى كتابة رقم الواتساب", true);
-
-            if(!customerReceiptBase64) return showToast("يرجى إرفاق صورة إيصال التحويل لإتمام الطلب!", true);
 
             const orderId = 'KEMO-' + Date.now().toString().slice(-6) + Math.floor(Math.random() * 10);
             let finalTotal = parseInt(document.getElementById('cart-total-price').innerText);
@@ -1254,7 +1321,6 @@
                 receiptImage: customerReceiptBase64 
             };
 
-            // إنشاء الرابط الذكي للإيصال
             const currentUrl = window.location.href.split('?')[0]; 
             const receiptLink = `${currentUrl}?receipt=${orderId}`;
 
@@ -1264,9 +1330,14 @@
             msg += `\n💰 *الإجمالي الكلي:* ${finalTotal} ج.م\n`; 
             if(appliedCouponObj) msg += `🎁 (تم تطبيق كود خصم ${appliedCouponObj.code})\n`; 
             
-            // إضافة رابط الإيصال للرسالة
-            msg += `\n🔗 *رابط صورة الإيصال (اضغط للمشاهدة):*\n${receiptLink}\n`;
-            msg += `\nبرجاء مراجعة الإيصال وتأكيد الشحن معي. (رقم الطلب: #${orderId})`;
+            // إضافة رابط الإيصال لو موجود، أو ملاحظة لو مش موجود
+            if (customerReceiptBase64) {
+                msg += `\n🔗 *رابط صورة الإيصال (اضغط للمشاهدة):*\n${receiptLink}\n`;
+            } else {
+                msg += `\n⚠️ *ملاحظة:* العميل لم يقم بإرفاق صورة إيصال التحويل.\n`;
+            }
+            
+            msg += `\nبرجاء مراجعة الطلب وتأكيد الشحن معي. (رقم الطلب: #${orderId})`;
 
             const waLink = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`;
 
@@ -1291,7 +1362,6 @@
 
             finishCheckout(waLink);
         }
-        // =========================================================
 
         function finishCheckout(waLink) {
             cart=[]; appliedCouponObj=null; customerReceiptBase64="";
@@ -1624,3 +1694,4 @@
     </script>
 </body>
 </html>
+ق
