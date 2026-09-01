@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -13,16 +14,12 @@
     
     <title>Kemo Store | شحن ألعاب</title>
 
-    <!-- ================= بداية أكواد SEO وأيقونات الموقع المخصصة لمحرك بحث جوجل ================= -->
     <meta name="description" content="متجر كيمو ستور (Kemo Store) الأفضل والأسرع لشحن جميع الألعاب بأرخص الأسعار وبطرق دفع آمنة. تسليم فوري.">
     <meta name="keywords" content="شحن العاب, شحن ببجي, شحن فري فاير, متجر شحن العاب, Kemo Store, كيمو ستور">
     <meta name="author" content="Kemo Store">
     <meta name="robots" content="index, follow"> 
     
-    <!-- تعريف اسم الموقع صراحة لجوجل -->
     <meta property="og:site_name" content="Kemo Store">
-    
-    <!-- مسارات الأيقونة بالروابط الكاملة لضمان التقاط جوجل لها -->
     <link rel="icon" href="https://kemo-alamy.github.io/Kemo-Store-/1000490757.jpg" sizes="192x192" type="image/jpeg">
     <link rel="apple-touch-icon" href="https://kemo-alamy.github.io/Kemo-Store-/1000490757.jpg" sizes="180x180">
     <link rel="shortcut icon" href="https://kemo-alamy.github.io/Kemo-Store-/1000490757.jpg" type="image/jpeg">
@@ -34,7 +31,6 @@
     <meta property="og:image" content="https://kemo-alamy.github.io/Kemo-Store-/1000490757.jpg"> 
     <meta property="og:type" content="website">
 
-    <!-- كود JSON-LD لإجبار جوجل على تغيير اسم الموقع في البحث إلى Kemo Store -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -44,7 +40,6 @@
       "url": "https://kemo-alamy.github.io/Kemo-Store-/"
     }
     </script>
-
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -56,7 +51,6 @@
       "telephone": "+201115168017"
     }
     </script>
-    <!-- ========================================================================================= -->
     
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -77,7 +71,7 @@
             --bg-dark: #0f141e; --bg-card: #18202f; --primary: #f89e1b; --primary-hover: #d97706; 
             --accent: #8B5CF6; --text-main: #F3F4F6; --text-muted: #9CA3AF; --danger: #EF4444; 
             --success: #10B981; --whatsapp: #25D366; --border-color: #2a3447;
-            --sale-badge: #6b21a8; 
+            --sale-badge: #6b21a8; --etisalat: #6e9f1a;
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
@@ -85,8 +79,6 @@
         
         button, a, input, select, .product-card, .close-side { touch-action: manipulation; }
         
-
-
         header { background: var(--bg-card); position: sticky; top: 0; z-index: 1000; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; border-bottom: 1px solid var(--border-color); }
         .logo { font-size: 24px; font-weight: 900; color: var(--primary); display: flex; align-items: center; gap: 8px; }
         .logo i { color: var(--accent); }
@@ -96,39 +88,16 @@
         .cart-icon-btn { background: var(--bg-dark); border: 1px solid var(--border-color); width: 45px; height: 45px; border-radius: 12px; font-size: 18px; color: var(--text-main); cursor: pointer; position: relative; transition: 0.2s; display: flex; justify-content: center; align-items: center; }
         .cart-icon-btn:hover { border-color: var(--primary); color: var(--primary); }
         .cart-icon-btn.heart-icon:hover { border-color: var(--danger); color: var(--danger); }
+        .cart-icon-btn.track-icon:hover { border-color: var(--success); color: var(--success); }
         .cart-badge { position: absolute; top: -5px; right: -5px; background: var(--primary); color: #000; font-size: 11px; font-weight: 900; width: 20px; height: 20px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid var(--bg-card); }
 
         .user-area { display: flex; align-items: center; gap: 10px; }
         
         .btn-google { 
-            background-color: #131314 !important; 
-            border: 1px solid #747775 !important; 
-            color: #e3e3e3 !important; 
-            padding: 8px 20px !important; 
-            border-radius: 40px !important; 
-            font-family: 'Cairo', sans-serif !important; 
-            font-weight: 600 !important; 
-            font-size: 14px !important; 
-            cursor: pointer !important; 
-            display: flex !important; 
-            align-items: center !important; 
-            gap: 12px !important; 
-            transition: all 0.2s ease !important; 
-            outline: none !important; 
-            box-shadow: none !important;
+            background-color: #131314 !important; border: 1px solid #747775 !important; color: #e3e3e3 !important; padding: 8px 20px !important; border-radius: 40px !important; font-family: 'Cairo', sans-serif !important; font-weight: 600 !important; font-size: 14px !important; cursor: pointer !important; display: flex !important; align-items: center !important; gap: 12px !important; transition: all 0.2s ease !important; outline: none !important; box-shadow: none !important;
         }
-        .btn-google:hover { 
-            background-color: #1e1e1e !important; 
-            border-color: #8e918f !important; 
-        }
-        .btn-google svg { 
-            width: 20px !important; 
-            height: 20px !important; 
-            background: transparent !important; 
-            border-radius: 0 !important; 
-            padding: 0 !important; 
-            border: none !important; 
-        }
+        .btn-google:hover { background-color: #1e1e1e !important; border-color: #8e918f !important; }
+        .btn-google svg { width: 20px !important; height: 20px !important; background: transparent !important; border-radius: 0 !important; padding: 0 !important; border: none !important; }
 
         .user-profile { display: flex; align-items: center; gap: 8px; background: var(--bg-dark); padding: 5px 15px 5px 5px; border-radius: 30px; border: 1px solid var(--primary); box-shadow: 0 0 10px rgba(248, 158, 27, 0.1);}
         .user-profile img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
@@ -302,9 +271,12 @@
         .live-popup-text .prod { color: var(--success); font-weight: bold; }
         .live-popup-text small { font-size: 10px; color: var(--text-muted); }
 
-        .whatsapp-support-btn { position: fixed; bottom: 20px; left: 20px; background-color: var(--whatsapp); color: white; width: 55px; height: 55px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 32px; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4); z-index: 1000; text-decoration: none; transition: 0.2s; }
-        .whatsapp-support-btn:hover { transform: scale(1.1); background-color: #1DA851; color: white; }
-        .whatsapp-support-btn:active { transform: scale(0.9); }
+        .customers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
+        .customer-card { background: var(--bg-card); border: 1px solid var(--border-color); padding: 15px; border-radius: 12px; text-align: right; transition: 0.2s;}
+        .customer-card:hover { border-color: var(--primary); transform: translateY(-3px); }
+        .customer-card h4 { color: #fff; font-size: 15px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;}
+        .customer-card p { font-size: 12px; color: var(--text-muted); margin-bottom: 5px;}
+        .customer-card .stats { display: flex; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-color); font-size: 13px; font-weight: bold;}
 
         @media (max-width: 600px) {
             .products-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
@@ -322,14 +294,12 @@
 
     <audio id="welcome-audio" src="welcome.mp3" preload="auto"></audio>
 
-
-
     <header>
         <div class="logo"><i class="fa-solid fa-gamepad"></i> 𝑲𝒆𝒎𝒐 𝑺𝒕𝒐𝒓𝒆</div>
         <div class="nav-actions">
-            <button id="btn-install-app"><i class="fa-solid fa-download"></i> تثبيت التطبيق</button>
             
             <div class="icon-btn-wrapper">
+                <button class="cart-icon-btn track-icon" onclick="openTrackModal()" title="تتبع طلبك"><i class="fa-solid fa-map-location-dot"></i></button>
                 <button class="cart-icon-btn heart-icon" onclick="openSidebar('wishlist-sidebar')"><i class="fa-solid fa-heart"></i></button>
                 <button class="cart-icon-btn" onclick="openSidebar('orders-sidebar')"><i class="fa-solid fa-box-open"></i></button>
                 <button class="cart-icon-btn" onclick="openSidebar('cart-sidebar')">
@@ -354,7 +324,6 @@
 
     <div class="overlay" id="main-overlay" onclick="closeAllSidebars()"></div>
 
-    <!-- ===== نافذة اختيار التسجيل الجديدة ===== -->
     <div class="overlay" id="auth-modal-overlay" style="z-index: 3005;" onclick="closeAuthModal()"></div>
     <div class="custom-modal" id="auth-modal" style="z-index: 3006;">
         <button onclick="closeAuthModal()" style="position: absolute; top: 15px; left: 15px; background: transparent; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
@@ -366,7 +335,26 @@
             <button class="btn btn-buy" style="background: var(--accent);" onclick="closeAuthModal(); handleAuth('signup')"><i class="fa-solid fa-user-plus"></i> إنشاء حساب جديد</button>
         </div>
     </div>
-    <!-- ===================================== -->
+
+    <!-- نافذة تتبع الطلب -->
+    <div class="overlay" id="track-modal-overlay" style="z-index: 3005;" onclick="closeTrackModal()"></div>
+    <div class="custom-modal" id="track-modal" style="z-index: 3006;">
+        <button onclick="closeTrackModal()" style="position: absolute; top: 15px; left: 15px; background: transparent; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+        <i class="fa-solid fa-map-location-dot main-icon" style="color: var(--success);"></i>
+        <h3>تتبع حالة طلبك 📍</h3>
+        <p>أدخل رقم الطلب الخاص بك (يبدأ بـ KEMO) لمعرفة حالته الآن:</p>
+        <input type="text" id="track-order-id" class="name-input" placeholder="مثال: KEMO-123456" style="text-align: center; letter-spacing: 1px;">
+        <button class="btn btn-cart" style="background: var(--success); color: white;" onclick="trackOrderGuest()"><i class="fa-solid fa-magnifying-glass"></i> بحث عن الطلب</button>
+        <div id="track-result" style="margin-top: 15px; text-align: center;"></div>
+    </div>
+
+    <!-- نافذة عرض الإيصال للإدارة -->
+    <div class="overlay" id="receipt-modal-overlay" style="z-index: 4000;" onclick="closeReceiptModal()"></div>
+    <div class="custom-modal" id="receipt-modal" style="z-index: 4001; max-width: 500px; padding: 20px;">
+        <button onclick="closeReceiptModal()" style="position: absolute; top: 15px; left: 15px; background: transparent; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+        <h3 style="margin-bottom: 15px; color: var(--primary);">صورة إيصال الدفع</h3>
+        <img id="admin-receipt-img" src="" style="width: 100%; border-radius: 10px; border: 1px solid var(--border-color);">
+    </div>
 
     <div class="overlay" id="tutorial-modal-overlay" style="z-index: 3000;"></div>
     <div class="custom-modal" id="tutorial-modal" style="z-index: 3001;">
@@ -422,19 +410,6 @@
         </div>
     </div>
 
-    <div id="live-purchase-popup" class="live-popup">
-        <img src="" id="live-popup-img">
-        <div class="live-popup-text">
-            <span class="name" id="live-popup-name"></span>
-            <span class="action">قام بشراء <span class="prod" id="live-popup-prod"></span> الآن!</span>
-            <small>منذ لحظات</small>
-        </div>
-    </div>
-
-    <a href="https://wa.me/201115168017" class="whatsapp-support-btn" target="_blank" title="تحدث مع الدعم الفني">
-        <i class="fa-brands fa-whatsapp"></i>
-    </a>
-
     <div class="side-panel" id="cart-sidebar">
         <div class="side-header">
             <h3><i class="fa-solid fa-basket-shopping" style="color:var(--primary)"></i> سلة الشحن</h3>
@@ -457,10 +432,17 @@
             </div>
             <div id="coupon-msg" style="font-size:12px; margin-bottom:10px; font-weight:bold;"></div>
 
-            <div style="display: flex; justify-content: space-between; font-weight: 900; margin-bottom: 10px;">
-                <span>الإجمالي:</span><span style="color: var(--primary);"><span id="cart-total-price">0</span> ج.م</span>
+            <div style="background: var(--bg-dark); padding: 10px; border-radius: 8px; border: 1px solid var(--etisalat); margin-bottom: 15px;">
+                <p style="font-size: 13px; color: #fff; margin-bottom: 5px; font-weight: bold; text-align: center;"><i class="fa-solid fa-money-bill-transfer" style="color: var(--etisalat);"></i> الدفع عبر اتصالات كاش فقط</p>
+                <p style="font-size: 18px; color: var(--etisalat); font-weight: 900; text-align: center; margin-bottom: 8px; user-select: all; letter-spacing: 2px;">01115168017</p>
+                <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 5px; text-align: center;">الرجاء تحويل المبلغ ثم إرفاق صورة الإيصال (إجباري)</label>
+                <input type="file" id="receipt-image-input" accept="image/*" style="width: 100%; font-size: 12px; color: white; background: var(--bg-card); padding: 5px; border-radius: 5px; border: 1px dashed var(--etisalat);">
             </div>
-            <button class="btn btn-buy" onclick="checkoutWhatsApp()"><i class="fa-brands fa-whatsapp fa-lg"></i> إرسال الطلب</button>
+
+            <div style="display: flex; justify-content: space-between; font-weight: 900; margin-bottom: 10px;">
+                <span>الإجمالي المطلوب:</span><span style="color: var(--primary);"><span id="cart-total-price">0</span> ج.م</span>
+            </div>
+            <button class="btn btn-buy" onclick="checkoutWhatsApp()"><i class="fa-brands fa-whatsapp fa-lg"></i> تأكيد الطلب</button>
         </div>
     </div>
 
@@ -572,6 +554,7 @@
                 </div>
             </div>
         </div>
+
         <h3 style="margin-bottom:15px; color:var(--primary);"><i class="fa-solid fa-truck-fast"></i> إدارة الطلبات</h3>
         <div class="admin-panel">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
@@ -594,7 +577,13 @@
             <div id="admin-orders-list" style="max-height: 400px; overflow-y:auto;"></div>
         </div>
 
-        <h3 style="margin-bottom:15px; color:var(--primary);"><i class="fa-solid fa-ticket"></i> إضافة كوبون خصم</h3>
+        <h3 style="margin-bottom:15px; color:var(--primary); margin-top: 30px;"><i class="fa-solid fa-users"></i> قاعدة بيانات العملاء (VIP)</h3>
+        <div class="admin-panel">
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">هذا القسم يعرض جميع عملائك وإجمالي المبالغ التي دفعوها لك، لتتمكن من تمييز عملائك المخلصين.</p>
+            <div id="admin-customers-db" class="customers-grid"></div>
+        </div>
+
+        <h3 style="margin-bottom:15px; color:var(--primary); margin-top: 30px;"><i class="fa-solid fa-ticket"></i> إضافة كوبون خصم</h3>
         <div class="admin-panel">
             <div class="form-grid">
                 <div class="input-group"><label>كود الكوبون</label><input type="text" id="c-code" placeholder="مثال: KEMO10"></div>
@@ -612,7 +601,7 @@
             <div id="admin-coupons-list" style="margin-top:15px; display:flex; gap:10px; flex-wrap:wrap;"></div>
         </div>
 
-        <h3 style="margin-bottom:15px; color:var(--primary);"><i class="fa-solid fa-plus"></i> إضافة / تعديل منتج</h3>
+        <h3 style="margin-bottom:15px; color:var(--primary); margin-top: 30px;"><i class="fa-solid fa-plus"></i> إضافة / تعديل منتج</h3>
         <div class="admin-panel">
             <input type="hidden" id="p-id">
             <div class="form-grid">
@@ -667,8 +656,6 @@
             });
         });
 
-
-
         window.addEventListener('load', () => {
             if(!localStorage.getItem('kemo_tutorial_seen')) {
                 setTimeout(() => {
@@ -683,7 +670,6 @@
             document.getElementById('tutorial-modal').classList.remove('active');
         }
 
-        // ===== الدوال الجديدة لفتح وإغلاق نافذة الدخول/التسجيل =====
         function openAuthModal() {
             document.getElementById('auth-modal-overlay').classList.add('active');
             document.getElementById('auth-modal').classList.add('active');
@@ -692,7 +678,44 @@
             document.getElementById('auth-modal-overlay').classList.remove('active');
             document.getElementById('auth-modal').classList.remove('active');
         }
-        // ==========================================================
+
+        function openTrackModal() {
+            document.getElementById('track-modal-overlay').classList.add('active');
+            document.getElementById('track-modal').classList.add('active');
+            document.getElementById('track-result').innerHTML = '';
+            document.getElementById('track-order-id').value = '';
+        }
+        function closeTrackModal() {
+            document.getElementById('track-modal-overlay').classList.remove('active');
+            document.getElementById('track-modal').classList.remove('active');
+        }
+        function trackOrderGuest() {
+            let trackId = document.getElementById('track-order-id').value.trim();
+            let resultDiv = document.getElementById('track-result');
+            if(!trackId) return showToast("يرجى إدخال رقم الطلب", true);
+            
+            db.ref('kemo_orders/' + trackId).once('value').then(snap => {
+                if(snap.exists()) {
+                    let o = snap.val();
+                    let statusHtml = '';
+                    if(o.status === 'pending') statusHtml = `<span style="color:var(--primary); font-weight:bold; font-size:16px;">قيد المراجعة ⏳</span>`;
+                    else if(o.status === 'completed') statusHtml = `<span style="color:var(--success); font-weight:bold; font-size:16px;">تم الشحن ✅</span>`;
+                    else if(o.status === 'rejected') statusHtml = `<span style="color:var(--danger); font-weight:bold; font-size:16px;">مرفوض / ملغي ❌</span>`;
+                    
+                    resultDiv.innerHTML = `
+                        <div style="background: var(--bg-dark); padding: 15px; border-radius: 10px; border: 1px solid var(--border-color);">
+                            <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 5px;">الطلب رقم: #${o.id}</div>
+                            <div style="font-size: 14px; margin-bottom: 10px;">ID اللعبة: <b style="color:white;">${o.playerId}</b></div>
+                            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;"><i class="fa-regular fa-clock"></i> ${o.dateStr}</div>
+                            <hr style="border-color: var(--border-color); margin: 10px 0;">
+                            <div>حالة الطلب الآن: <br><br> ${statusHtml}</div>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<span style="color:var(--danger); font-weight:bold;">عفواً، لا يوجد طلب بهذا الرقم ❌</span>`;
+                }
+            });
+        }
 
         let currentSlide = 0;
         const slides = document.querySelectorAll('.slide');
@@ -765,6 +788,29 @@
         
         let appliedCouponObj = null; 
         let isAuthProcessing = false;
+        let customerReceiptBase64 = "";
+
+        // ===== كود يقرأ الرابط لو جاي من الواتساب وفيه رابط إيصال =====
+        window.addEventListener('load', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const receiptOrderId = urlParams.get('receipt');
+            if (receiptOrderId) {
+                // البحث عن الطلب وعرض الصورة
+                db.ref('kemo_orders/' + receiptOrderId).once('value').then(snap => {
+                    if (snap.exists() && snap.val().receiptImage) {
+                        document.getElementById('admin-receipt-img').src = snap.val().receiptImage;
+                        document.getElementById('receipt-modal-overlay').classList.add('active');
+                        document.getElementById('receipt-modal').classList.add('active');
+                        
+                        // تنظيف الرابط عشان لو عمل ريفريش النافذة متفتحش تاني
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    } else {
+                        showToast("الإيصال غير موجود أو تم حذفه", true);
+                    }
+                });
+            }
+        });
+        // ==============================================================
 
         function showToast(msg, isError=false) {
             const t = document.getElementById("toast"); t.innerHTML = msg; t.style.borderColor = isError?"var(--danger)":"var(--primary)";
@@ -790,10 +836,16 @@
         });
         
         db.ref('kemo_coupons').on('value', snap => { coupons = snap.val() ? Object.values(snap.val()) :[]; if(isAdmin) renderAdminCoupons(); });
+        
         db.ref('kemo_orders').on('value', snap => { 
             if(snap.val()) { allOrders = Object.values(snap.val()).filter(o => o && o.id && String(o.id) !== 'undefined').sort((a,b)=>b.timestamp-a.timestamp); } else { allOrders =[]; }
             if(currentUser) renderUserOrders(); 
-            if(isAdmin) { updateAdminDashboard(); let searchBox = document.getElementById('admin-order-search'); if (searchBox && searchBox.value.trim() !== '') searchOrders(); else filterAdminOrders(adminCurrentOrderFilter); }
+            if(isAdmin) { 
+                updateAdminDashboard(); 
+                renderCustomersDB();
+                let searchBox = document.getElementById('admin-order-search'); 
+                if (searchBox && searchBox.value.trim() !== '') searchOrders(); else filterAdminOrders(adminCurrentOrderFilter); 
+            }
         });
 
         function handleAuth(actionType) { 
@@ -861,7 +913,7 @@
             const btnAdmin = document.getElementById('btn-admin-nav');
             btnAdmin.style.display = isAdmin ? 'inline-block' : 'none'; 
             renderUserOrders(); 
-            if(isAdmin) { renderAdminCoupons(); updateAdminDashboard(); renderCouponProducts(); }
+            if(isAdmin) { renderAdminCoupons(); updateAdminDashboard(); renderCouponProducts(); renderCustomersDB(); }
         }
 
         function updateUIForLogOut() {
@@ -1158,6 +1210,24 @@
             document.getElementById('cart-total-price').innerText = Math.round(finalTotal); document.getElementById('cart-badge-count').innerText = cnt;
         }
 
+        document.getElementById('receipt-image-input').addEventListener('change', e => {
+            const f = e.target.files[0]; if(!f) return;
+            const r = new FileReader();
+            r.onload = ev => {
+                const img = new Image();
+                img.onload = () => {
+                    const cv = document.createElement('canvas'); const M = 800; 
+                    let w = img.width, h = img.height;
+                    if(w>h){if(w>M){h*=M/w; w=M;}}else{if(h>M){w*=M/h; h=M;}}
+                    cv.width=w; cv.height=h; cv.getContext('2d').drawImage(img,0,0,w,h);
+                    customerReceiptBase64 = cv.toDataURL('image/jpeg', 0.5); 
+                };
+                img.src = ev.target.result;
+            };
+            r.readAsDataURL(f);
+        });
+
+        // ===== دالة الدفع مع رابط الإيصال الذكي =====
         function checkoutWhatsApp() {
             if(!currentUser) { showToast("سجل دخول أولاً!",true); return openAuthModal(); }
             if(!cart.length) return showToast("السلة فارغة",true);
@@ -1169,6 +1239,8 @@
             const cPhone = document.getElementById('customer-phone').value.trim(); 
             if(!cPhone) return showToast("يرجى كتابة رقم الواتساب", true);
 
+            if(!customerReceiptBase64) return showToast("يرجى إرفاق صورة إيصال التحويل لإتمام الطلب!", true);
+
             const orderId = 'KEMO-' + Date.now().toString().slice(-6) + Math.floor(Math.random() * 10);
             let finalTotal = parseInt(document.getElementById('cart-total-price').innerText);
             const now = new Date(); const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }; 
@@ -1176,14 +1248,25 @@
 
             const userEmail = currentUser.email || 'غير متوفر';
 
-            const order = { id: orderId, uid: currentUser.uid, userName: currentUser.displayName || 'عميل', email: userEmail, phone: cPhone, playerId: pId, items: cart, total: finalTotal, status: 'pending', timestamp: Date.now(), dateStr: fullDateTime };
+            const order = { 
+                id: orderId, uid: currentUser.uid, userName: currentUser.displayName || 'عميل', email: userEmail, phone: cPhone, 
+                playerId: pId, items: cart, total: finalTotal, status: 'pending', timestamp: Date.now(), dateStr: fullDateTime,
+                receiptImage: customerReceiptBase64 
+            };
+
+            // إنشاء الرابط الذكي للإيصال
+            const currentUrl = window.location.href.split('?')[0]; 
+            const receiptLink = `${currentUrl}?receipt=${orderId}`;
 
             let msg = `مرحباً Kemo Store 👋\nأريد شحن المنتجات التالية:\n\n📅 *تاريخ الطلب:* ${fullDateTime}\n\n👤 *معلومات المشتري:*\n   الاسم: ${order.userName}\n   رقم التواصل: ${order.phone}\n   البريد: ${userEmail}\n\n🎮 *معلومات اللعبة:*\n   الـ ID / الحساب: *${pId}*\n\n📦 *تفاصيل الشحنة:*\n`;
             
             cart.forEach((it, i) => { let itTotal = it.price * it.qty; msg += `${i+1}- *${it.name}*\n   الكمية: ${it.qty} | السعر: ${itTotal} ج.م\n`; if(it.waMessage) msg += `   💬: ${it.waMessage}\n`; });
             msg += `\n💰 *الإجمالي الكلي:* ${finalTotal} ج.م\n`; 
             if(appliedCouponObj) msg += `🎁 (تم تطبيق كود خصم ${appliedCouponObj.code})\n`; 
-            msg += `\nبرجاء تأكيد الشحن معي. (رقم الطلب: #${orderId})`;
+            
+            // إضافة رابط الإيصال للرسالة
+            msg += `\n🔗 *رابط صورة الإيصال (اضغط للمشاهدة):*\n${receiptLink}\n`;
+            msg += `\nبرجاء مراجعة الإيصال وتأكيد الشحن معي. (رقم الطلب: #${orderId})`;
 
             const waLink = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`;
 
@@ -1208,11 +1291,13 @@
 
             finishCheckout(waLink);
         }
+        // =========================================================
 
         function finishCheckout(waLink) {
-            cart=[]; appliedCouponObj=null; 
+            cart=[]; appliedCouponObj=null; customerReceiptBase64="";
             document.getElementById('promo-code').value=''; 
             document.getElementById('coupon-msg').innerText=''; 
+            document.getElementById('receipt-image-input').value='';
             saveCart(); 
             closeAllSidebars(); 
             
@@ -1263,11 +1348,9 @@
             document.getElementById('stat-pending').innerText = pendingCount; 
             document.getElementById('stat-completed').innerText = completedCount;
         }
-        // --- stat adjustments stored in memory ---
-        let statAdj = { revenue: 0, 'net-profit': 0, completed: 0, pending: 0 };
 
+        let statAdj = { revenue: 0, 'net-profit': 0, completed: 0, pending: 0 };
         function openStatEdit(key) {
-            // close all others first
             ['revenue','net-profit','completed','pending'].forEach(k => {
                 const el = document.getElementById('edit-' + k);
                 if(el) el.style.display = 'none';
@@ -1275,18 +1358,15 @@
             const box = document.getElementById('edit-' + key);
             if(box) { box.style.display = 'block'; document.getElementById('adj-' + key).focus(); }
         }
-
         function closeStatEdit(key) {
             const box = document.getElementById('edit-' + key);
             if(box) { box.style.display = 'none'; document.getElementById('adj-' + key).value = ''; }
         }
-
         function applyStatAdj(key, unit) {
             const input = document.getElementById('adj-' + key);
             const val = parseFloat(input.value);
             if(isNaN(val)) return showToast('أدخل رقم صحيح', true);
             statAdj[key] = (statAdj[key] || 0) + val;
-            // update display
             const el = document.getElementById('stat-' + key);
             const baseText = el.innerText.replace(' ج.م','').replace(/,/g,'');
             const base = parseFloat(baseText) || 0;
@@ -1311,6 +1391,21 @@
             let link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = `KemoStore_Orders_${new Date().toISOString().split('T')[0]}.csv`; link.click();
         }
 
+        function viewReceipt(orderId) {
+            const order = allOrders.find(o => String(o.id) === String(orderId));
+            if(order && order.receiptImage) {
+                document.getElementById('admin-receipt-img').src = order.receiptImage;
+                document.getElementById('receipt-modal-overlay').classList.add('active');
+                document.getElementById('receipt-modal').classList.add('active');
+            } else {
+                showToast("لا يوجد إيصال مرفق مع هذا الطلب", true);
+            }
+        }
+        function closeReceiptModal() {
+            document.getElementById('receipt-modal-overlay').classList.remove('active');
+            document.getElementById('receipt-modal').classList.remove('active');
+        }
+
         function filterAdminOrders(status, btn=null) { adminCurrentOrderFilter = status; if(btn) { document.querySelectorAll('.admin-filters button').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); } let filteredList = status === 'all' ? allOrders : allOrders.filter(o => o.status === status); renderAdminOrders(filteredList); }
 
         function renderAdminOrders(list = allOrders) {
@@ -1326,7 +1421,10 @@
                 else if(o.status === 'rejected') { adminActions = `<div style="color:var(--danger); font-weight:bold; text-align:center; margin-top: 10px;">تم رفض الطلب ❌</div>`; }
 
                 let deleteBtnHtml = `<button onclick="deleteSingleOrder('${o.id}')" style="position: absolute; top: 10px; left: 10px; background: transparent; border: none; color: var(--danger); font-size: 14px; cursor: pointer;"><i class="fa-solid fa-trash"></i></button>`;
-                html += `<div class="order-card" style="background:var(--bg-card); position:relative;">${deleteBtnHtml}<div class="order-header"><div>${lateIndicator}<span style="color:var(--primary);">#${o.id}</span></div><span style="padding-left:25px;">${o.userName}</span></div><div style="font-size:13px; margin-bottom:10px;"><b>الرقم:</b> <a href="tel:${o.phone || ''}" style="color:var(--success); text-decoration:none;">${o.phone || 'غير مسجل'}</a><br><b>ID:</b> ${o.playerId} <br> <b>إجمالي:</b> ${o.total} ج.م <br> <b>التاريخ:</b> ${o.dateStr || new Date(o.timestamp).toLocaleDateString('ar-EG')}</div>${adminActions}</div>`;
+                
+                let receiptBtnHtml = o.receiptImage ? `<button class="btn" style="background: var(--etisalat); color: white; padding: 5px; font-size: 11px; margin-top: 8px; width: max-content; display: inline-block;" onclick="viewReceipt('${o.id}')"><i class="fa-solid fa-image"></i> الإيصال</button>` : `<span style="font-size:11px; color:gray; display:block; margin-top:8px;">بدون إيصال</span>`;
+
+                html += `<div class="order-card" style="background:var(--bg-card); position:relative;">${deleteBtnHtml}<div class="order-header"><div>${lateIndicator}<span style="color:var(--primary);">#${o.id}</span></div><span style="padding-left:25px;">${o.userName}</span></div><div style="font-size:13px; margin-bottom:10px;"><b>الرقم:</b> <a href="tel:${o.phone || ''}" style="color:var(--success); text-decoration:none;">${o.phone || 'غير مسجل'}</a><br><b>ID:</b> ${o.playerId} <br> <b>إجمالي:</b> ${o.total} ج.م <br> <b>التاريخ:</b> ${o.dateStr || new Date(o.timestamp).toLocaleDateString('ar-EG')} <br> ${receiptBtnHtml}</div>${adminActions}</div>`;
             });
             cont.innerHTML = html;
         }
@@ -1370,6 +1468,58 @@
         }
         
         function sendLateMessage(id) { const order = allOrders.find(o => String(o.id) === String(id)); if (order && order.phone) { let msg = `مرحباً يا ${order.userName.split(' ')[0]} 👋\n\nنعتذر عن التأخير البسيط في طلبك رقم (#${order.id}).\nالطلب حالياً قيد المراجعة وسوف يتم شحن (ID: ${order.playerId}) في أقرب وقت.\n\nKemo Store 🎮`; let formattedPhone = order.phone.startsWith('0') ? '2' + order.phone : order.phone; window.location.href = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`; } }
+
+        function renderCustomersDB() {
+            if(!isAdmin) return;
+            const dbContainer = document.getElementById('admin-customers-db');
+            let customersObj = {};
+
+            allOrders.forEach(o => {
+                if(!o.uid) return;
+                if(!customersObj[o.uid]) {
+                    customersObj[o.uid] = { 
+                        name: o.userName || 'غير معروف', 
+                        phone: o.phone || '', 
+                        email: o.email || 'غير متوفر', 
+                        totalSpent: 0, 
+                        orderCount: 0 
+                    };
+                }
+                
+                if(o.status === 'completed') {
+                    customersObj[o.uid].totalSpent += Number(o.total || 0);
+                }
+                customersObj[o.uid].orderCount += 1;
+
+                if(o.phone && !customersObj[o.uid].phone) customersObj[o.uid].phone = o.phone;
+            });
+
+            let customersArray = Object.values(customersObj).sort((a, b) => b.totalSpent - a.totalSpent);
+            
+            let html = '';
+            if(customersArray.length === 0) {
+                html = '<div style="grid-column: 1/-1; text-align:center; color: gray;">لا يوجد عملاء حتى الآن</div>';
+            } else {
+                customersArray.forEach((c, index) => {
+                    let rankIcon = index === 0 ? '<i class="fa-solid fa-crown" style="color: gold;"></i>' : 
+                                   index === 1 ? '<i class="fa-solid fa-medal" style="color: silver;"></i>' : 
+                                   index === 2 ? '<i class="fa-solid fa-award" style="color: #cd7f32;"></i>' : 
+                                   '<i class="fa-solid fa-user" style="color: var(--primary);"></i>';
+                                   
+                    html += `
+                    <div class="customer-card">
+                        <h4>${rankIcon} ${c.name}</h4>
+                        <p><i class="fa-solid fa-phone" style="width:15px; color:var(--success)"></i> <a href="tel:${c.phone}" style="color:white; text-decoration:none;">${c.phone || 'غير مسجل'}</a></p>
+                        <p><i class="fa-solid fa-envelope" style="width:15px; color:var(--text-muted)"></i> ${c.email}</p>
+                        <div class="stats">
+                            <span style="color:var(--text-muted)">عدد الطلبات: <b style="color:white">${c.orderCount}</b></span>
+                            <span style="color:var(--primary)">دفع: <b>${c.totalSpent} ج.م</b></span>
+                        </div>
+                    </div>`;
+                });
+            }
+            dbContainer.innerHTML = html;
+        }
 
         function renderCategoriesUI() { let cHtml = `<option value="none">بدون قسم</option>`, fHtml = `<button class="cat-btn active" onclick="filterCat('all',this)">الكل</button>`; categories.forEach(c => { cHtml+=`<option value="${c.name}">${c.name}</option>`; fHtml+=`<button class="cat-btn" onclick="filterCat('${c.name}',this)">${c.name}</button>`; }); cHtml+=`<option value="__NEW__">➕ قسم جديد...</option>`; document.getElementById('p-category').innerHTML = cHtml; document.getElementById('store-category-filter').innerHTML = fHtml; }
         function filterCat(cat, btn) { currentFilter = cat; document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderProducts(); }
